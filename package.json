@@ -1,0 +1,21 @@
+{
+  "name": "pet-wb",
+  "version": "1.0.0",
+  "description": "给宠物穿搭、给主人团购 — 微信小程序",
+  "main": "miniprogram/app.js",
+  "scripts": {
+    "lint": "eslint miniprogram/ cloudfunctions/",
+    "format": "prettier --write \"miniprogram/**/*.{js,json,wxml,wxss}\""
+  },
+  "dependencies": {
+    "tdesign-miniprogram": "^1.5.0"
+  },
+  "devDependencies": {
+    "miniprogram-ci": "^2.1.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0"
+  },
+  "keywords": ["wechat", "miniprogram", "pet", "wardrobe", "group-buy"],
+  "license": "UNLICENSED",
+  "private": true
+}

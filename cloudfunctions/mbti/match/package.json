@@ -1,0 +1,9 @@
+{
+  "name": "cf-mbti-match",
+  "version": "1.0.0",
+  "description": "标签匹配",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

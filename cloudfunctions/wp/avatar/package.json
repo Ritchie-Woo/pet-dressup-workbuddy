@@ -1,0 +1,9 @@
+{
+  "name": "cf-wp-avatar",
+  "version": "1.0.0",
+  "description": "2D形象",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

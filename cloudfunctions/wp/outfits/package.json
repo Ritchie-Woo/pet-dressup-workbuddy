@@ -1,0 +1,9 @@
+{
+  "name": "cf-wp-outfits",
+  "version": "1.0.0",
+  "description": "穿搭方案",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

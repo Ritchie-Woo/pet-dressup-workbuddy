@@ -1,0 +1,5 @@
+/* components/empty-state - 空状态提示 */
+
+.component-container {
+  /* TODO: 组件样式 */
+}

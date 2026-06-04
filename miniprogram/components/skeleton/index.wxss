@@ -1,0 +1,5 @@
+/* components/skeleton - 骨架屏 */
+
+.component-container {
+  /* TODO: 组件样式 */
+}

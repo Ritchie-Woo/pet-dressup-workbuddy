@@ -1,0 +1,9 @@
+{
+  "name": "cf-wp-items",
+  "version": "1.0.0",
+  "description": "服饰道具",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

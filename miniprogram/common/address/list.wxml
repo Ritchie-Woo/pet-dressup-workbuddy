@@ -1,0 +1,6 @@
+<!-- common/address/list.wxml -->
+<t-navbar title="地址列表" left-arrow="{{false}}" />
+<view class="page-container">
+  <text class="page-title">{{pageTitle}}</text>
+  <!-- TODO: 页面内容 -->
+</view>

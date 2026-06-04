@@ -1,0 +1,9 @@
+{
+  "name": "cf-mp-place",
+  "version": "1.0.0",
+  "description": "宠物地点",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

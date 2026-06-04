@@ -1,0 +1,9 @@
+{
+  "name": "cf-mbti-test",
+  "version": "1.0.0",
+  "description": "MBTI测试",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

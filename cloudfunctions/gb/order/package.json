@@ -1,0 +1,9 @@
+{
+  "name": "cf-gb-order",
+  "version": "1.0.0",
+  "description": "团购订单",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

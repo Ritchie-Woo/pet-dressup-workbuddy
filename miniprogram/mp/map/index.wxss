@@ -1,0 +1,13 @@
+/* mp/map/index.wxss */
+
+.page-container {
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  background: var(--color-bg-page);
+}
+
+.page-title {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--color-text-main);
+}

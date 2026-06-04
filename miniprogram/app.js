@@ -1,0 +1,80 @@
+// pet-wb 小程序入口
+App({
+  globalData: {
+    userInfo: null,
+    token: null,
+    featureFlags: {},
+    flagsLoaded: false,
+    systemInfo: null
+  },
+
+  onLaunch() {
+    this.getSystemInfo();
+    // 启动时拉取 Feature Flag 配置
+    this.loadFeatureFlags();
+    // 检查登录态
+    this.checkLoginStatus();
+  },
+
+  onShow(options) {
+    // 处理分享进入、模板消息跳转等场景
+    this.handleLaunchOptions(options);
+  },
+
+  // 获取系统信息
+  getSystemInfo() {
+    try {
+      const info = wx.getSystemInfoSync();
+      this.globalData.systemInfo = info;
+      // 存储状态栏高度给自定义导航栏使用
+      this.globalData.statusBarHeight = info.statusBarHeight;
+      this.globalData.navBarHeight = info.platform === 'android' ? 48 : 44;
+    } catch (err) {
+      console.error('[App] 获取系统信息失败', err);
+    }
+  },
+
+  // 加载 Feature Flag
+  loadFeatureFlags() {
+    const featureFlag = require('./utils/featureFlag');
+    featureFlag.loadFlags()
+      .then((flags) => {
+        this.globalData.featureFlags = flags;
+        this.globalData.flagsLoaded = true;
+        console.log('[App] Feature flags 加载完成', flags);
+      })
+      .catch((err) => {
+        console.warn('[App] Feature flags 加载失败，使用默认值', err);
+        this.globalData.flagsLoaded = true;
+      });
+  },
+
+  // 检查登录状态
+  checkLoginStatus() {
+    const storage = require('./utils/storage');
+    const token = storage.getSync('token');
+    if (token) {
+      this.globalData.token = token;
+      const userInfo = storage.getSync('userInfo');
+      if (userInfo) {
+        this.globalData.userInfo = userInfo;
+      }
+    }
+  },
+
+  // 处理启动参数
+  handleLaunchOptions(options) {
+    if (options.query && options.query.scene) {
+      console.log('[App] 通过场景值进入:', options.query.scene);
+    }
+  },
+
+  // 获取 feature flag 值
+  isFeatureEnabled(key, defaultValue) {
+    const flags = this.globalData.featureFlags;
+    if (flags && typeof flags[key] !== 'undefined') {
+      return !!flags[key];
+    }
+    return defaultValue !== undefined ? defaultValue : false;
+  }
+});
