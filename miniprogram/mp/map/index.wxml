@@ -1,6 +1,36 @@
-<!-- mp/map/index.wxml -->
-<t-navbar title="地图首页" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- mp/map/index.wxml — 宠物友好地图主页面 -->
+<view class="page-map">
+  <!-- 搜索栏 -->
+  <view class="map-search-bar">
+    <t-search placeholder="搜索地点" bind:submit="onSearch" bind:clear="onSearchClear" />
+  </view>
+
+  <!-- 分类筛选 -->
+  <scroll-view class="map-cats" scroll-x>
+    <view wx:for="{{categories}}" wx:key="value" class="cat-chip {{activeCategory === item.value ? 'active' : ''}}" bindtap="switchCategory" data-val="{{item.value}}">
+      {{item.icon}} {{item.label}}
+    </view>
+  </scroll-view>
+
+  <!-- 地图 -->
+  <map id="myMap" class="map-view" latitude="{{latitude}}" longitude="{{longitude}}" scale="{{14}}" markers="{{markers}}" show-location="{{true}}" bindmarkertap="onMarkerTap" bindregionchange="onRegionChange" />
+
+  <!-- 底部投稿按钮 -->
+  <view class="map-submit-btn" bindtap="goSubmit">
+    <t-icon name="add" size="40rpx" color="#fff" />
+    <text>投稿地点</text>
+  </view>
+
+  <!-- 附近地点列表 -->
+  <view class="map-place-list" wx:if="{{places.length > 0}}">
+    <text class="list-title">附近宠物友好地点 ({{places.length}})</text>
+    <view wx:for="{{places}}" wx:key="placeId" class="place-mini-card" bindtap="goDetail" data-id="{{item.placeId}}">
+      <image class="place-thumb" src="{{item.images[0] || ''}}" mode="aspectFill" />
+      <view class="place-info">
+        <text class="place-name">{{item.name}}</text>
+        <text class="place-meta">{{categoryLabel(item.category)}} · {{item.distance}}m</text>
+      </view>
+      <t-tag wx:if="{{item.rating > 0}}" size="small" variant="light">⭐{{item.rating}}</t-tag>
+    </view>
+  </view>
 </view>

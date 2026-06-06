@@ -1,4 +1,8 @@
-<!-- components/toast - 轻提示 -->
-<view class="component-container">
-  <!-- TODO: 组件内容 -->
+<!-- components/toast/index.wxml -->
+<view wx:if="{{show}}" class="toast-wrap">
+  <view class="toast-body">
+    <t-icon wx:if="{{icon === 'success'}}" name="check-circle" size="44rpx" color="#07C160" />
+    <t-icon wx:elif="{{icon === 'error'}}" name="close-circle" size="44rpx" color="#FF4D4F" />
+    <text class="toast-msg">{{message}}</text>
+  </view>
 </view>

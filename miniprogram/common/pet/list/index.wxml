@@ -1,0 +1,42 @@
+<!-- common/pet/list/index.wxml — 宠物列表 -->
+<navbar title="我的宠物" showBack="{{false}}" />
+
+<view class="page-pet-list">
+  <!-- 空状态 -->
+  <view wx:if="{{!loading && pets.length === 0}}" class="empty-wrap">
+    <empty-state icon="pet" text="还没有宠物，快来创建一只吧">
+      <t-button theme="primary" size="medium" bindtap="goCreate">添加宠物</t-button>
+    </empty-state>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view wx:elif="{{loading}}" class="skeleton-wrap">
+    <skeleton row="{{3}}" />
+  </view>
+
+  <!-- 宠物列表 -->
+  <view wx:else class="pet-list">
+    <view wx:for="{{pets}}" wx:key="petId" class="pet-card card" bindtap="goDetail" data-id="{{item.petId}}">
+      <view class="pet-avatar">
+        <t-avatar image="{{item.avatarUrl || ''}}" icon="user" size="large" />
+      </view>
+      <view class="pet-info">
+        <view class="pet-name-row">
+          <text class="pet-name">{{item.name}}</text>
+          <t-tag size="small" variant="light">{{item.breed || item.species}}</t-tag>
+        </view>
+        <text class="pet-meta">{{item.gender === 'male' ? '♂ 男孩' : item.gender === 'female' ? '♀ 女孩' : '性别未知'}}{{item.birthday ? ' · ' + item.birthday : ''}}</text>
+      </view>
+      <view class="pet-arrow">
+        <t-icon name="chevron-right" size="32rpx" color="#ccc" />
+      </view>
+    </view>
+
+    <!-- 添加按钮 -->
+    <view wx:if="{{pets.length < 5}}" class="add-pet card" bindtap="goCreate">
+      <t-icon name="add" size="48rpx" color="#FF8C00" />
+      <text class="add-text">添加宠物</text>
+    </view>
+    <view wx:else class="pet-limit-text">最多添加 5 只宠物</view>
+  </view>
+</view>

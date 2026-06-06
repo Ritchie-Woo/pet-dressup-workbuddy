@@ -9,6 +9,13 @@ App({
   },
 
   onLaunch() {
+    // 初始化云开发
+    if (wx.cloud) {
+      wx.cloud.init({
+        env: 'cloud1-d7gqpsxqg5fb00c1b',
+        traceUser: true
+      });
+    }
     this.getSystemInfo();
     // 启动时拉取 Feature Flag 配置
     this.loadFeatureFlags();
@@ -24,11 +31,11 @@ App({
   // 获取系统信息
   getSystemInfo() {
     try {
-      const info = wx.getSystemInfoSync();
-      this.globalData.systemInfo = info;
-      // 存储状态栏高度给自定义导航栏使用
-      this.globalData.statusBarHeight = info.statusBarHeight;
-      this.globalData.navBarHeight = info.platform === 'android' ? 48 : 44;
+      const windowInfo = wx.getWindowInfo();
+      const deviceInfo = wx.getDeviceInfo();
+      this.globalData.systemInfo = { ...windowInfo, ...deviceInfo };
+      this.globalData.statusBarHeight = windowInfo.statusBarHeight;
+      this.globalData.navBarHeight = deviceInfo.platform === 'android' ? 48 : 44;
     } catch (err) {
       console.error('[App] 获取系统信息失败', err);
     }
@@ -36,16 +43,21 @@ App({
 
   // 加载 Feature Flag
   loadFeatureFlags() {
+    // 先用默认值，避免白等
     const featureFlag = require('./utils/featureFlag');
+    this.globalData.featureFlags = featureFlag.DEFAULTS;
+    this.globalData.flagsLoaded = true;
+
     featureFlag.loadFlags()
       .then((flags) => {
         this.globalData.featureFlags = flags;
-        this.globalData.flagsLoaded = true;
         console.log('[App] Feature flags 加载完成', flags);
       })
       .catch((err) => {
-        console.warn('[App] Feature flags 加载失败，使用默认值', err);
-        this.globalData.flagsLoaded = true;
+        // 静默降级，已用默认值
+        if (err.message !== '_FF_TIMEOUT_SILENT') {
+          console.warn('[App] Feature flags 云加载失败，使用默认值');
+        }
       });
   },
 

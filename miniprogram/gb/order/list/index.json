@@ -1,0 +1,14 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "我的订单",
+  "usingComponents": {
+    "navbar": "../../../components/navbar/index",
+    "empty-state": "../../../components/empty-state/index",
+    "skeleton": "../../../components/skeleton/index",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-icon": "tdesign-miniprogram/icon/icon"
+  }
+}

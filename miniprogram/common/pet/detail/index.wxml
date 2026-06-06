@@ -1,0 +1,36 @@
+<!-- common/pet/detail/index.wxml — 宠物详情/编辑 -->
+<navbar title="宠物详情" />
+
+<view class="page-pet-detail" wx:if="{{!loading}}">
+  <!-- 顶部信息卡片 -->
+  <view class="detail-card card">
+    <t-avatar image="{{pet.avatarUrl || ''}}" icon="user" size="xlarge" />
+    <view class="detail-info">
+      <view class="detail-name">{{pet.name}}</view>
+      <view class="detail-meta">
+        <text class="meta-item">{{pet.breed || pet.species}}</text>
+        <text class="meta-item" wx:if="{{pet.gender === 'male'}}">♂ 男生</text>
+        <text class="meta-item" wx:elif="{{pet.gender === 'female'}}">♀ 女生</text>
+        <text class="meta-item" wx:if="{{pet.birthday}}">🎂 {{pet.birthday}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="action-grid">
+    <view class="action-item" bindtap="goDressup">
+      <t-icon name="gesture-click" size="44rpx" color="#FF8C00" />
+      <text class="action-text">去穿搭</text>
+    </view>
+    <view class="action-item" bindtap="goEdit">
+      <t-icon name="edit" size="44rpx" color="#666" />
+      <text class="action-text">编辑信息</text>
+    </view>
+    <view class="action-item" bindtap="confirmDelete">
+      <t-icon name="delete" size="44rpx" color="#FF4D4F" />
+      <text class="action-text danger">删除</text>
+    </view>
+  </view>
+</view>
+
+<skeleton wx:else row="{{4}}" />

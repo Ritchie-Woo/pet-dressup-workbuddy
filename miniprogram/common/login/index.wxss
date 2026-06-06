@@ -1,13 +1,153 @@
-/* common/login/index.wxss */
+/* common/login/index.wxss — 粒子动效登录 */
 
-.page-container {
+.page-login {
   min-height: 100vh;
-  padding: var(--spacing-md);
-  background: var(--color-bg-page);
+  background: #FFF8E8;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(env(safe-area-inset-top) + 80rpx);
+  position: relative;
+  overflow: hidden;
 }
 
-.page-title {
-  font-size: var(--font-xl);
-  font-weight: 600;
-  color: var(--color-text-main);
+.particle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
+
+/* Hero */
+.login-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 40rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* CSS Pet */
+.hero-pet {
+  margin-bottom: 16rpx;
+}
+
+.pet-face {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFE5E3, #FFD1CF);
+  position: relative;
+}
+
+.pet-ear {
+  position: absolute;
+  width: 48rpx;
+  height: 56rpx;
+  background: #FFD1CF;
+  border-radius: 50% 50% 8rpx 8rpx;
+  top: -20rpx;
+}
+
+.ear-left { left: 12rpx; transform: rotate(-15deg); }
+.ear-right { right: 12rpx; transform: rotate(15deg); }
+
+.pet-eyes {
+  display: flex;
+  gap: 28rpx;
+  justify-content: center;
+  padding-top: 50rpx;
+}
+
+.eye {
+  width: 16rpx;
+  height: 20rpx;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.pet-nose {
+  width: 20rpx;
+  height: 14rpx;
+  background: var(--primary);
+  border-radius: 50%;
+  opacity: 0.6;
+  margin: 10rpx auto 0;
+}
+
+.pet-smile {
+  width: 40rpx;
+  height: 16rpx;
+  border-bottom: 3rpx solid var(--primary);
+  border-radius: 0 0 50% 50%;
+  margin: 6rpx auto 0;
+  opacity: 0.5;
+}
+
+.brand {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -1rpx;
+}
+
+.slogan {
+  font-size: var(--font-md);
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Bottom */
+.login-bottom {
+  padding: 0 40rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-wechat {
+  width: 100%;
+  padding: 28rpx 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--font-md);
+  font-weight: 700;
+  box-shadow: 0 8rpx 24rpx rgba(255,90,95,0.35);
+}
+
+.btn-wechat::after { border: none; }
+.btn-wechat:active { transform: scale(0.96); }
+
+.btn-skip {
+  width: 100%;
+  padding: 20rpx 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  margin-top: 12rpx;
+}
+
+.btn-skip::after { border: none; }
+
+.agreement {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 24rpx 0 8rpx;
+  gap: 2rpx;
+}
+
+.agree-text { font-size: var(--font-xs); color: var(--text-secondary); }
+.agree-link { font-size: var(--font-xs); color: var(--primary); font-weight: 600; }

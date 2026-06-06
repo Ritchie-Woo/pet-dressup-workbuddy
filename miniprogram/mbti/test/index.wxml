@@ -1,6 +1,46 @@
-<!-- mbti/test/index.wxml -->
-<t-navbar title="MBTI测试" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- mbti/test/index.wxml — MBTI 测试页 -->
+<navbar title="宠物性格测试" />
+
+<view wx:if="{{step === 'intro'}}" class="page-mbti-intro">
+  <view class="intro-header">
+    <text class="intro-icon">🐾</text>
+    <text class="intro-title">你的宠物是什么性格类型？</text>
+    <text class="intro-sub">基于动物行为学研究 · 12 道情景题 · 约 2 分钟</text>
+  </view>
+  <view class="intro-disclaimer card">
+    <t-icon name="info-circle" size="32rpx" color="#999" />
+    <text class="disclaimer-text">本测试基于主人观察报告和行为科学研究，非临床诊断工具，结果仅供趣味参考。</text>
+  </view>
+  <view class="intro-start safe-bottom">
+    <t-button theme="primary" size="large" block bindtap="startQuiz">开始测试</t-button>
+  </view>
+</view>
+
+<view wx:elif="{{step === 'quiz'}}" class="page-mbti-quiz">
+  <!-- 进度条 -->
+  <view class="quiz-progress">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progress}}%"></view>
+    </view>
+    <text class="progress-text">{{currentIndex + 1}} / {{questions.length}}</text>
+  </view>
+
+  <!-- 题目 -->
+  <view wx:if="{{currentQ}}" class="quiz-card card">
+    <view class="q-number">Q{{currentIndex + 1}}</view>
+    <text class="q-text">{{currentQ.text}}</text>
+    <view class="q-options">
+      <view wx:for="{{currentQ.options}}" wx:key="key" class="q-option {{selectedAnswer === item.key ? 'selected' : ''}}" bindtap="selectAnswer" data-key="{{item.key}}" data-weight="{{item.weight}}">
+        <view class="option-marker">{{item.key}}</view>
+        <text class="option-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导航按钮 -->
+  <view class="quiz-nav safe-bottom">
+    <t-button wx:if="{{currentIndex > 0}}" variant="outline" size="large" bindtap="prevQuestion">上一题</t-button>
+    <t-button wx:if="{{currentIndex < questions.length - 1}}" theme="primary" size="large" bindtap="nextQuestion" disabled="{{!selectedAnswer}}">下一题</t-button>
+    <t-button wx:if="{{currentIndex === questions.length - 1}}" theme="primary" size="large" bindtap="submitQuiz" loading="{{submitting}}" disabled="{{!selectedAnswer}}">查看结果</t-button>
+  </view>
 </view>

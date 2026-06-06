@@ -1,6 +1,42 @@
-<!-- mbti/card/index.wxml -->
-<t-navbar title="MBTI卡片" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- mbti/card/index.wxml — MBTI 结果卡片 -->
+<navbar title="性格报告" />
+
+<view wx:if="{{result}}" class="page-mbti-card">
+  <!-- 主标签卡片 -->
+  <view class="result-header card">
+    <text class="result-emoji">🐾</text>
+    <text class="result-pet-name">{{result.petName}}</text>
+    <view class="result-type-badge">
+      <text class="type-code">{{result.typeCode}}</text>
+    </view>
+    <text class="type-name">{{result.typeName}}</text>
+    <text class="type-desc">基于 4 维度 12 题行为评估</text>
+  </view>
+
+  <!-- 四维度详情 -->
+  <view class="dimension-list">
+    <view wx:for="{{result.scores}}" wx:key="dimension" class="dim-card card">
+      <view class="dim-header">
+        <text class="dim-label">{{item.name}}</text>
+        <view class="dim-bar-wrap">
+          <view class="dim-bar" style="width: {{(item.total / 15) * 100}}%; background: {{item.level === 'high' ? '#FF8C00' : item.level === 'mid' ? '#FFD700' : '#87CEEB'}}"></view>
+        </view>
+        <text class="dim-score">{{item.total}}分</text>
+      </view>
+      <text class="dim-desc">{{item.desc}}</text>
+    </view>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="disclaimer card">
+    <text class="disclaimer-text">⚠️ 本测试基于主人观察报告和行为科学研究，结果仅供趣味参考，不代表临床诊断。</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="card-actions safe-bottom">
+    <t-button theme="primary" size="large" block bindtap="goShare">分享标签卡片</t-button>
+    <t-button variant="outline" size="large" block style="margin-top: 16rpx" bindtap="retest" wx:if="{{true}}">重新测试（30天后）</t-button>
+  </view>
 </view>
+
+<skeleton wx:else row="{{4}}" />

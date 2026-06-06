@@ -1,0 +1,56 @@
+/* common/address/edit/index.wxss */
+
+.page-address-edit {
+  padding: 24rpx;
+  min-height: 100vh;
+  background: var(--body-bg);
+}
+
+.form-section {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 8rpx 0;
+  box-shadow: var(--shadow);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid var(--td-bg-color-page);
+  min-height: 88rpx;
+}
+
+.form-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 28rpx;
+  color: var(--td-text-color-primary);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 150rpx;
+}
+
+.label .required {
+  color: #D54941;
+}
+
+.picker-wrap {
+  flex: 1;
+}
+
+.picker-placeholder {
+  font-size: 28rpx;
+  color: var(--td-text-color-placeholder);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8rpx;
+}
+
+.btn-area {
+  margin-top: 48rpx;
+  padding: 0 8rpx;
+}

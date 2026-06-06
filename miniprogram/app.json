@@ -1,65 +1,36 @@
 {
   "pages": [
-    "wp/dressup/index",
-    "gb/list/index",
     "common/login/index",
-    "common/pet/list",
-    "common/pet/create",
-    "common/pet/detail",
-    "common/address/list",
-    "common/address/edit",
+    "wp/dressup/index",
+    "wp/avatar/index",
+    "wp/share/index",
+    "gb/list/index",
+    "gb/detail/index",
+    "gb/cart/index",
+    "gb/order/list",
+    "gb/order/detail",
+    "mp/map/index",
+    "mp/place/index",
+    "mbti/test/index",
+    "mbti/card/index",
+    "common/pet/list/index",
+    "common/pet/create/index",
+    "common/pet/detail/index",
+    "common/address/list/index",
+    "common/address/edit/index",
     "my/index"
-  ],
-  "subPackages": [
-    {
-      "root": "gb",
-      "name": "gb",
-      "pages": [
-        "detail/index",
-        "order/list",
-        "order/detail"
-      ]
-    },
-    {
-      "root": "wp",
-      "name": "wp",
-      "pages": [
-        "avatar/index",
-        "share/index"
-      ]
-    },
-    {
-      "root": "mp",
-      "name": "mp",
-      "pages": [
-        "map/index",
-        "place/index",
-        "checkin/index"
-      ]
-    },
-    {
-      "root": "mbti",
-      "name": "mbti",
-      "pages": [
-        "test/index",
-        "card/index"
-      ]
-    }
   ],
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#FF8C00",
-    "navigationBarTitleText": "pet-wb",
-    "navigationBarTextStyle": "white",
     "backgroundColor": "#FFF8F0"
   },
   "tabBar": {
     "custom": false,
     "color": "#999999",
-    "selectedColor": "#FF8C00",
+    "selectedColor": "#FF5A5F",
     "backgroundColor": "#FFFFFF",
-    "borderStyle": "white",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "wp/dressup/index",
@@ -72,6 +43,12 @@
         "text": "团购",
         "iconPath": "images/tab/gb.png",
         "selectedIconPath": "images/tab/gb-active.png"
+      },
+      {
+        "pagePath": "gb/order/list",
+        "text": "订单",
+        "iconPath": "images/tab/order.png",
+        "selectedIconPath": "images/tab/order-active.png"
       },
       {
         "pagePath": "mp/map/index",
@@ -137,7 +114,6 @@
     "skyline": {
       "defaultDisplayBlock": true,
       "defaultContentBox": true,
-      "disableABR": false,
       "sdkVersionBegin": "3.7.0",
       "sdkVersionEnd": "99.0.0"
     }

@@ -1,4 +1,10 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "订单列表"
+  "navigationBarTitleText": "订单列表",
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-tag": "tdesign-miniprogram/tag/tag"
+  }
 }

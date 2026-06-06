@@ -1,0 +1,94 @@
+/* common/address/list/index.wxss */
+
+.page-address-list {
+  min-height: 100vh;
+  background: var(--body-bg);
+  padding: 24rpx;
+}
+
+.address-list { }
+
+.address-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 第一行：用户信息 + 操作 */
+.addr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+
+.addr-user {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.addr-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--td-text-color-primary);
+  flex-shrink: 0;
+}
+
+.addr-phone {
+  font-size: 26rpx;
+  color: var(--td-text-color-secondary);
+  flex-shrink: 0;
+}
+
+.addr-tag {
+  flex-shrink: 0;
+}
+
+/* 右侧操作按钮 */
+.addr-ops {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.op-link {
+  font-size: 26rpx;
+  color: var(--td-text-color-secondary);
+  padding: 4rpx 8rpx;
+}
+
+.op-link.danger {
+  color: #D54941;
+}
+
+/* 第二行：地址详情 */
+.addr-detail {
+  font-size: 26rpx;
+  color: var(--td-text-color-placeholder);
+  line-height: 1.6;
+  display: block;
+}
+
+/* 新增按钮 */
+.add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 32rpx;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 2rpx dashed var(--td-bg-color-page);
+}
+
+.add-text {
+  font-size: 28rpx;
+  color: var(--td-text-color-secondary);
+}

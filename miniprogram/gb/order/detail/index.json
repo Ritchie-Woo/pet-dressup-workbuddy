@@ -1,0 +1,11 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "订单详情",
+  "usingComponents": {
+    "navbar": "../../../components/navbar/index",
+    "skeleton": "../../../components/skeleton/index",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tag": "tdesign-miniprogram/tag/tag"
+  }
+}

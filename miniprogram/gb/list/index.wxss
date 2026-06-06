@@ -1,13 +1,178 @@
 /* gb/list/index.wxss */
-
-.page-container {
-  min-height: 100vh;
-  padding: var(--spacing-md);
-  background: var(--color-bg-page);
+.gb-list-container {
+  position: relative;
+  height: 100vh;
 }
 
-.page-title {
-  font-size: var(--font-xl);
-  font-weight: 600;
-  color: var(--color-text-main);
+.gb-list-page {
+  height: 100%;
+  padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  background: var(--bg);
+}
+
+/* 搜索 */
+.search-bar { padding: 0 24rpx 16rpx; }
+
+/* 分类 */
+.cate-row {
+  white-space: nowrap;
+  padding: 16rpx 24rpx;
+  background: #fff;
+}
+.cate-pill {
+  display: inline-flex;
+  padding: 12rpx 28rpx;
+  border-radius: var(--radius-pill);
+  font-size: 26rpx;
+  color: var(--td-text-color-secondary);
+  background: var(--td-bg-color-page);
+  margin-right: 16rpx;
+  font-weight: 500;
+}
+.cate-pill.active { background: var(--primary); color: #fff; font-weight: 700; }
+
+/* 商品网格 */
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx 20rpx;
+  gap: 20rpx;
+}
+
+.prod-card {
+  width: calc(50% - 10rpx);
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.prod-img {
+  width: 100%;
+  height: 280rpx;
+  background: #F0F0F0;
+  transition: opacity 0.3s ease;
+}
+.prod-img[src] {
+  opacity: 0;
+  animation: imgFadeIn 0.4s ease forwards;
+}
+@keyframes imgFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.sold-mask {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36rpx; font-weight: 800; color: #fff;
+}
+
+.prod-body { padding: 18rpx; }
+
+.prod-name {
+  font-size: 28rpx; font-weight: 600; color: var(--td-text-color-primary);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; line-height: 1.4; margin-bottom: 10rpx;
+}
+
+.prod-price-row { display: flex; align-items: baseline; gap: 8rpx; margin-bottom: 10rpx; }
+.prod-price { font-size: var(--font-lg); font-weight: 700; color: var(--primary); }
+.prod-old { font-size: var(--font-xs); color: #ccc; text-decoration: line-through; }
+
+.prod-foot {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.prod-sold { font-size: 22rpx; color: var(--td-text-color-secondary); }
+
+.add-btn {
+  width: 48rpx; height: 48rpx; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36rpx; line-height: 1; font-weight: 300;
+}
+
+.safe-bottom { height: 80rpx; }
+
+/* 触底提示 */
+.end-tips {
+  width: 100%;
+  padding: 32rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.end-text {
+  font-size: 24rpx;
+  color: var(--td-text-color-placeholder);
+  letter-spacing: 2rpx;
+}
+
+/* 加载居中 */
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+}
+
+/* 空状态居中 */
+.empty-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+}
+
+/* 右下角浮动购物车 */
+.float-cart {
+  position: fixed;
+  right: 28rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 130rpx);
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.float-cart-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  border-radius: 18rpx;
+  background: var(--primary);
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8rpx;
+}
+
+/* 加购飞入小球 */
+.fly-ball {
+  position: fixed;
+  border-radius: 12rpx;
+  overflow: hidden;
+  z-index: 200;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,.15);
+  pointer-events: none;
+}
+
+.fly-img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }

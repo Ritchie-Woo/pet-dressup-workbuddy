@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>真实照片微动效 + 穿戴 Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, sans-serif; background: #1a1a2e; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+.app { text-align: center; }
+h1 { font-size: 18px; color: #fff; margin-bottom: 12px; }
+.stage { position: relative; display: inline-block; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.3); background: #fff; }
+.stage canvas { display: block; }
+.controls { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.controls button { padding: 10px 20px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; }
+.controls button:hover { transform: translateY(-1px); }
+.btn-wear { background: #FF5A5F; color: #fff; }
+.btn-clear { background: rgba(255,255,255,0.15); color: #ccc; }
+.btn-upload { background: #00A699; color: #fff; }
+.info { margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.4); max-width: 380px; line-height: 1.6; }
+.info span { color: #FF5A5F; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🐱 真实照片微动效 + 服饰穿戴</h1>
+  <div class="stage">
+    <canvas id="c" width="400" height="400"></canvas>
+  </div>
+  <div class="controls">
+    <button class="btn-upload" onclick="uploadCat()">📷 上传你的猫</button>
+    <button class="btn-wear" onclick="toggleCollar()">💎 切换项圈</button>
+    <button class="btn-clear" onclick="adjustAnchor()">📍 调整锚点</button>
+  </div>
+  <div class="info">
+    <span>技术说明：</span>真实照片是完整像素图，无法拆分骨骼。<br>
+    此 Demo 使用<span>微动效</span>（呼吸缩放+位移）模拟活力，<br>
+    项圈跟随<span>脖子锚点</span>运动。如需完整骨骼动画，需 AI 卡通化或人工拆图。
+  </div>
+</div>
+
+<script>
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+const W = 400, H = 400;
+
+// 图片资源
+let catImg = new Image();
+let collarImg = new Image();
+let hasCollar = false;
+let adjusting = false;
+
+// 猫的位置和锚点
+let catState = {
+  x: W/2, y: H/2,
+  scale: 1,
+  // 脖子锚点（相对于猫中心）
+  neckOffsetX: 0, neckOffsetY: -35
+};
+
+// 加载你的暹罗猫照片
+catImg.crossOrigin = 'anonymous';
+catImg.onload = () => {
+  catState.neckOffsetX = 0;
+  catState.neckOffsetY = -catImg.height * 0.15;
+};
+catImg.src = 'cat-1.png';
+
+// 项圈 SVG
+collarImg.src = 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="24">
+  <rect x="5" y="6" width="110" height="12" rx="4" fill="#FF5A5F"/>
+  <circle cx="60" cy="18" r="7" fill="#FFD700"/>
+  <circle cx="60" cy="20" r="2" fill="#D4A800"/>
+</svg>`);
+
+// 动画状态
+let breathPhase = 0;
+let tailPhase = 0;
+
+function animate(time) {
+  breathPhase = time / 1200;
+  tailPhase = time / 600;
+
+  // 呼吸效果：轻微缩放 + 上下浮动
+  const breathScale = 1 + Math.sin(breathPhase) * 0.015;
+  const breathY = Math.sin(breathPhase) * 2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // 背景
+  ctx.fillStyle = '#f5f0e8';
+  ctx.fillRect(0, 0, W, H);
+
+  // 地面阴影
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.beginPath();
+  ctx.ellipse(catState.x, catState.y + 140, 80 * breathScale, 20, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // 绘制猫（整体缩放）
+  ctx.save();
+  ctx.translate(catState.x, catState.y + breathY);
+  ctx.scale(breathScale, breathScale);
+
+  if (catImg.complete && catImg.width > 10) {
+    // 保持比例居中绘制
+    const aspect = catImg.width / catImg.height;
+    const drawW = aspect > 1 ? 300 : 300 * aspect;
+    const drawH = aspect > 1 ? 300 / aspect : 300;
+    ctx.drawImage(catImg, -drawW/2, -drawH/2, drawW, drawH);
+
+    // 脖子锚点标记
+    const nx = catState.neckOffsetX;
+    const ny = catState.neckOffsetY;
+
+    // 锚点指示器
+    ctx.strokeStyle = 'rgba(255,90,95,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(nx-15, ny); ctx.lineTo(nx+15, ny);
+    ctx.moveTo(nx, ny-15); ctx.lineTo(nx, ny+15);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(nx, ny, 6, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,90,95,0.7)';
+    ctx.fill();
+
+    // 绘制项圈
+    if (hasCollar && collarImg.complete) {
+      ctx.save();
+      ctx.translate(nx, ny);
+      ctx.rotate(Math.sin(breathPhase*0.5) * 0.03); // 轻微跟随晃动
+      ctx.scale(0.6, 0.6); // 缩放适配
+      ctx.drawImage(collarImg, -collarImg.width/2, -collarImg.height/2);
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+
+  // 调整模式提示
+  if (adjusting) {
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(10, 10, 180, 60);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('调整模式：点击猫脖子', 20, 32);
+    ctx.fillText('当前位置锚定项圈', 20, 52);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+// 交互
+c.addEventListener('click', e => {
+  const rect = c.getBoundingClientRect();
+  const x = e.clientX - rect.left - catState.x;
+  const y = e.clientY - rect.top - catState.y;
+
+  if (adjusting) {
+    catState.neckOffsetX = x;
+    catState.neckOffsetY = y;
+    adjusting = false;
+    c.style.cursor = 'default';
+    return;
+  }
+});
+
+function uploadCat() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      catImg = new Image();
+      catImg.onload = () => {
+        // 自动估计脖子位置（大致在头部下方）
+        catState.neckOffsetX = 0;
+        catState.neckOffsetY = -catImg.height * 0.15;
+      };
+      catImg.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function toggleCollar() {
+  hasCollar = !hasCollar;
+}
+
+function adjustAnchor() {
+  adjusting = true;
+  c.style.cursor = 'crosshair';
+}
+
+// 启动
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>

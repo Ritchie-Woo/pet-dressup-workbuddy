@@ -1,0 +1,108 @@
+<!-- gb/order/detail/index.wxml — 订单详情 / 支付成功页 -->
+<navbar title="{{isNewOrder ? '支付成功' : '订单详情'}}" />
+
+<scroll-view wx:if="{{!loading}}" class="detail-page" scroll-y enhanced show-scrollbar="{{false}}">
+
+  <!-- 支付成功头部 -->
+  <view wx:if="{{isNewOrder}}" class="success-header">
+    <view class="success-icon">
+      <t-icon name="check-circle-filled" size="96rpx" color="#00A699" />
+    </view>
+    <text class="success-title">支付成功</text>
+    <text class="success-price">¥{{order.amountTotal}}</text>
+    <view wx:if="{{order.wpItemAdded}}" class="success-bonus">
+      <t-icon name="gift" size="32rpx" color="#FF8F1F" />
+      <text class="bonus-text">已自动解锁对应 2D 服饰</text>
+    </view>
+    <view class="success-actions">
+      <t-button theme="primary" size="large" bindtap="goDressup">查看穿搭</t-button>
+      <t-button variant="outline" size="large" bindtap="goOrders">查看订单</t-button>
+    </view>
+  </view>
+
+  <!-- 订单状态卡片 -->
+  <view class="status-card">
+    <view class="status-header">
+      <t-tag size="medium" variant="light" theme="{{statusTheme(order.status)}}">{{statusLabel(order.status)}}</t-tag>
+      <text class="status-desc">{{statusDesc(order.status)}}</text>
+    </view>
+  </view>
+
+  <!-- 物流进度时间线 -->
+  <view class="timeline-card">
+    <text class="card-title">订单进度</text>
+    <view class="timeline">
+      <view class="tl-item {{order.createdAt ? 'active' : ''}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">已下单</text>
+          <text class="tl-time">{{order.createdAt || '—'}}</text>
+        </view>
+      </view>
+      <view class="tl-item {{order.paidAt ? 'active' : ''}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">已支付</text>
+          <text class="tl-time">{{order.paidAt || '—'}}</text>
+        </view>
+      </view>
+      <view class="tl-item {{order.shippedAt ? 'active' : ''}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">已发货</text>
+          <text class="tl-time">{{order.shippedAt || '—'}}</text>
+        </view>
+      </view>
+      <view class="tl-item {{order.completedAt ? 'active' : ''}}">
+        <view class="tl-dot"></view>
+        <view class="tl-content">
+          <text class="tl-label">已完成</text>
+          <text class="tl-time">{{order.completedAt || '—'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商品信息 -->
+  <view class="product-card">
+    <text class="card-title">商品信息</text>
+    <view class="product-row">
+      <image class="product-thumb" src="{{order.productThumbnail || ''}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-name text-ellipsis-2">{{order.productName}}</text>
+        <text class="product-spec" wx:if="{{order.specChoiceText}}">{{order.specChoiceText}}</text>
+      </view>
+    </view>
+    <view class="product-detail">
+      <view class="detail-row">
+        <text class="detail-label">数量</text>
+        <text class="detail-value">×{{order.quantity}}</text>
+      </view>
+      <view class="detail-row">
+        <text class="detail-label">实付金额</text>
+        <text class="detail-value price">¥{{order.amountTotal}}</text>
+      </view>
+      <view class="detail-row" wx:if="{{order.trackingNo}}">
+        <text class="detail-label">快递单号</text>
+        <text class="detail-value tracking">{{order.trackingNo}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订单编号信息 -->
+  <view class="info-card">
+    <text class="card-title">订单信息</text>
+    <view class="detail-row">
+      <text class="detail-label">订单编号</text>
+      <text class="detail-value order-id">{{order.orderId}}</text>
+    </view>
+    <view class="detail-row">
+      <text class="detail-label">下单时间</text>
+      <text class="detail-value">{{order.createdAt}}</text>
+    </view>
+  </view>
+
+  <view class="bottom-placeholder" />
+</scroll-view>
+
+<skeleton wx:else row="{{4}}" />

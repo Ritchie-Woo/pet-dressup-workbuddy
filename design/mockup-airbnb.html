@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetMini · Airbnb 设计系统（真实提取版）</title>
+<style>
+  :root {
+    --primary: #FF5A5F;
+    --primary-light: #FFE5E3;
+    --primary-lighter: #FFF5F5;
+    --secondary: #00A699;
+    --secondary-light: #E8F8F6;
+    --secondary-lighter: #F0FAF9;
+    --bg: #FFFFFF;
+    --bg-secondary: #F7F7F7;
+    --bg-tertiary: #EBEBEB;
+    --body-bg: #F5F5F5;
+    --text: #222222;
+    --text-secondary: #717171;
+    --text-on-primary: #FFFFFF;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 6px 20px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-xl: 16px;
+    --radius-pill: 20px;
+    --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-stack); background: var(--body-bg); color: var(--text); line-height: 1.6; }
+
+  /* Nav */
+  .nav { position: fixed; left: 0; top: 0; bottom: 0; width: 230px; background: var(--bg); border-right: 0.5px solid var(--bg-tertiary); padding: 32px 20px; overflow-y: auto; z-index: 100; }
+  .nav-logo { font-size: 18px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; margin-bottom: 32px; }
+  .nav a { display: block; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text-secondary); text-decoration: none; border-radius: 8px; margin-bottom: 2px; }
+  .nav a:hover { background: var(--bg-secondary); color: var(--text); }
+  .nav a.active { background: var(--primary-lighter); color: var(--primary); }
+
+  /* Main */
+  .main { margin-left: 230px; padding: 48px 56px; max-width: 880px; }
+  h1 { font-size: 32px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 8px; }
+  .subtitle { font-size: 16px; color: var(--text-secondary); margin-bottom: 40px; }
+  h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-top: 48px; margin-bottom: 20px; padding-top: 24px; border-top: 0.5px solid var(--bg-tertiary); }
+  h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 28px; margin-bottom: 12px; }
+
+  /* Banner */
+  .banner { background: linear-gradient(135deg, #FFE5E3 0%, #FFD1CF 50%, #FFB8B3 100%); border-radius: var(--radius-xl); padding: 48px; margin-bottom: 40px; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; }
+  .banner::after { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF5A5F' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .banner h1 { position: relative; z-index: 1; }
+  .banner .subtitle { position: relative; z-index: 1; }
+
+  /* Cards */
+  .card { background: var(--bg); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 0.5px solid var(--bg-tertiary); margin-bottom: 16px; }
+  .card-hover:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); transition: all 0.2s ease; }
+
+  /* Color swatches */
+  .swatch-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .swatch { width: 100px; }
+  .swatch-color { width: 100px; height: 64px; border-radius: var(--radius); margin-bottom: 6px; border: 0.5px solid var(--bg-tertiary); }
+  .swatch-name { font-size: 11px; font-weight: 700; color: var(--text); }
+  .swatch-hex { font-size: 11px; color: var(--text-secondary); }
+  .swatch-on-white .swatch-color { border: 0.5px solid var(--bg-tertiary); }
+
+  /* Tokens table */
+  .tokens { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .tokens th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--bg-tertiary); }
+  .tokens td { padding: 10px 14px; font-size: 13px; border-bottom: 0.5px solid var(--bg-secondary); }
+  .tokens tr:hover td { background: var(--bg-secondary); }
+  .dot { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: middle; border: 0.5px solid rgba(0,0,0,0.1); }
+  .code { font-family: "SF Mono", "Menlo", "Monaco", monospace; font-size: 12px; background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; }
+
+  /* Typography */
+  .type-sample { padding: 12px 0; border-bottom: 0.5px solid var(--bg-secondary); display: flex; align-items: baseline; gap: 16px; }
+  .type-label { width: 100px; font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+  .type-preview { flex: 1; }
+  .type-spec { width: 120px; font-size: 12px; color: var(--text-secondary); text-align: right; }
+
+  /* UI components */
+  .comp-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; font-weight: 700; border: none; cursor: pointer; border-radius: var(--radius-pill); font-family: var(--font-stack); }
+  .btn-primary { background: var(--primary); color: var(--text-on-primary); padding: 10px 20px; font-size: 13px; }
+  .btn-secondary { background: var(--bg); color: var(--text); border: 0.5px solid var(--bg-tertiary); padding: 10px 20px; font-size: 13px; }
+  .btn-ghost { background: transparent; color: var(--primary); font-size: 12px; padding: 8px 16px; }
+  .btn-small { padding: 6px 14px; font-size: 11px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 10px; font-weight: 700; }
+  .tag-primary { background: var(--primary); color: white; }
+  .tag-light { background: var(--primary-lighter); color: var(--primary); }
+
+  /* Spacing */
+  .space-demo { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .space-label { width: 60px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-align: right; }
+  .space-bar { height: 6px; background: var(--primary); border-radius: 3px; opacity: 0.7; }
+  .space-value { font-size: 12px; color: var(--text-secondary); min-width: 50px; }
+
+  /* Phone mockup */
+  .phone-showcase { display: flex; gap: 24px; overflow-x: auto; padding-bottom: 8px; }
+  .phone { flex-shrink: 0; width: 260px; background: var(--bg); border-radius: var(--radius-xl); overflow: hidden; border: 0.5px solid var(--bg-tertiary); box-shadow: var(--shadow-lg); }
+  .phone-top { padding: 12px 16px 8px; background: var(--bg); }
+  .phone-top-inner { display: flex; justify-content: space-between; align-items: center; }
+  .phone-top-inner span { font-size: 12px; font-weight: 600; color: var(--text); }
+  .phone-top-icons { display: flex; gap: 3px; }
+  .phone-top-icons span { width: 14px; height: 7px; background: var(--text); border-radius: 2px; display: block; }
+  .phone-nav { padding: 0 16px 10px; background: var(--bg); display: flex; align-items: center; justify-content: space-between; }
+  .phone-nav-brand { font-size: 16px; font-weight: 800; color: var(--primary); }
+  .phone-nav-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); }
+  .phone-hero { margin: 0 12px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-lg); }
+  .phone-hero-img { height: 150px; background: linear-gradient(135deg, #FFE5E3, #FFD1CF, #FFB8B3); display: flex; align-items: center; justify-content: center; position: relative; }
+  .phone-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 18px 14px 14px; background: linear-gradient(to top, rgba(0,0,0,0.55), transparent); }
+  .phone-hero-tag { background: var(--primary); color: white; font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: var(--radius-pill); display: inline-block; margin-bottom: 4px; }
+  .phone-hero-title { color: white; font-size: 14px; font-weight: 700; line-height: 1.3; }
+  .phone-hero-sub { color: rgba(255,255,255,0.8); font-size: 10px; margin-top: 2px; }
+  .phone-hero-btn { display: inline-block; margin-top: 8px; background: white; color: var(--primary); font-size: 10px; font-weight: 700; padding: 5px 12px; border-radius: var(--radius-pill); }
+  .phone-section { padding: 16px; }
+  .phone-section-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .phone-grid-item { border-radius: var(--radius); padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .phone-grid-icon { width: 36px; height: 36px; border-radius: 6px; }
+  .phone-grid-label { font-size: 11px; font-weight: 600; }
+  .phone-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 0 4px; }
+  .phone-pet-card { min-width: 130px; border-radius: var(--radius); background: var(--bg); box-shadow: var(--shadow); border: 0.5px solid var(--bg-tertiary); overflow: hidden; }
+  .phone-pet-img { height: 90px; display: flex; align-items: center; justify-content: center; }
+  .phone-pet-body { padding: 10px; }
+  .phone-pet-name { font-size: 12px; font-weight: 700; }
+  .phone-pet-info { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
+  .phone-pet-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10px; }
+  .phone-pet-rating { color: var(--primary); font-weight: 600; }
+  .phone-pet-likes { color: var(--text-secondary); }
+  .phone-tabbar { height: 50px; background: var(--bg); border-top: 0.5px solid var(--bg-tertiary); display: flex; justify-content: space-around; align-items: center; padding: 0 8px 8px; }
+  .phone-tab { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .phone-tab-icon { width: 20px; height: 20px; border-radius: 6px; }
+  .phone-tab-label { font-size: 9px; font-weight: 600; }
+  .phone-tab.active .phone-tab-icon { background: var(--primary); }
+  .phone-tab-label.active { color: var(--primary); }
+
+  /* Do / Don't */
+  .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .do-box, .dont-box { padding: 20px; border-radius: var(--radius); }
+  .do-box { background: #F0FAF9; border: 0.5px solid var(--secondary); }
+  .dont-box { background: #FFF5F5; border: 0.5px solid var(--primary); }
+  .do-box h4 { color: var(--secondary); margin-bottom: 8px; font-size: 14px; }
+  .dont-box h4 { color: var(--primary); margin-bottom: 8px; font-size: 14px; }
+  .do-box li, .dont-box li { font-size: 13px; margin-bottom: 4px; color: var(--text); }
+
+  .footer { margin-top: 56px; padding-top: 24px; border-top: 0.5px solid var(--bg-tertiary); font-size: 12px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">PawAI<br>Airbnb DS</div>
+  <a href="#s0">00 · 概览</a>
+  <a href="#s1">01 · 色彩</a>
+  <a href="#s2">02 · 排版</a>
+  <a href="#s3">03 · 间距 & 圆角</a>
+  <a href="#s4">04 · 阴影</a>
+  <a href="#s5">05 · 组件</a>
+  <a href="#s6">06 · 页面预览</a>
+  <a href="#s7">07 · Do's & Don'ts</a>
+  <a href="#s8">08 · CSS 变量</a>
+</nav>
+
+<main class="main">
+
+<!-- 00 · 概览 -->
+<section id="s0">
+<div class="banner">
+  <h1>PetMini · Airbnb 设计系统</h1>
+  <div class="subtitle">珊瑚红 × 青绿 · 现代极简 · 亲和有活力 · 基于真正 Airbnb 设计令牌提取</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:40px;">
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px;">🎯 来源</div>
+    <div style="font-size:12px;color:var(--text-secondary);">从 PawAI mockup-airbnb.html 提取的实际 CSS 变量和视觉模式</div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px;">🎨 主色</div>
+    <div style="font-size:12px;color:var(--text-secondary);"><span class="dot" style="background:var(--primary)"></span> #FF5A5F 珊瑚红 — Airbnb 品牌基因</div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px;">💚 辅色</div>
+    <div style="font-size:12px;color:var(--text-secondary);"><span class="dot" style="background:var(--secondary)"></span> #00A699 青绿 — Airbnb 信任信号</div>
+  </div>
+</div>
+</section>
+
+<!-- 01 · 色彩 -->
+<section id="s1">
+<h2>01 · 色彩体系</h2>
+
+<h3>品牌色</h3>
+<div class="swatch-group swatch-on-white">
+  <div class="swatch"><div class="swatch-color" style="background:#FF5A5F"></div><div class="swatch-name">Primary</div><div class="swatch-hex">#FF5A5F</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#00A699"></div><div class="swatch-name">Secondary</div><div class="swatch-hex">#00A699</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#FFE5E3"></div><div class="swatch-name">Primary Light</div><div class="swatch-hex">#FFE5E3</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#FFF5F5"></div><div class="swatch-name">Primary Lighter</div><div class="swatch-hex">#FFF5F5</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#E8F8F6"></div><div class="swatch-name">Secondary Light</div><div class="swatch-hex">#E8F8F6</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#F0FAF9"></div><div class="swatch-name">Secondary Lighter</div><div class="swatch-hex">#F0FAF9</div></div>
+</div>
+
+<h3>中性色</h3>
+<div class="swatch-group swatch-on-white">
+  <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;border:1px solid #EBEBEB"></div><div class="swatch-name">bg</div><div class="swatch-hex">#FFFFFF</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#F7F7F7"></div><div class="swatch-name">bg-secondary</div><div class="swatch-hex">#F7F7F7</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#EBEBEB"></div><div class="swatch-name">bg-tertiary</div><div class="swatch-hex">#EBEBEB</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#F5F5F5"></div><div class="swatch-name">body-bg</div><div class="swatch-hex">#F5F5F5</div></div>
+</div>
+
+<h3>文字色</h3>
+<div class="swatch-group">
+  <div class="swatch"><div class="swatch-color" style="background:#222222"></div><div class="swatch-name">text</div><div class="swatch-hex">#222222</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#717171"></div><div class="swatch-name">text-secondary</div><div class="swatch-hex">#717171</div></div>
+  <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;border:1px solid #EBEBEB"></div><div class="swatch-name">on-primary</div><div class="swatch-hex">#FFFFFF</div></div>
+</div>
+
+<h3>色彩应用规则</h3>
+<table class="tokens">
+  <tr><th>色值</th><th>用途</th><th>规则</th></tr>
+  <tr><td><span class="dot" style="background:var(--primary)"></span> #FF5A5F</td><td>主按钮 · 品牌标识 · 选中态 · 标签 · 星级</td><td>仅用于交互元素，不做大面积背景</td></tr>
+  <tr><td><span class="dot" style="background:var(--secondary)"></span> #00A699</td><td>成功态 · 辅色图标 · 交替 Feature 背景</td><td>与 Primary 按奇偶交替使用</td></tr>
+  <tr><td><span class="dot" style="background:#FFF5F5"></span> #FFF5F5</td><td>Feature 卡片背景（奇数位） · 错误背景</td><td>轻量强调，永不用作正文背景</td></tr>
+  <tr><td><span class="dot" style="background:#F0FAF9"></span> #F0FAF9</td><td>Feature 卡片背景（偶数位） · 成功背景</td><td>与 Primary Lighter 交替使用</td></tr>
+  <tr><td><span class="dot" style="background:linear-gradient(135deg,#FFE5E3,#FFD1CF,#FFB8B3)"></span> Hero 渐变</td><td>Hero Banner 专用</td><td>仅 Top-of-page，其他地方不用渐变</td></tr>
+</table>
+</section>
+
+<!-- 02 · 排版 -->
+<section id="s2">
+<h2>02 · 排版体系</h2>
+
+<table class="tokens">
+  <tr><th>层级</th><th>字号</th><th>字重</th><th>用途</th></tr>
+  <tr><td>Logo / Brand</td><td>20px</td><td><strong>800</strong></td><td>导航品牌名</td></tr>
+  <tr><td>Headline (h1)</td><td>32px</td><td><strong>800</strong></td><td>页面主标题 · letter-spacing: -0.5px</td></tr>
+  <tr><td>Title (h2)</td><td>18-20px</td><td><strong>700</strong></td><td>区块标题、Hero 标题</td></tr>
+  <tr><td>Card Title</td><td>13-15px</td><td><strong>700</strong></td><td>卡片标题、列表主文字</td></tr>
+  <tr><td>Body</td><td>13px</td><td>400-600</td><td>正文、描述</td></tr>
+  <tr><td>Caption</td><td>10-12px</td><td>600</td><td>辅助信息、标签、Tab 文字</td></tr>
+</table>
+
+<pre style="background:var(--bg-secondary);padding:16px;border-radius:var(--radius);font-size:12px;margin-top:12px;">font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", sans-serif;
+font-weight: 600-800 (标题) / 400-600 (正文)
+letter-spacing: -0.5px (大标题)</pre>
+
+<p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">Airbnb 排版特征：极高的字重对比（800 标题 vs 400 正文），SF Pro Display 优先，中文回退至苹方。标题用负 letter-spacing 营造精致感。</p>
+</section>
+
+<!-- 03 · 间距 & 圆角 -->
+<section id="s3">
+<h2>03 · 间距 & 圆角</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+  <div>
+    <h3>间距（从 Mockup 提取）</h3>
+    <table class="tokens">
+      <tr><th>用途</th><th>值</th></tr>
+      <tr><td>Card padding</td><td>18-24px</td></tr>
+      <tr><td>Section padding</td><td>20-24px</td></tr>
+      <tr><td>Grid gap</td><td>12px</td></tr>
+      <tr><td>元素间 gap</td><td>8-10px</td></tr>
+      <tr><td>Tab bar padding</td><td>8px</td></tr>
+      <tr><td>Body margin</td><td>20px</td></tr>
+    </table>
+  </div>
+  <div>
+    <h3>圆角</h3>
+    <table class="tokens">
+      <tr><th>变量</th><th>值</th><th>用途</th></tr>
+      <tr><td><code>--radius</code></td><td><strong>12px</strong></td><td>卡片 · Feature 项 · 图片</td></tr>
+      <tr><td><code>--radius-xl</code></td><td><strong>16px</strong></td><td>Hero · 弹窗 · 大面板</td></tr>
+      <tr><td><code>--radius-pill</code></td><td><strong>20px</strong></td><td>按钮 · 标签 · Tab 图标</td></tr>
+      <tr><td>Circle</td><td>50%</td><td>头像 · 圆形图标</td></tr>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- 04 · 阴影 -->
+<section id="s4">
+<h2>04 · 阴影</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div class="card card-hover" style="box-shadow:var(--shadow);text-align:center;padding:32px;">
+    <div style="font-size:24px;margin-bottom:8px;">📇</div>
+    <div style="font-weight:700;font-size:14px;">shadow</div>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;"><code>0 4px 12px rgba(0,0,0,0.08)</code></div>
+    <div style="font-size:11px;color:var(--text-secondary);">卡片 · 列表项</div>
+  </div>
+  <div class="card" style="box-shadow:var(--shadow-lg);text-align:center;padding:32px;background:var(--bg);">
+    <div style="font-size:24px;margin-bottom:8px;">📦</div>
+    <div style="font-weight:700;font-size:14px;">shadow-lg</div>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;"><code>0 6px 20px rgba(0,0,0,0.12)</code></div>
+    <div style="font-size:11px;color:var(--text-secondary);">Hero · 弹窗 · 浮层</div>
+  </div>
+</div>
+
+<p style="font-size:12px;color:var(--text-secondary);margin-top:12px;">Airbnb 阴影规则：明显但柔和。用显著的 y-offset（4-6px）和低透明度（0.08-0.12）制造亲和力。卡片悬停时抬升至 shadow-lg。</p>
+</section>
+
+<!-- 05 · 组件 -->
+<section id="s5">
+<h2>05 · 组件规范</h2>
+
+<h3>5.1 按钮</h3>
+<div class="comp-row">
+  <button class="btn btn-primary">主按钮</button>
+  <button class="btn btn-primary btn-small">小按钮</button>
+  <button class="btn btn-secondary">次按钮</button>
+  <button class="btn btn-ghost">文字按钮</button>
+</div>
+<p style="font-size:12px;color:var(--text-secondary);">Airbnb 特征：药丸形按钮（border-radius: 20px），字重 700，padding 10px 20px（主）/ 8px 16px（文字）。不用矩形按钮。</p>
+
+<h3>5.2 标签</h3>
+<div class="comp-row">
+  <span class="tag tag-primary">AI 新形象</span>
+  <span class="tag tag-light">宠物档案</span>
+  <span class="tag tag-light">穿搭</span>
+  <span class="tag tag-light">社区</span>
+</div>
+<p style="font-size:12px;color:var(--text-secondary);">标签统一用 pill 形（20px 圆角），字重 700，10px 字号。Primary 标签白字红底，Light 标签红字浅红底。</p>
+
+<h3>5.3 卡片（横滑列表）</h3>
+<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;">
+  <div class="phone-pet-card">
+    <div class="phone-pet-img" style="background:linear-gradient(135deg,#FFE8E7,#FFD5D3)"><div style="width:36px;height:36px;border-radius:50%;background:rgba(255,90,95,0.2);border:2px solid white;"></div></div>
+    <div class="phone-pet-body">
+      <div class="phone-pet-name">球球</div>
+      <div class="phone-pet-info">金毛 · 2岁</div>
+      <div class="phone-pet-footer"><span class="phone-pet-rating">4.9</span><span class="phone-pet-likes">♥ 326</span></div>
+    </div>
+  </div>
+  <div class="phone-pet-card">
+    <div class="phone-pet-img" style="background:linear-gradient(135deg,#E8F8F6,#D0F0EB)"><div style="width:36px;height:36px;border-radius:50%;background:rgba(0,166,153,0.2);border:2px solid white;"></div></div>
+    <div class="phone-pet-body">
+      <div class="phone-pet-name">豆豆</div>
+      <div class="phone-pet-info">柯基 · 1岁</div>
+      <div class="phone-pet-footer"><span class="phone-pet-rating">4.7</span><span class="phone-pet-likes">♥ 189</span></div>
+    </div>
+  </div>
+</div>
+<p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">横滑卡片：160px 最小宽度，shadow 阴影，0.5px border，图片区 130px 渐变背景，body 12px padding。</p>
+
+<h3>5.4 Feature Grid（功能入口）</h3>
+<div class="phone-grid" style="max-width:340px;">
+  <div class="phone-grid-item" style="background:var(--primary-lighter)">
+    <div class="phone-grid-icon" style="background:var(--primary)"></div>
+    <div class="phone-grid-label">宠物档案</div>
+  </div>
+  <div class="phone-grid-item" style="background:var(--secondary-lighter)">
+    <div class="phone-grid-icon" style="background:var(--secondary)"></div>
+    <div class="phone-grid-label">穿搭</div>
+  </div>
+</div>
+<p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">2 列网格，项背景按奇偶交替：奇数 #FFF5F5（珊瑚浅），偶数 #F0FAF9（青绿浅）。图标区 44px 圆形，图标 20px 圆角方形。</p>
+
+<h3>5.5 Hero Banner</h3>
+<div class="card" style="padding:0;overflow:hidden;max-width:400px;">
+  <div style="height:160px;background:linear-gradient(135deg,#FFE5E3,#FFD1CF,#FFB8B3);display:flex;align-items:center;justify-content:center;position:relative;">
+    <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,90,95,0.3);border:2px solid rgba(255,255,255,0.6);"></div>
+  </div>
+  <div style="padding:18px 14px 14px;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);margin-top:-60px;position:relative;">
+    <span class="tag tag-primary" style="margin-bottom:6px;">推荐</span>
+    <div style="color:white;font-size:14px;font-weight:700;line-height:1.3;">为你的毛孩子<br>生成独一无二的头像</div>
+    <div style="color:rgba(255,255,255,0.8);font-size:10px;margin-top:2px;">上传照片，AI 帮你设计萌宠风格</div>
+    <div class="btn btn-primary btn-small" style="margin-top:8px;">立即生成 →</div>
+  </div>
+</div>
+<p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">Hero 三段式：顶部渐变图 + 底部黑渐变遮罩 + pill 标签/标题/按钮。页面上唯一的渐变使用。</p>
+</section>
+
+<!-- 06 · 页面预览 -->
+<section id="s6">
+<h2>06 · 页面预览</h2>
+
+<div class="phone-showcase">
+  <!-- 首页 -->
+  <div class="phone">
+    <div class="phone-top"><div class="phone-top-inner"><span>9:41</span><div class="phone-top-icons"><span></span><span></span><span></span></div></div></div>
+    <div class="phone-nav"><div class="phone-nav-brand">PawAI</div><div class="phone-nav-avatar"></div></div>
+    <div class="phone-hero">
+      <div class="phone-hero-img"><div style="width:56px;height:56px;border-radius:50%;background:rgba(255,90,95,0.3);border:2px solid rgba(255,255,255,0.6);"></div></div>
+      <div class="phone-hero-content">
+        <span class="phone-hero-tag">AI 新形象</span>
+        <div class="phone-hero-title">为你的毛孩子<br>生成独一无二的头像</div>
+        <div class="phone-hero-sub">上传照片，AI 帮你设计萌宠风格</div>
+        <div class="phone-hero-btn">立即生成 →</div>
+      </div>
+    </div>
+    <div class="phone-section">
+      <div class="phone-section-title">发现精彩</div>
+      <div class="phone-grid">
+        <div class="phone-grid-item" style="background:#FFF5F5"><div class="phone-grid-icon" style="background:#FF5A5F"></div><div class="phone-grid-label">宠物档案</div></div>
+        <div class="phone-grid-item" style="background:#F0FAF9"><div class="phone-grid-icon" style="background:#00A699"></div><div class="phone-grid-label">穿搭</div></div>
+        <div class="phone-grid-item" style="background:#FFF5F5"><div class="phone-grid-icon" style="background:#FF5A5F"></div><div class="phone-grid-label">社区</div></div>
+        <div class="phone-grid-item" style="background:#F0FAF9"><div class="phone-grid-icon" style="background:#00A699"></div><div class="phone-grid-label">地图</div></div>
+      </div>
+    </div>
+    <div class="phone-tabbar">
+      <div class="phone-tab active"><div class="phone-tab-icon" style="background:var(--primary)"></div><div class="phone-tab-label" style="color:var(--primary)">首页</div></div>
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--bg-tertiary)"></div><div class="phone-tab-label" style="color:var(--text-secondary)">档案</div></div>
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--bg-tertiary)"></div><div class="phone-tab-label" style="color:var(--text-secondary)">社区</div></div>
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--bg-tertiary)"></div><div class="phone-tab-label" style="color:var(--text-secondary)">我的</div></div>
+    </div>
+  </div>
+
+  <!-- 推荐页 -->
+  <div class="phone">
+    <div class="phone-top"><div class="phone-top-inner"><span>9:41</span><div class="phone-top-icons"><span></span><span></span><span></span></div></div></div>
+    <div class="phone-nav"><div class="phone-nav-brand" style="font-size:14px;font-weight:700;color:var(--text)">推荐毛孩子</div><div style="font-size:11px;color:var(--primary);font-weight:600">更多 →</div></div>
+    <div class="phone-section" style="padding-top:0;">
+      <div class="phone-scroll">
+        <div class="phone-pet-card"><div class="phone-pet-img" style="background:linear-gradient(135deg,#FFE8E7,#FFD5D3)"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,90,95,0.2);border:2px solid white;"></div></div><div class="phone-pet-body"><div class="phone-pet-name">球球</div><div class="phone-pet-info">金毛 · 2岁</div><div class="phone-pet-footer"><span class="phone-pet-rating">4.9</span><span class="phone-pet-likes">♥ 326</span></div></div></div>
+        <div class="phone-pet-card"><div class="phone-pet-img" style="background:linear-gradient(135deg,#E8F8F6,#D0F0EB)"><div style="width:32px;height:32px;border-radius:50%;background:rgba(0,166,153,0.2);border:2px solid white;"></div></div><div class="phone-pet-body"><div class="phone-pet-name">豆豆</div><div class="phone-pet-info">柯基 · 1岁</div><div class="phone-pet-footer"><span class="phone-pet-rating">4.7</span><span class="phone-pet-likes">♥ 189</span></div></div></div>
+        <div class="phone-pet-card"><div class="phone-pet-img" style="background:linear-gradient(135deg,#FFF0EE,#FFE0DD)"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,90,95,0.2);border:2px solid white;"></div></div><div class="phone-pet-body"><div class="phone-pet-name">棉花</div><div class="phone-pet-info">萨摩耶 · 3岁</div><div class="phone-pet-footer"><span class="phone-pet-rating">5.0</span><span class="phone-pet-likes">♥ 512</span></div></div></div>
+      </div>
+    </div>
+    <div class="phone-tabbar">
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--primary)"></div><div class="phone-tab-label" style="color:var(--primary)">首页</div></div>
+      <div class="phone-tab active"><div class="phone-tab-icon" style="background:var(--primary)"></div><div class="phone-tab-label" style="color:var(--primary)">档案</div></div>
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--bg-tertiary)"></div><div class="phone-tab-label" style="color:var(--text-secondary)">社区</div></div>
+      <div class="phone-tab"><div class="phone-tab-icon" style="background:var(--bg-tertiary)"></div><div class="phone-tab-label" style="color:var(--text-secondary)">我的</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- 07 · Do's & Don'ts -->
+<section id="s7">
+<h2>07 · Do's & Don'ts</h2>
+
+<div class="do-dont">
+  <div class="do-box">
+    <h4>✅ Do</h4>
+    <ul>
+      <li>用 pill 形按钮（20px border-radius）</li>
+      <li>用 shadow-lg 做卡片 hover 抬升</li>
+      <li>Feature grid 奇偶交替珊瑚浅/青绿浅</li>
+      <li>标题用 700-800 字重 + 负 letter-spacing</li>
+      <li>横滑卡片用 shadow + 0.5px border</li>
+      <li>Hero 用三层渐变（#FFE5E3→#FFD1CF→#FFB8B3）</li>
+      <li>文字色 #222222 / #717171 两档</li>
+    </ul>
+  </div>
+  <div class="dont-box">
+    <h4>❌ Don't</h4>
+    <ul>
+      <li>不要用矩形按钮（统一 pill 形）</li>
+      <li>不要用暖橙 #FF8C00 — 珊瑚红 #FF5A5F 才是 Airbnb</li>
+      <li>不要在整个页面用渐变（仅 Hero）</li>
+      <li>不要用 box-shadow 代替卡片边框 — 两者共存</li>
+      <li>不要在 Feature grid 全用同一背景色</li>
+      <li>不要用字重 &lt; 600 做按钮文字</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- 08 · CSS 变量 -->
+<section id="s8">
+<h2>08 · CSS 变量速查</h2>
+
+<table class="tokens">
+  <tr><th>变量</th><th>值</th><th>用途</th></tr>
+  <tr><td><code>--primary</code></td><td><span class="dot" style="background:#FF5A5F"></span>#FF5A5F</td><td>主色 · 按钮/品牌/标签/星级</td></tr>
+  <tr><td><code>--secondary</code></td><td><span class="dot" style="background:#00A699"></span>#00A699</td><td>辅色 · 成功态/Feature 交替</td></tr>
+  <tr><td><code>--bg</code></td><td><span class="dot" style="background:#FFFFFF"></span>#FFFFFF</td><td>页面/卡片底色</td></tr>
+  <tr><td><code>--bg-secondary</code></td><td><span class="dot" style="background:#F7F7F7"></span>#F7F7F7</td><td>次级背景</td></tr>
+  <tr><td><code>--bg-tertiary</code></td><td><span class="dot" style="background:#EBEBEB"></span>#EBEBEB</td><td>边框/分割/禁用</td></tr>
+  <tr><td><code>--text</code></td><td><span class="dot" style="background:#222"></span>#222222</td><td>主文字</td></tr>
+  <tr><td><code>--text-secondary</code></td><td><span class="dot" style="background:#717171"></span>#717171</td><td>辅助文字</td></tr>
+  <tr><td><code>--shadow</code></td><td>0 4px 12px / 0.08</td><td>卡片阴影</td></tr>
+  <tr><td><code>--shadow-lg</code></td><td>0 6px 20px / 0.12</td><td>Hero/弹窗阴影</td></tr>
+  <tr><td><code>--radius</code></td><td>12px</td><td>卡片/图片圆角</td></tr>
+  <tr><td><code>--radius-xl</code></td><td>16px</td><td>Hero/弹窗圆角</td></tr>
+  <tr><td><code>--radius-pill</code></td><td>20px</td><td>按钮/标签 pill</td></tr>
+</table>
+</section>
+
+<div class="footer">
+  <p><strong>PetMini · Airbnb 设计系统</strong> v2.0 — 基于真实 Airbnb 设计令牌提取 · 生成于 2025-06-05</p>
+  <p>来源模板：PawAI mockup-airbnb.html · 设计基座：Airbnb Design Language · 基线组件库：TDesign Miniprogram v1.5.0</p>
+</div>
+
+</main>
+</body>
+</html>

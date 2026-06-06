@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "MBTI测试"
+  "navigationBarTitleText": "MBTI测试",
+  "usingComponents": {
+    "navbar": "../../components/navbar/index"
+  }
 }

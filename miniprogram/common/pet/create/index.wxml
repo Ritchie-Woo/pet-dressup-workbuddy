@@ -1,0 +1,76 @@
+<!-- common/pet/create/index.wxml — Airbnb Design System -->
+<view class="pg-toolbar">
+  <view class="toolbar-back" catchtap="goBack">‹</view>
+  <text class="toolbar-title">添加宠物</text>
+  <view style="width:60rpx;"></view>
+</view>
+
+<view class="pg-create">
+  <view class="form-card">
+    <!-- Avatar -->
+    <view class="form-row">
+      <text class="form-label">宠物头像</text>
+      <view class="avatar-picker" catchtap="onAvatarTap">
+        <image wx:if="{{avatarUrl}}" class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar-placeholder">
+          <text class="avatar-camera">📷</text>
+          <text class="avatar-hint">点击上传</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Name -->
+    <view class="form-row">
+      <text class="form-label">名字 <text class="required">*</text></text>
+      <t-input value="{{name}}" placeholder="给 TA 起个名字" bind:change="onNameChange" maxlength="{{8}}" />
+    </view>
+
+    <!-- Species -->
+    <view class="form-row">
+      <text class="form-label">物种 <text class="required">*</text></text>
+      <view class="species-grid">
+        <view wx:for="{{speciesList}}" wx:key="value" class="sp-item {{species === item.value ? 'active' : ''}}" catchtap="selectSpecies" data-val="{{item.value}}">
+          <text class="sp-icon">{{item.icon}}</text>
+          <text class="sp-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Breed -->
+    <view class="form-row breed-row">
+      <text class="form-label">品种</text>
+      <view class="breed-wrap">
+        <input class="breed-input" value="{{breedInput}}" placeholder="{{species ? '输入品种名搜索' : '先选择物种'}}" bindinput="onBreedInput" bindfocus="onBreedFocus" bindblur="hideBreedDrop" maxlength="16" disabled="{{!species}}" />
+        <view class="breed-drop" wx:if="{{showBreedDrop && breedSuggestions.length}}">
+          <view wx:for="{{breedSuggestions}}" wx:key="*this" class="breed-opt" catchtap="selectBreed" data-val="{{item}}">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Gender -->
+    <view class="form-row">
+      <text class="form-label">性别</text>
+      <view class="gender-inline">
+        <view class="gender-opt has-male {{gender === 'male' ? 'active' : ''}}" catchtap="onGenderChange" data-val="male">
+          <text class="gender-icon male">♂</text><text>男生</text>
+        </view>
+        <view class="gender-opt {{gender === 'female' ? 'active' : ''}}" catchtap="onGenderChange" data-val="female">
+          <text class="gender-icon female">♀</text><text>女生</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Birthday -->
+    <view class="form-row">
+      <text class="form-label">生日</text>
+      <picker mode="date" value="{{birthday}}" start="2000-01-01" end="{{today}}" bindchange="onBirthdayChange">
+        <view class="picker-val">{{birthday || '选择日期'}}</view>
+      </picker>
+    </view>
+
+    <!-- Submit -->
+    <view class="form-row form-row-submit">
+      <button class="btn-primary-pill" catchtap="handleSubmit" loading="{{submitting}}" disabled="{{!name || !species}}">保存</button>
+    </view>
+  </view>
+</view>

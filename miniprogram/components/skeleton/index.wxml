@@ -1,4 +1,6 @@
-<!-- components/skeleton - 骨架屏 -->
-<view class="component-container">
-  <!-- TODO: 组件内容 -->
+<!-- components/skeleton/index.wxml — 简洁加载态 -->
+<view wx:if="{{loading}}" class="loading-wrap">
+  <t-loading theme="circular" size="48rpx" />
+  <text class="loading-text">加载中...</text>
 </view>
+<slot wx:else />

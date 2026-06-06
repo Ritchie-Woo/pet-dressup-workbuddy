@@ -1,8 +1,9 @@
-/* mbti/test/index.wxss */
+/* mbti/test/index.wxss — Notion 温润极简改造 */
 
+/* 页面容器 — 充足留白 */
 .page-container {
   min-height: 100vh;
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   background: var(--color-bg-page);
 }
 
@@ -10,4 +11,73 @@
   font-size: var(--font-xl);
   font-weight: 600;
   color: var(--color-text-main);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 题目区 — 大段留白 */
+.question-area {
+  padding: var(--spacing-xl) 0;
+}
+
+.question-text {
+  font-size: var(--font-lg);
+  font-weight: 500;
+  color: var(--color-text-main);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-xl);
+}
+
+.question-number {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* 选项按钮 — 两列布局 */
+.option-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.option-btn {
+  width: calc(50% - 12rpx);
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  background: var(--color-bg-card);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  color: var(--color-text-main);
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.option-btn:active {
+  background: var(--td-bg-color-container-hover);
+}
+
+.option-btn.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* 进度条 */
+.progress-bar {
+  height: 8rpx;
+  background: var(--td-gray-color-3);
+  border-radius: var(--radius-round);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-round);
+  transition: width 0.3s ease;
 }

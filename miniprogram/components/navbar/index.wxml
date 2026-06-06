@@ -1,4 +1,12 @@
-<!-- components/navbar - 自定义导航栏 -->
-<view class="component-container">
-  <!-- TODO: 组件内容 -->
+<!-- components/navbar/index.wxml -->
+<view class="navbar-wrap" style="background-color: {{bgColor}}; padding-top: {{statusBarHeight}}px;">
+  <view class="navbar-inner" style="height: {{navBarHeight}}px;">
+    <view class="navbar-left" wx:if="{{showBack}}" bindtap="goBack">
+      <t-icon name="chevron-left" size="40rpx" color="#333" />
+    </view>
+    <view class="navbar-title">{{title}}</view>
+    <view class="navbar-right"></view>
+  </view>
+  <view class="navbar-divider"></view>
 </view>
+<view style="height: {{statusBarHeight + navBarHeight}}px;"></view>

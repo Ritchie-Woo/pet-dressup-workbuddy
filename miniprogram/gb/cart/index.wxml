@@ -1,0 +1,81 @@
+<!-- gb/cart/index.wxml — 购物车页面 -->
+<view class="page-cart">
+  <!-- 空状态 -->
+  <view wx:if="{{cartItems.length === 0}}" class="empty-wrap">
+    <t-empty icon="cart" description="购物车是空的">
+      <t-button theme="primary" size="medium" bindtap="goShopping">去逛逛</t-button>
+    </t-empty>
+  </view>
+
+  <!-- 购物车列表 -->
+  <block wx:else>
+    <!-- 顶部标题栏（固定） -->
+    <view class="cart-header">
+      <view class="cart-back" bindtap="goBack">
+        <t-icon name="chevron-left" size="44rpx" color="#333" />
+      </view>
+      <text class="cart-title">购物车</text>
+      <text class="cart-manage" bindtap="toggleEditMode">{{editMode ? '完成' : '管理'}}</text>
+    </view>
+
+    <!-- 商品列表（可滚动） -->
+    <scroll-view class="cart-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view wx:for="{{cartItems}}" wx:key="productId" class="cart-item-wrapper">
+        <view class="item-delete-bg" data-index="{{index}}" catchtap="swipeDelete">删除</view>
+        <view
+          class="cart-item"
+          style="transform: translateX({{item.swipeX || 0}}rpx); transition: {{item.swiping ? '' : 'transform 0.25s ease'}}"
+          data-index="{{index}}"
+          bindtouchstart="onTouchStart"
+          bindtouchmove="onTouchMove"
+          bindtouchend="onTouchEnd"
+        >
+          <view class="item-check" catchtap="toggleSelect" data-index="{{index}}">
+            <view class="check-circle {{item.selected ? 'checked' : ''}}">
+              <t-icon wx:if="{{item.selected}}" name="check" size="28rpx" color="#FFFFFF" />
+            </view>
+          </view>
+          <image class="item-img" src="{{item.thumbnail}}" mode="aspectFill" />
+          <view class="item-info">
+            <text class="item-name text-ellipsis-2">{{item.name}}</text>
+            <view class="item-bottom">
+              <text class="item-price">¥{{item.priceGroup}}</text>
+              <view class="item-quantity">
+                <view class="qty-btn {{item.quantity <= 1 ? 'disabled' : ''}}" catchtap="decreaseQty" data-index="{{index}}">
+                  <text class="qty-icon">−</text>
+                </view>
+                <view class="qty-input"><text class="qty-num">{{item.quantity}}</text></view>
+                <view class="qty-btn" catchtap="increaseQty" data-index="{{index}}">
+                  <text class="qty-icon">+</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="scroll-bottom"></view>
+    </scroll-view>
+
+    <!-- 底部结算栏（固定） -->
+    <view class="bottom-bar safe-bottom">
+      <view class="bottom-left" bindtap="toggleSelectAll">
+        <view class="check-circle {{allSelected ? 'checked' : ''}}">
+          <t-icon wx:if="{{allSelected}}" name="check" size="28rpx" color="#FFFFFF" />
+        </view>
+        <text class="select-all-text">全选</text>
+      </view>
+      <view class="bottom-right">
+        <view class="total-wrap" wx:if="{{!editMode}}">
+          <text class="total-label">合计：</text>
+          <text class="total-price">¥{{totalPrice}}</text>
+        </view>
+        <t-button wx:if="{{!editMode}}" theme="primary" size="medium" shape="round" bindtap="goCheckout" disabled="{{selectedCount === 0}}">
+          去结算{{selectedCount > 0 ? '（' + selectedCount + '）' : ''}}
+        </t-button>
+        <t-button wx:else theme="danger" size="medium" shape="round" bindtap="removeSelected" disabled="{{selectedCount === 0}}">
+          删除{{selectedCount > 0 ? '（' + selectedCount + '）' : ''}}
+        </t-button>
+      </view>
+    </view>
+  </block>
+</view>

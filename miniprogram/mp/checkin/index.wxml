@@ -1,6 +1,0 @@
-<!-- mp/checkin/index.wxml -->
-<t-navbar title="宠物打卡" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
-</view>

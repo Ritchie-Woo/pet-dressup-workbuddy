@@ -37,3 +37,15 @@ project.private.config.json
 # 临时文件
 tmp/
 temp/
+
+# WorkBuddy 本地数据
+.workbuddy/
+
+# Playwright 测试产物
+.playwright-mcp/
+
+# 测试素材
+taobaosku/
+
+# 制品文件（非项目源码）
+overview.md

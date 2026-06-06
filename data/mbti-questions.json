@@ -1,0 +1,183 @@
+{
+  "version": "1.0",
+  "generated": "2026-06-05",
+  "source": "pet-mbti-vault (17 papers, 22 evidence cards, 4 dimensions)",
+  "disclaimer": "本测试基于主人观察报告和行为科学研究，非临床诊断工具。结果仅供趣味参考。",
+  "dimensions": [
+    { "code": "social", "name": "社交倾向", "label": "外向型 ↔ 内敛型", "desc": "评估宠物对人类和其他动物的社交驱动力。" },
+    { "code": "explore", "name": "探索风格", "label": "好奇型 ↔ 务实型", "desc": "评估宠物对新环境和事物的反应模式。" },
+    { "code": "react", "name": "反应模式", "label": "从容型 ↔ 敏感型", "desc": "评估宠物面对压力和变化的情绪稳定性。" },
+    { "code": "rhythm", "name": "日常节奏", "label": "规律型 ↔ 随性型", "desc": "评估宠物在饮食/活动/作息上的可预测程度。" }
+  ],
+  "questions": [
+    {
+      "id": 1, "dimension": "social",
+      "dog": "出门遛弯时，TA 看到陌生狗狗通常会？",
+      "cat": "带去新环境或见到陌生猫时，TA 通常会？",
+      "options": [
+        { "key": "A", "text": "主动上前嗅闻、摇尾巴，很想交朋友", "weight": 5 },
+        { "key": "B", "text": "保持距离观察一会，确认安全后才靠近", "weight": 3 },
+        { "key": "C", "text": "躲在你身后或者绕道走", "weight": 1 }
+      ],
+      "paper": "ev-dog-0015, ev-dog-0016",
+      "risk": "社交行为受早期社会化影响大。"
+    },
+    {
+      "id": 2, "dimension": "social",
+      "dog": "家里来客人时，TA 的典型反应是？",
+      "cat": "家里来客人时，TA 的典型反应是？",
+      "options": [
+        { "key": "A", "text": "兴奋地凑上去求摸摸", "weight": 5 },
+        { "key": "B", "text": "先闻一闻观察一会，熟了才亲近", "weight": 3 },
+        { "key": "C", "text": "躲到角落，等客人走了才出来", "weight": 1 }
+      ],
+      "paper": "ev-dog-0015",
+      "risk": "客人类型影响反应。"
+    },
+    {
+      "id": 3, "dimension": "social",
+      "dog": "遇到其他狗对 TA 叫或挑衅时，TA通常？",
+      "cat": "其他猫对 TA 哈气/低吼时，TA 通常？",
+      "options": [
+        { "key": "A", "text": "不理会，继续走自己的路", "weight": 3 },
+        { "key": "B", "text": "也回叫几声但很快被拉开就平静了", "weight": 2 },
+        { "key": "C", "text": "变得紧张、夹尾巴、想赶紧离开", "weight": 1 }
+      ],
+      "paper": "ev-dog-0016",
+      "risk": "分数仅表示淡定程度，不衡量攻击性。"
+    },
+    {
+      "id": 4, "dimension": "explore",
+      "dog": "给 TA 一个新玩具，TA 的反应是？",
+      "cat": "给 TA 一个新玩具或猫抓板，TA 的反应是？",
+      "options": [
+        { "key": "A", "text": "二话不说直接上手玩起来", "weight": 5 },
+        { "key": "B", "text": "先闻一闻看一看，犹豫一会再试探", "weight": 3 },
+        { "key": "C", "text": "不理它，或者被吓一跳走开了", "weight": 1 }
+      ],
+      "paper": "ev-dog-0012",
+      "risk": "玩具类型影响探索行为。"
+    },
+    {
+      "id": 5, "dimension": "explore",
+      "dog": "学新指令时，TA 更像？",
+      "cat": "学新技能（如用猫砂盆新位置），TA 更像？",
+      "options": [
+        { "key": "A", "text": "看一两遍就能懂，但不太愿意反复练", "weight": 5 },
+        { "key": "B", "text": "需要反复练习，但学会了就记得很牢", "weight": 3 },
+        { "key": "C", "text": "对新指令不感兴趣，按自己的方式来", "weight": 1 }
+      ],
+      "paper": "ev-dog-0012",
+      "risk": "训练行为受品种/性别/绝育状态混淆。"
+    },
+    {
+      "id": 6, "dimension": "explore",
+      "dog": "带 TA 走没走过的遛弯路线时？",
+      "cat": "带 TA 去没去过的房间或环境时？",
+      "options": [
+        { "key": "A", "text": "开心地探索，到处闻到处看", "weight": 5 },
+        { "key": "B", "text": "有点犹豫但跟着你走，慢慢就适应了", "weight": 3 },
+        { "key": "C", "text": "明显不安，想掉头回熟悉的地方", "weight": 1 }
+      ],
+      "paper": "ev-dog-0013",
+      "risk": "新环境类型影响探索意愿。"
+    },
+    {
+      "id": 7, "dimension": "react",
+      "dog": "突然大响声（打雷/装修/鞭炮）时，TA 通常？",
+      "cat": "突然大响声（吸尘器/吹风机/打雷）时，TA 通常？",
+      "options": [
+        { "key": "A", "text": "抬头看一眼，继续睡/玩自己的", "weight": 5 },
+        { "key": "B", "text": "警觉一会但很快恢复常态", "weight": 3 },
+        { "key": "C", "text": "吓得躲起来、发抖、很久不能平静", "weight": 1 }
+      ],
+      "paper": "ev-dog-0011",
+      "risk": "响声类型和强度影响反应程度。"
+    },
+    {
+      "id": 8, "dimension": "react",
+      "dog": "你不小心做了让TA不开心的事，TA 的反应？",
+      "cat": "你不小心做了让TA不开心的事，TA 的反应？",
+      "options": [
+        { "key": "A", "text": "很快翻篇，几秒钟后就来蹭你了", "weight": 5 },
+        { "key": "B", "text": "会不高兴一会但哄一哄就好了", "weight": 3 },
+        { "key": "C", "text": "记仇很久，半天不理你甚至躲着你", "weight": 1 }
+      ],
+      "paper": "ev-dog-0011",
+      "risk": "主人行为严重程度影响恢复时间。"
+    },
+    {
+      "id": 9, "dimension": "react",
+      "dog": "遇到不满的事，TA 的表现？",
+      "cat": "遇到不满的事，TA 的表现？",
+      "options": [
+        { "key": "A", "text": "冷静接受，转身干别的去了", "weight": 5 },
+        { "key": "B", "text": "会哼唧或叫几声抗议但不闹太久", "weight": 3 },
+        { "key": "C", "text": "会闹脾气、破坏东西或一直叫", "weight": 1 }
+      ],
+      "paper": "ev-dog-0014",
+      "risk": "不代表临床行为问题。"
+    },
+    {
+      "id": 10, "dimension": "rhythm",
+      "dog": "关于吃饭习惯，TA 更像？",
+      "cat": "关于吃饭习惯，TA 更像？",
+      "options": [
+        { "key": "A", "text": "定时定量，到点就催你喂，规律性很强", "weight": 5 },
+        { "key": "B", "text": "大概有个规律但偶尔会变化", "weight": 3 },
+        { "key": "C", "text": "想吃就吃，随性而为", "weight": 1 }
+      ],
+      "paper": "ev-dog-0017",
+      "risk": "喂食规律受主人习惯影响。"
+    },
+    {
+      "id": 11, "dimension": "rhythm",
+      "dog": "TA 对日常路线和遛弯时间变化的反应？",
+      "cat": "TA 对日常喂食/玩耍时间变化的反应？",
+      "options": [
+        { "key": "A", "text": "换了就焦虑，必须按老规矩来", "weight": 5 },
+        { "key": "B", "text": "有偏好但不强求，变了也能接受", "weight": 3 },
+        { "key": "C", "text": "随时随性，完全不在意变化", "weight": 1 }
+      ],
+      "paper": "ev-dog-0017",
+      "risk": "日常规律由主人建立，非纯宠物属性。"
+    },
+    {
+      "id": 12, "dimension": "rhythm",
+      "dog": "TA 的玩具/床铺摆放习惯？",
+      "cat": "TA 的猫窝/抓板摆放习惯？",
+      "options": [
+        { "key": "A", "text": "喜欢固定位置，你挪动了TA会叼/挪回去", "weight": 5 },
+        { "key": "B", "text": "有个大概的区域但不固定", "weight": 3 },
+        { "key": "C", "text": "到处拖来拖去、随叼随放", "weight": 1 }
+      ],
+      "paper": "ev-dog-0017",
+      "risk": "无重大风险。"
+    }
+  ],
+  "scoring": {
+    "method": "per_dimension_average",
+    "type_map": {
+      "social": {
+        "15_13": { "code": "E", "name": "社牛型", "desc": "TA 是宠物界的社交达人，喜欢交朋友，见到谁都想打个招呼。" },
+        "12_8": { "code": "e", "name": "友善型", "desc": "TA 性格温和友善，虽然不一定主动社交，但相处起来很舒服。" },
+        "7_3": { "code": "i", "name": "慢热型", "desc": "TA 比较慢热，需要时间适应新朋友和新环境，但一旦信任你就会很忠诚。" }
+      },
+      "explore": {
+        "15_13": { "code": "N", "name": "探险家型", "desc": "TA 是天生的探险家，对新事物充满好奇，学东西快但不太愿意重复练习。" },
+        "12_8": { "code": "n", "name": "观察型", "desc": "TA 面对新事物会先观察再行动，有自己的节奏，学会了就很扎实。" },
+        "7_3": { "code": "s", "name": "安稳型", "desc": "TA 喜欢熟悉的事物和稳定的环境，是踏实的陪伴者，不太喜欢冒险。" }
+      },
+      "react": {
+        "15_13": { "code": "T", "name": "淡定型", "desc": "TA 情绪稳定、遇事冷静，是个让人省心的小大人。" },
+        "12_8": { "code": "t", "name": "适中型", "desc": "TA 大多数时候很淡定，偶尔会敏感一下但很快就能调整过来。" },
+        "7_3": { "code": "f", "name": "细腻型", "desc": "TA 情感丰富细腻，对环境变化敏感，需要多一点安全感和安抚。" }
+      },
+      "rhythm": {
+        "15_13": { "code": "J", "name": "自律型", "desc": "TA 是自律小达人，定时定量、按部就班，生活很有规律。" },
+        "12_8": { "code": "j", "name": "弹性型", "desc": "TA 大概有自己的节奏但不僵化，能适应变化的同时保持基本规律。" },
+        "7_3": { "code": "p", "name": "随性型", "desc": "TA 随心所欲、自由自在，今天和昨天可以完全不一样，是个快乐的自由灵魂。" }
+      }
+    }
+  }
+}

@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pet-wb Phase 1 低保真线框图</title>
+<style>
+  :root {
+    --bg: #f0f0f0;
+    --wireframe-bg: #fff;
+    --line: #888;
+    --line-light: #bbb;
+    --line-lighter: #ddd;
+    --fill: #e8e8e8;
+    --fill-light: #f5f5f5;
+    --accent: #666;
+    --accent-dark: #444;
+    --text: #555;
+    --text-dark: #333;
+    --text-light: #999;
+    --highlight: #ddeeff;
+    --page-width: 375px;
+    --page-height: 667px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #e0e0e0; height: 100vh; overflow: hidden; }
+  .app { display: flex; height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 240px; background: #fff; border-right: 1px solid var(--line-lighter); overflow-y: auto; flex-shrink: 0; }
+  .sidebar-header { padding: 16px; border-bottom: 1px solid var(--line-lighter); }
+  .sidebar-header h2 { font-size: 15px; color: var(--text-dark); margin-bottom: 4px; }
+  .sidebar-header p { font-size: 11px; color: var(--text-light); }
+  .nav-section { padding: 8px 0; border-bottom: 1px solid var(--line-lighter); }
+  .nav-section-title { padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+  .nav-item { padding: 7px 16px 7px 24px; font-size: 13px; color: var(--text); cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; }
+  .nav-item:hover { background: var(--fill-light); color: var(--text-dark); }
+  .nav-item.active { background: var(--highlight); color: var(--accent-dark); border-left-color: var(--accent-dark); font-weight: 600; }
+  .nav-badge { float: right; font-size: 10px; background: var(--fill); color: var(--text-light); padding: 1px 6px; border-radius: 8px; margin-top: 1px; }
+
+  /* Main content */
+  .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; background: #d8d8d8; }
+  .toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .toolbar button { padding: 6px 14px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--text-dark); font-size: 12px; cursor: pointer; }
+  .toolbar button:hover { background: var(--highlight); }
+  .toolbar button.active-btn { background: var(--accent-dark); color: #fff; border-color: var(--accent-dark); }
+
+  /* Phone frame */
+  .phone-wrapper { position: relative; }
+  .page-label { text-align: center; font-size: 12px; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+  .phone-frame { width: var(--page-width); height: var(--page-height); background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.12); position: relative; }
+  .phone-frame .wf-page { width: 100%; height: 100%; display: none; flex-direction: column; }
+  .phone-frame .wf-page.active-page { display: flex; }
+
+  /* Annotations panel */
+  .annotations { width: 260px; background: #fff; border-left: 1px solid var(--line-lighter); overflow-y: auto; flex-shrink: 0; padding: 16px; }
+  .annotations h3 { font-size: 13px; color: var(--text-dark); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line-lighter); }
+  .anno-item { margin-bottom: 10px; font-size: 12px; line-height: 1.5; }
+  .anno-num { display: inline-block; width: 18px; height: 18px; background: var(--accent-dark); color: #fff; border-radius: 50%; text-align: center; line-height: 18px; font-size: 10px; margin-right: 6px; flex-shrink: 0; }
+  .anno-path { font-size: 11px; color: var(--accent); margin-top: 4px; margin-left: 22px; }
+  .anno-flow { padding: 4px 8px; background: var(--fill-light); border-left: 2px solid var(--accent-dark); margin-bottom: 8px; font-size: 11px; line-height: 1.5; }
+  .anno-flow strong { display: block; margin-bottom: 2px; }
+  .anno-trigger { color: var(--accent); font-size: 11px; }
+  .anno-status { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 3px; margin-right: 4px; }
+  .anno-status.empty { background: #ffebee; color: #c62828; }
+  .anno-status.loading { background: #fff3e0; color: #ef6c00; }
+  .anno-status.normal { background: #e8f5e9; color: #2e7d32; }
+  .anno-status.error { background: #fce4ec; color: #c62828; }
+
+  /* Wireframe Components */
+  .wf-statusbar { height: 20px; background: var(--fill); border-bottom: 1px solid var(--line-lighter); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 10px; color: var(--text-light); }
+  .wf-nav { height: 44px; display: flex; align-items: center; padding: 0 12px; border-bottom: 1px solid var(--line-lighter); background: #fff; }
+  .wf-nav-back { width: 24px; height: 24px; border: 1px solid var(--line); border-radius: 3px; margin-right: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-light); }
+  .wf-nav-title { font-size: 14px; font-weight: 600; color: var(--text-dark); flex: 1; }
+  .wf-nav-action { font-size: 12px; color: var(--accent); padding: 4px 8px; border: 1px solid var(--line); border-radius: 3px; }
+  .wf-content { flex: 1; overflow-y: auto; padding: 12px; }
+  .wf-tabbar { height: 50px; border-top: 1px solid var(--line-lighter); display: flex; background: #fff; }
+  .wf-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--text-light); }
+  .wf-tab.active-tab { color: var(--accent-dark); }
+  .wf-tab-icon { width: 20px; height: 20px; border: 1.5px solid var(--line); border-radius: 3px; margin-bottom: 2px; }
+  .wf-tab.active-tab .wf-tab-icon { background: var(--fill); border-color: var(--accent-dark); }
+
+  /* Reusable blocks */
+  .wf-block { background: var(--fill); border: 1px dashed var(--line-light); border-radius: 4px; padding: 10px; margin-bottom: 8px; }
+  .wf-block-solid { border-style: solid; background: #fff; }
+  .wf-btn { background: var(--accent-dark); color: #fff; text-align: center; padding: 10px; border-radius: 4px; font-size: 13px; }
+  .wf-btn-outline { background: #fff; border: 1.5px solid var(--accent-dark); color: var(--accent-dark); }
+  .wf-btn-small { padding: 5px 10px; font-size: 11px; }
+  .wf-btn-disabled { background: var(--line-light); color: #fff; }
+  .wf-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--fill); border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .wf-thumb { width: 100%; aspect-ratio: 1; background: var(--fill-light); border: 1px dashed var(--line-light); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--line-light); }
+  .wf-input { width: 100%; padding: 8px; border: 1px dashed var(--line); border-radius: 4px; background: #fff; font-size: 12px; color: var(--text-light); }
+  .wf-divider { border: none; border-top: 1px solid var(--line-lighter); margin: 8px 0; }
+  .wf-badge { font-size: 9px; padding: 1px 6px; border-radius: 8px; background: var(--fill); border: 1px solid var(--line-light); }
+  .wf-tag { display: inline-block; padding: 3px 8px; border: 1px solid var(--line); border-radius: 12px; font-size: 10px; margin: 2px; }
+  .wf-tag.active { background: var(--accent-dark); color: #fff; border-color: var(--accent-dark); }
+  .wf-arrow { display: inline-block; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--line); }
+  .wf-flex { display: flex; gap: 8px; align-items: center; }
+  .wf-row { display: flex; justify-content: space-between; align-items: center; }
+  .wf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wf-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .wf-label { font-size: 11px; color: var(--text-light); margin-bottom: 4px; }
+  .wf-value { font-size: 13px; color: var(--text-dark); }
+  .wf-hint { font-size: 11px; color: var(--text-light); text-align: center; padding: 20px; }
+  .wf-connector { width: 100%; text-align: center; padding: 4px; font-size: 10px; color: var(--accent); }
+  .wf-connector::before { content: "↓"; display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>pet-wb 线框图</h2>
+      <p>Phase 1 · 13 页</p>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">全局导航</div>
+      <div class="nav-item" data-page="flow-overview">📐 交互流程总览</div>
+      <div class="nav-item" data-page="tabbar">📱 底部 Tab-bar</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">共享层 <span class="nav-badge">4页</span></div>
+      <div class="nav-item" data-page="login">登录/授权页</div>
+      <div class="nav-item" data-page="mine">用户中心（我的）</div>
+      <div class="nav-item" data-page="pet-list">宠物档案管理</div>
+      <div class="nav-item" data-page="address-list">收货地址管理</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">#2 桌宠穿搭 <span class="nav-badge">5页</span></div>
+      <div class="nav-item" data-page="pet-select">宠物选择/创建</div>
+      <div class="nav-item" data-page="outfit-main">穿搭主页</div>
+      <div class="nav-item" data-page="dress-up">换装编辑器</div>
+      <div class="nav-item" data-page="outfit-list">穿搭方案列表</div>
+      <div class="nav-item" data-page="share-card">分享卡片</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">#5 团购商城 <span class="nav-badge">4页</span></div>
+      <div class="nav-item" data-page="product-list">团购商品列表</div>
+      <div class="nav-item" data-page="product-detail">商品详情</div>
+      <div class="nav-item" data-page="checkout">下单/支付</div>
+      <div class="nav-item" data-page="order-list">订单管理</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="main">
+    <div class="toolbar">
+      <button onclick="prevPage()">◀ 上一页</button>
+      <span id="page-indicator" style="font-size:12px;color:var(--text-dark);line-height:30px;padding:0 8px;"></span>
+      <button onclick="nextPage()">下一页 ▶</button>
+      <span style="width:16px;"></span>
+      <button id="flow-btn" onclick="toggleFlow()" class="active-btn">标注</button>
+    </div>
+    <div class="page-label" id="page-label">登录/授权页</div>
+    <div class="phone-wrapper">
+      <div class="phone-frame" id="phone-frame">
+        <!-- Pages will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Annotations Panel -->
+  <div class="annotations" id="annotations">
+    <h3>📝 页面说明</h3>
+    <div id="anno-content"></div>
+  </div>
+</div>
+
+<script>
+const pages = {};
+
+// Mock data
+const icons = {
+  login: '🐾',
+  mine: '👤',
+  pet: '🐱',
+  address: '📍',
+  product: '🛒',
+  dress: '👕',
+};
+
+// ========== SHARED LAYER PAGES ==========
+
+pages['login'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 40px;">
+  <div style="width:80px;height:80px;border:2px dashed var(--line);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;background:var(--fill-light);">
+    🐾
+  </div>
+  <div style="font-size:20px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">给宠物穿搭</div>
+  <div style="font-size:14px;color:var(--text-light);margin-bottom:60px;">给主人团购</div>
+  <div class="wf-btn" style="width:100%;margin-bottom:20px;" data-anno="1">微信一键登录</div>
+  <div class="wf-flex" style="font-size:11px;color:var(--text-light);">
+    <span style="width:14px;height:14px;border:1px solid var(--line);border-radius:2px;display:inline-block;"></span>
+    <span>已阅读并同意《隐私政策》</span>
+  </div>
+</div>`;
+
+pages['mine'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="padding:0;">
+  <div class="wf-block" style="display:flex;align-items:center;gap:12px;background:#fff;border-style:solid;border-left:0;border-right:0;border-radius:0;padding:16px;margin:0;" data-anno="1">
+    <div class="wf-avatar" style="width:52px;height:52px;">👤</div>
+    <div>
+      <div class="wf-value" style="font-size:15px;font-weight:600;">用户昵称</div>
+      <div class="wf-label" style="margin-top:2px;">ID: xxxxxx</div>
+    </div>
+    <span style="margin-left:auto;font-size:18px;color:var(--line);">›</span>
+  </div>
+  <div style="padding:12px;">
+    <div class="wf-flex" style="justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line-lighter);" data-anno="2">
+      <span>🐱 我的宠物</span>
+      <span style="color:var(--line-light);">›</span>
+    </div>
+    <div class="wf-flex" style="justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line-lighter);" data-anno="3">
+      <span>📍 收货地址</span>
+      <span style="color:var(--line-light);">›</span>
+    </div>
+    <div class="wf-flex" style="justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line-lighter);" data-anno="4">
+      <span>📦 我的订单</span>
+      <span style="color:var(--line-light);">›</span>
+    </div>
+    <div class="wf-flex" style="justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line-lighter);">
+      <span>⚙️ 设置</span>
+      <span style="color:var(--line-light);">›</span>
+    </div>
+  </div>
+  <div style="text-align:center;padding:30px;font-size:11px;color:var(--line);">版本 1.0.0</div>
+</div>
+<div class="wf-tabbar">
+  <div class="wf-tab"><div class="wf-tab-icon"></div>穿搭</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>商城</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>地图</div>
+  <div class="wf-tab active-tab"><div class="wf-tab-icon"></div>我的</div>
+</div>`;
+
+pages['pet-list'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">我的宠物</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content">
+  <div class="wf-block" style="background:#fff;border-style:solid;display:flex;align-items:center;gap:12px;padding:14px;" data-anno="1">
+    <div style="width:56px;height:56px;background:var(--fill);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;">🐱</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:600;color:var(--text-dark);">年糕</div>
+      <div style="font-size:11px;color:var(--text-light);">英短蓝猫 · ♀</div>
+    </div>
+    <div class="wf-btn-outline wf-btn-small">编辑</div>
+  </div>
+  <div class="wf-block" style="background:#fff;border-style:solid;display:flex;align-items:center;gap:12px;padding:14px;" data-anno="1">
+    <div style="width:56px;height:56px;background:var(--fill);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;">🐶</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:600;color:var(--text-dark);">坦克</div>
+      <div style="font-size:11px;color:var(--text-light);">金毛 · ♂</div>
+    </div>
+    <div class="wf-btn-outline wf-btn-small">编辑</div>
+  </div>
+  <div style="margin-top:20px;">
+    <div class="wf-btn" data-anno="2" style="background:var(--fill);border:1.5px dashed var(--line);color:var(--text-dark);">+ 添加宠物</div>
+  </div>
+</div>`;
+
+pages['address-list'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">收货地址</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content">
+  <div class="wf-block" style="background:#fff;border-style:solid;" data-anno="1">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+      <span style="font-weight:600;color:var(--text-dark);">张三</span>
+      <span style="color:var(--text-light);">138xxxx1234</span>
+    </div>
+    <div style="font-size:12px;color:var(--text);margin-bottom:8px;line-height:1.5;">广东省深圳市<br>南山区科技园南路xx号</div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;">默认</span>
+      <span style="font-size:11px;color:var(--accent);margin-left:auto;">编辑</span>
+      <span style="font-size:11px;color:var(--text-light);">删除</span>
+    </div>
+  </div>
+  <div class="wf-block" style="background:#fff;border-style:solid;" data-anno="1">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+      <span style="font-weight:600;color:var(--text-dark);">李四</span>
+      <span style="color:var(--text-light);">139xxxx5678</span>
+    </div>
+    <div style="font-size:12px;color:var(--text);margin-bottom:8px;line-height:1.5;">广东省广州市<br>天河区天河北路xx号</div>
+    <div style="display:flex;gap:6px;justify-content:flex-end;">
+      <span style="font-size:11px;color:var(--accent);">编辑</span>
+      <span style="font-size:11px;color:var(--text-light);">删除</span>
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <div class="wf-btn" data-anno="2" style="background:var(--fill);border:1.5px dashed var(--line);color:var(--text-dark);">+ 新增收货地址</div>
+  </div>
+</div>`;
+
+// ========== #2 OUTFIT PAGES ==========
+
+pages['pet-select'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="padding:20px;">
+  <div style="font-size:15px;font-weight:600;color:var(--text-dark);margin-bottom:16px;">选择要穿搭的宠物</div>
+  <div class="wf-grid" data-anno="1">
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:16px 8px;cursor:pointer;">
+      <div style="width:60px;height:60px;margin:0 auto 8px;background:var(--fill);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;">🐱</div>
+      <div style="font-weight:600;font-size:13px;">年糕</div>
+      <div style="font-size:10px;color:var(--text-light);">英短蓝猫</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:16px 8px;cursor:pointer;">
+      <div style="width:60px;height:60px;margin:0 auto 8px;background:var(--fill);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;">🐶</div>
+      <div style="font-weight:600;font-size:13px;">坦克</div>
+      <div style="font-size:10px;color:var(--text-light);">金毛</div>
+    </div>
+  </div>
+  <div style="margin-top:24px;">
+    <div class="wf-btn" data-anno="2" style="background:var(--fill);border:1.5px dashed var(--line);color:var(--text-dark);">+ 创建新桌宠</div>
+  </div>
+</div>`;
+
+pages['outfit-main'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="display:flex;flex-direction:column;padding:0;">
+  <div style="padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line-lighter);" data-anno="1">
+    <div style="width:32px;height:32px;background:var(--fill);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">🐱</div>
+    <span style="font-weight:600;color:var(--text-dark);">年糕 · 英短蓝猫</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--accent);">切换 ›</span>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--fill-light);border-bottom:1px dashed var(--line);margin:12px;border-radius:8px;" data-anno="2">
+    <div style="text-align:center;">
+      <div style="font-size:80px;line-height:1;">🐱</div>
+      <div style="font-size:11px;color:var(--line-light);margin-top:8px;">2D 形象展示区 (Canvas)</div>
+    </div>
+  </div>
+  <div style="padding:8px 16px;font-size:13px;color:var(--accent-dark);text-align:center;border-bottom:1px solid var(--line-lighter);" data-anno="3">
+    当前穿搭：日常出门装
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:12px 16px;" data-anno="4">
+    <div class="wf-btn" style="padding:12px 8px;font-size:12px;">换装</div>
+    <div class="wf-btn" style="padding:12px 8px;font-size:12px;">方案</div>
+    <div class="wf-btn" style="padding:12px 8px;font-size:12px;">收藏</div>
+    <div class="wf-btn" style="padding:12px 8px;font-size:12px;">分享</div>
+  </div>
+</div>
+<div class="wf-tabbar">
+  <div class="wf-tab active-tab"><div class="wf-tab-icon"></div>穿搭</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>商城</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>地图</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>我的</div>
+</div>`;
+
+pages['dress-up'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">换装编辑器</div>
+  <div class="wf-nav-action" data-anno="4">保存</div>
+</div>
+<div class="wf-content" style="display:flex;flex-direction:column;padding:0;">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--fill-light);border-bottom:1px dashed var(--line);margin:8px 12px;border-radius:8px;" data-anno="1">
+    <div style="text-align:center;">
+      <div style="font-size:60px;line-height:1;">🐱</div>
+      <div style="font-size:10px;color:var(--line-light);margin-top:4px;">实时预览</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:4px;padding:6px 12px;border-bottom:1px solid var(--line-lighter);overflow-x:auto;" data-anno="2">
+    <span class="wf-tag active">帽子</span><span class="wf-tag">上衣</span><span class="wf-tag">下装</span><span class="wf-tag">配饰</span><span class="wf-tag">项圈</span>
+  </div>
+  <div class="wf-grid wf-grid-3" style="padding:12px;" data-anno="3">
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">🎩</div>
+      <div style="font-size:10px;color:var(--text-light);">小礼帽</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">🧢</div>
+      <div style="font-size:10px;color:var(--text-light);">棒球帽</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">⛑️</div>
+      <div style="font-size:10px;color:var(--text-light);">安全帽</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">👑</div>
+      <div style="font-size:10px;color:var(--text-light);">小皇冠</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">🎀</div>
+      <div style="font-size:10px;color:var(--text-light);">蝴蝶结</div>
+    </div>
+    <div class="wf-block" style="text-align:center;background:#fff;border-style:solid;padding:8px;">
+      <div style="font-size:28px;">🌸</div>
+      <div style="font-size:10px;color:var(--text-light);">小花</div>
+    </div>
+  </div>
+</div>`;
+
+pages['outfit-list'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">我的穿搭方案</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content">
+  <div class="wf-block" style="background:#fff;border-style:solid;display:flex;align-items:center;gap:12px;padding:14px;" data-anno="1">
+    <div style="width:64px;height:64px;background:var(--fill);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:32px;">🐱</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:600;color:var(--text-dark);">日常出门装</div>
+      <div style="font-size:11px;color:var(--text-light);">4 件服饰</div>
+    </div>
+    <span style="font-size:12px;color:var(--text-light);">♥ 12</span>
+  </div>
+  <div class="wf-block" style="background:#fff;border-style:solid;display:flex;align-items:center;gap:12px;padding:14px;" data-anno="1">
+    <div style="width:64px;height:64px;background:var(--fill);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:32px;">🐱</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:600;color:var(--text-dark);">周末约会装</div>
+      <div style="font-size:11px;color:var(--text-light);">3 件服饰</div>
+    </div>
+    <span style="font-size:12px;color:var(--text-light);">♥ 3</span>
+  </div>
+  <div class="wf-hint" data-anno="2">最多可保存 5 套方案</div>
+</div>`;
+
+pages['share-card'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">分享穿搭</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content" style="display:flex;flex-direction:column;align-items:center;padding:24px;">
+  <div class="wf-block" style="width:260px;height:360px;background:#fff;border-style:solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;" data-anno="1">
+    <div style="font-size:64px;">🐱</div>
+    <div style="font-size:14px;font-weight:600;color:var(--text-dark);">日常出门装</div>
+    <div style="width:80px;height:80px;background:var(--fill);border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--line-light);">小程序码</div>
+    <div style="font-size:10px;color:var(--line-light);">pet-wb · 给宠物穿搭</div>
+  </div>
+  <div style="display:flex;gap:12px;width:100%;" data-anno="2">
+    <div class="wf-btn" style="flex:1;">保存图片</div>
+    <div class="wf-btn" style="flex:1;">分享给好友</div>
+  </div>
+</div>`;
+
+// ========== #5 GROUP BUY PAGES ==========
+
+pages['product-list'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="padding:0;">
+  <div style="padding:10px 12px;">
+    <div class="wf-input" style="background:var(--fill-light);" data-anno="1">🔍 搜索宠物用品</div>
+  </div>
+  <div style="padding:6px 12px;display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line-lighter);" data-anno="2">
+    <span class="wf-tag active">全部</span><span class="wf-tag">食品</span><span class="wf-tag">玩具</span><span class="wf-tag">服饰</span><span class="wf-tag">用品</span>
+  </div>
+  <div style="padding:12px;">
+    <div class="wf-grid" data-anno="3">
+      <div class="wf-block" style="background:#fff;border-style:solid;padding:8px;">
+        <div class="wf-thumb" style="height:120px;">🦖</div>
+        <div style="font-size:12px;font-weight:600;margin:6px 0 2px;color:var(--text-dark);">恐龙小卫衣</div>
+        <div style="font-size:10px;">
+          <span style="color:#c62828;font-weight:600;">¥39.9</span>
+          <span style="color:var(--line-light);text-decoration:line-through;margin-left:4px;">¥59</span>
+        </div>
+        <div style="font-size:9px;color:var(--text-light);margin-top:2px;">已团 23 件</div>
+      </div>
+      <div class="wf-block" style="background:#fff;border-style:solid;padding:8px;">
+        <div class="wf-thumb" style="height:120px;">🎀</div>
+        <div style="font-size:12px;font-weight:600;margin:6px 0 2px;color:var(--text-dark);">日系围兜</div>
+        <div style="font-size:10px;">
+          <span style="color:#c62828;font-weight:600;">¥29.9</span>
+          <span style="color:var(--line-light);text-decoration:line-through;margin-left:4px;">¥45</span>
+        </div>
+        <div style="font-size:9px;color:var(--text-light);margin-top:2px;">已团 15 件</div>
+      </div>
+      <div class="wf-block" style="background:#fff;border-style:solid;padding:8px;">
+        <div class="wf-thumb" style="height:120px;">🧶</div>
+        <div style="font-size:12px;font-weight:600;margin:6px 0 2px;color:var(--text-dark);">毛线球玩具</div>
+        <div style="font-size:10px;">
+          <span style="color:#c62828;font-weight:600;">¥19.9</span>
+          <span style="color:var(--line-light);text-decoration:line-through;margin-left:4px;">¥35</span>
+        </div>
+        <div style="font-size:9px;color:var(--text-light);margin-top:2px;">已团 42 件</div>
+      </div>
+      <div class="wf-block" style="background:#fff;border-style:solid;padding:8px;">
+        <div class="wf-thumb" style="height:120px;">🦴</div>
+        <div style="font-size:12px;font-weight:600;margin:6px 0 2px;color:var(--text-dark);">磨牙骨头</div>
+        <div style="font-size:10px;">
+          <span style="color:#c62828;font-weight:600;">¥15.9</span>
+          <span style="color:var(--line-light);text-decoration:line-through;margin-left:4px;">¥25</span>
+        </div>
+        <div style="font-size:9px;color:var(--text-light);margin-top:2px;">已团 68 件</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wf-tabbar">
+  <div class="wf-tab"><div class="wf-tab-icon"></div>穿搭</div>
+  <div class="wf-tab active-tab"><div class="wf-tab-icon"></div>商城</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>地图</div>
+  <div class="wf-tab"><div class="wf-tab-icon"></div>我的</div>
+</div>`;
+
+pages['product-detail'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">商品详情</div>
+  <span style="font-size:16px;color:var(--line-light);">···</span>
+</div>
+<div class="wf-content" style="padding:0;">
+  <div style="height:220px;background:var(--fill-light);border-bottom:1px dashed var(--line);display:flex;align-items:center;justify-content:center;position:relative;" data-anno="1">
+    <span style="font-size:64px;">🦖</span>
+    <div style="position:absolute;bottom:8px;display:flex;gap:4px;"><span style="width:6px;height:6px;background:var(--accent-dark);border-radius:50%;"></span><span style="width:6px;height:6px;background:var(--line-light);border-radius:50%;"></span><span style="width:6px;height:6px;background:var(--line-light);border-radius:50%;"></span></div>
+  </div>
+  <div style="padding:12px;" data-anno="2">
+    <div style="font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">恐龙小卫衣</div>
+    <div>
+      <span style="font-size:20px;color:#c62828;font-weight:700;">¥39.9</span>
+      <span style="font-size:12px;color:var(--line-light);text-decoration:line-through;margin-left:6px;">¥59.0</span>
+    </div>
+    <div style="font-size:11px;color:var(--accent);margin-top:4px;">已团 23 件 (2人成团)</div>
+  </div>
+  <div style="padding:12px;border-top:1px solid var(--line-lighter);" data-anno="3">
+    <div class="wf-label">颜色</div>
+    <div class="wf-flex"><span class="wf-tag active">红</span><span class="wf-tag">蓝</span><span class="wf-tag">黄</span></div>
+    <div class="wf-label" style="margin-top:8px;">尺寸</div>
+    <div class="wf-flex"><span class="wf-tag active">S</span><span class="wf-tag">M</span><span class="wf-tag">L</span></div>
+  </div>
+  <div style="padding:12px;border-top:1px solid var(--line-lighter);background:var(--fill-light);" data-anno="4">
+    <div style="font-size:12px;color:var(--text-light);margin-bottom:6px;">你家「年糕」穿上效果</div>
+    <div style="width:80px;height:80px;background:var(--fill);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:40px;">🐱</div>
+  </div>
+  <div style="padding:12px;border-top:1px solid var(--line-lighter);">
+    <div class="wf-label" style="font-weight:600;">商品详情</div>
+    <div style="font-size:11px;color:var(--text-light);line-height:1.6;">材质：棉<br>适用：中小型猫狗<br>清洗：手洗，自然晾干</div>
+  </div>
+</div>
+<div style="padding:12px;border-top:1px solid var(--line-lighter);background:#fff;">
+  <div class="wf-btn" data-anno="5">立即购买</div>
+</div>`;
+
+pages['checkout'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">确认订单</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content" style="padding:0;">
+  <div class="wf-block" style="display:flex;gap:10px;background:#fff;border-style:solid;padding:12px;margin:0;border-radius:0;" data-anno="1">
+    <div style="width:60px;height:60px;background:var(--fill);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:30px;">🦖</div>
+    <div style="flex:1;">
+      <div style="font-weight:600;font-size:13px;">恐龙小卫衣</div>
+      <div style="font-size:11px;color:var(--text-light);">颜色：红 · 尺寸：M</div>
+      <div style="font-size:11px;color:var(--text-light);">x 1</div>
+    </div>
+    <div style="font-weight:600;font-size:14px;">¥39.90</div>
+  </div>
+  <div class="wf-flex" style="justify-content:space-between;padding:14px;border-bottom:1px solid var(--line-lighter);background:#fff;" data-anno="2">
+    <span style="font-size:13px;">收货地址</span>
+    <div style="text-align:right;">
+      <div style="font-size:13px;font-weight:600;">张三 138xxxx1234</div>
+      <div style="font-size:11px;color:var(--text-light);">广东省深圳市南山区</div>
+    </div>
+    <span style="color:var(--line-light);">›</span>
+  </div>
+  <div style="padding:14px;background:#fff;border-bottom:1px solid var(--line-lighter);" data-anno="3">
+    <div class="wf-row" style="margin-bottom:8px;"><span style="font-size:12px;">商品金额</span><span>¥39.90</span></div>
+    <div class="wf-row" style="margin-bottom:8px;"><span style="font-size:12px;">运费</span><span>¥0.00</span></div>
+    <div class="wf-divider"></div>
+    <div class="wf-row"><span style="font-weight:600;">合计</span><span style="font-weight:700;font-size:16px;color:#c62828;">¥39.90</span></div>
+  </div>
+</div>
+<div style="padding:12px;border-top:1px solid var(--line-lighter);background:#fff;">
+  <div class="wf-btn" data-anno="4">微信支付</div>
+</div>`;
+
+pages['order-list'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-nav">
+  <div class="wf-nav-back">‹</div>
+  <div class="wf-nav-title">我的订单</div>
+  <div style="width:24px;"></div>
+</div>
+<div class="wf-content" style="padding:0;">
+  <div style="display:flex;border-bottom:1px solid var(--line-lighter);" data-anno="1">
+    <span class="wf-tag active" style="border:none;border-radius:0;border-bottom:2px solid var(--accent-dark);flex:1;text-align:center;">全部</span>
+    <span class="wf-tag" style="border:none;border-radius:0;flex:1;text-align:center;">待付款</span>
+    <span class="wf-tag" style="border:none;border-radius:0;flex:1;text-align:center;">已付款</span>
+    <span class="wf-tag" style="border:none;border-radius:0;flex:1;text-align:center;">已发货</span>
+    <span class="wf-tag" style="border:none;border-radius:0;flex:1;text-align:center;">已完成</span>
+  </div>
+  <div style="padding:12px;">
+    <div class="wf-block" style="background:#fff;border-style:solid;" data-anno="2">
+      <div style="font-size:10px;color:var(--text-light);margin-bottom:6px;">订单号: 20260601</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="width:56px;height:56px;background:var(--fill);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:28px;">🦖</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">恐龙小卫衣</div>
+          <div style="font-size:11px;color:var(--text-light);">红色 M x1</div>
+        </div>
+        <div style="font-weight:600;">¥39.90</div>
+      </div>
+      <div class="wf-row" style="margin-top:8px;">
+        <span style="font-size:10px;color:#2e7d32;">状态：已发货</span>
+        <span class="wf-btn-outline wf-btn-small">查看物流</span>
+      </div>
+    </div>
+    <div class="wf-block" style="background:#fff;border-style:solid;" data-anno="2">
+      <div style="font-size:10px;color:var(--text-light);margin-bottom:6px;">订单号: 20260528</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="width:56px;height:56px;background:var(--fill);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:28px;">🎀</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">日系围兜</div>
+          <div style="font-size:11px;color:var(--text-light);">粉色 M x1</div>
+        </div>
+        <div style="font-weight:600;">¥29.90</div>
+      </div>
+      <div class="wf-row" style="margin-top:8px;">
+        <span style="font-size:10px;color:#ef6c00;">状态：待付款</span>
+        <span class="wf-btn wf-btn-small">去支付</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+// ========== SPECIAL VIEWS ==========
+
+pages['tabbar'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="display:flex;flex-direction:column;justify-content:flex-end;padding:0;">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-light);">(任意页面内容)</div>
+  <div style="border-top:1px solid var(--line-lighter);">
+    <div class="wf-tabbar" style="border:none;">
+      <div class="wf-tab active-tab" data-anno="1">
+        <div class="wf-tab-icon" style="border-color:var(--accent-dark);background:var(--fill);"></div>
+        <span style="color:var(--accent-dark);">穿搭</span>
+      </div>
+      <div class="wf-tab">
+        <div class="wf-tab-icon"></div>
+        <span>商城</span>
+      </div>
+      <div class="wf-tab" data-anno="2">
+        <div class="wf-tab-icon" style="opacity:0.5;"></div>
+        <span style="color:var(--line-light);">地图</span>
+      </div>
+      <div class="wf-tab">
+        <div class="wf-tab-icon"></div>
+        <span>我的</span>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+pages['flow-overview'] = `
+<div class="wf-statusbar"><span>9:41</span><span>100%</span></div>
+<div class="wf-content" style="padding:16px;overflow-y:auto;">
+  <div style="font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:12px;">页面跳转关系图</div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">穿搭 Tab → 宠物选择 → 穿搭主页</div>
+    <div style="background:var(--fill-light);padding:10px;border-radius:4px;font-size:10px;line-height:1.8;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">穿搭主页</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">换装编辑器</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">穿搭主页</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">穿搭方案列表</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">穿搭主页</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">分享卡片</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">商城 Tab → 商品列表 → 下单支付</div>
+    <div style="background:var(--fill-light);padding:10px;border-radius:4px;font-size:10px;line-height:1.8;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">商品列表</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">商品详情</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">下单/支付</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">商品详情</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">穿搭预览</span>
+        <span style="color:var(--text-light);">（联动#2）</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">我的 Tab → 用户中心</div>
+    <div style="background:var(--fill-light);padding:10px;border-radius:4px;font-size:10px;line-height:1.8;">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">用户中心</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">宠物档案管理</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">用户中心</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">地址管理</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="wf-badge">用户中心</span>
+        <span style="color:var(--accent);">→</span>
+        <span class="wf-badge">订单管理</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;">核心闭环</div>
+    <div style="background:var(--highlight);padding:10px;border-radius:4px;font-size:10px;line-height:1.8;border:1px solid var(--line-light);">
+      <div>穿搭主页 → 看中服饰 → <span style="color:var(--accent);">购买同款</span></div>
+      <div>→ 商品详情（试穿预览）→ 下单</div>
+      <div>→ 微信支付 → <span style="color:#2e7d32;">自动解锁2D服饰</span></div>
+      <div>→ 回到穿搭页 → 新服饰已出现</div>
+    </div>
+  </div>
+</div>`;
+
+// ========== ANNOTATIONS DATA ==========
+
+const annotations = {
+  'login': {
+    title: '登录/授权页',
+    path: 'pages/common/login/login',
+    items: [
+      { num: '1', text: '微信一键登录按钮 — 点击调起 wx.getUserProfile' },
+      { text: '状态：正常 · 加载中 · 失败 Toast' },
+      { text: '触发：首次打开 / Token 过期' },
+      { text: '后续：登录成功 → 穿搭主页' },
+    ],
+    trigger: '首次打开小程序 / Token 过期'
+  },
+  'mine': {
+    title: '用户中心（我的）',
+    path: 'pages/common/mine/mine',
+    items: [
+      { num: '1', text: '用户信息卡片 — 头像+昵称+ID' },
+      { num: '2', text: '我的宠物 → 宠物档案管理页' },
+      { num: '3', text: '收货地址 → 地址管理页' },
+      { num: '4', text: '我的订单 → 订单管理页' },
+      { text: '底部 Tab-bar 固定显示' },
+    ],
+    trigger: 'Tab-bar「我的」'
+  },
+  'pet-list': {
+    title: '宠物档案管理页',
+    path: 'pages/common/pet-list/pet-list',
+    items: [
+      { num: '1', text: '宠物卡片 — 头像/名字/品种/性别，点击进入编辑' },
+      { num: '2', text: '添加宠物按钮 → 新增宠物页（表单：名字/物种/品种/性别/生日）' },
+      { text: '空状态：无宠物时引导添加，显示插画+引导文案' },
+      { text: '限制：最多 5 只宠物' },
+    ],
+    trigger: '我的 → 我的宠物'
+  },
+  'address-list': {
+    title: '收货地址管理页',
+    path: 'pages/common/address-list/address-list',
+    items: [
+      { num: '1', text: '地址卡片 — 收货人/电话/地址/默认标记' },
+      { num: '2', text: '新增地址按钮 → 省市区选择器 + 表单' },
+      { text: '每条地址可编辑、设置默认、删除' },
+      { text: '空状态：无地址时引导新增' },
+    ],
+    trigger: '我的 → 收货地址'
+  },
+  'pet-select': {
+    title: '宠物选择/创建页',
+    path: 'pages/outfit/pet-select/pet-select',
+    items: [
+      { num: '1', text: '宠物卡片网格 — 已有宠物列表，点击进入穿搭主页' },
+      { num: '2', text: '创建新桌宠 → 跳转宠物档案新增页' },
+      { text: '优化：仅 1 只宠物时跳过此页直达穿搭主页' },
+      { text: '空状态：引导去宠物档案创建' },
+    ],
+    trigger: '穿搭 Tab / 用户中心进入穿搭'
+  },
+  'outfit-main': {
+    title: '穿搭主页（核心页）',
+    path: 'pages/outfit/outfit-main/outfit-main',
+    items: [
+      { num: '1', text: '宠物信息条 — 名称/品种，可切换宠物' },
+      { num: '2', text: '2D 形象展示区 — Canvas 渲染，占 60% 屏幕' },
+      { num: '3', text: '当前穿搭方案名称' },
+      { num: '4', text: '操作按钮组 — 换装/方案/收藏/分享' },
+      { text: 'Tab-bar 默认进入页' },
+    ],
+    trigger: 'Tab-bar「穿搭」/ 宠物选择'
+  },
+  'dress-up': {
+    title: '换装编辑器',
+    path: 'pages/outfit/dress-up/dress-up',
+    items: [
+      { num: '1', text: '2D 形象预览区 — 实时渲染穿搭效果' },
+      { num: '2', text: '部件分类 Tab — 帽子/上衣/下装/配饰/项圈横滑切换' },
+      { num: '3', text: '服饰网格 — 点击服饰即时叠到 2D 形象上' },
+      { num: '4', text: '保存按钮 — 保存当前穿搭为方案' },
+      { text: '服饰为空时引导去商城' },
+    ],
+    trigger: '穿搭主页 → 换装'
+  },
+  'outfit-list': {
+    title: '穿搭方案列表',
+    path: 'pages/outfit/outfit-list/outfit-list',
+    items: [
+      { num: '1', text: '方案卡片 — 缩略图/名称/点赞数，点击设为当前穿搭' },
+      { num: '2', text: '容量提示 — 最多 5 套方案' },
+      { text: '空状态：引导创建第一套方案' },
+      { text: '长按：编辑/删除方案' },
+    ],
+    trigger: '穿搭主页 → 方案'
+  },
+  'share-card': {
+    title: '穿搭分享卡片页',
+    path: 'pages/outfit/share-card/share-card',
+    items: [
+      { num: '1', text: '分享卡片预览 — 2D形象+穿搭名称+小程序码+品牌文字' },
+      { num: '2', text: '操作按钮 — Canvas 绘制后保存图片/分享给好友' },
+      { text: '状态：生成中 → 生成完成 → 保存成功' },
+      { text: '好友扫码 → 登录 → 创建宠物 → 触发穿搭引导' },
+    ],
+    trigger: '穿搭主页 → 分享'
+  },
+  'product-list': {
+    title: '团购商品列表',
+    path: 'pages/groupbuy/product-list/product-list',
+    items: [
+      { num: '1', text: '搜索栏 — 关键词搜索宠物用品' },
+      { num: '2', text: '分类筛选 — 横滑 Tab：全部/食品/玩具/服饰/用品' },
+      { num: '3', text: '商品卡片双列瀑布流 — 主图/名称/团购价/原价/已团数' },
+      { text: '点击商品 → 商品详情' },
+      { text: '支持下拉刷新' },
+    ],
+    trigger: 'Tab-bar「商城」'
+  },
+  'product-detail': {
+    title: '商品详情页',
+    path: 'pages/groupbuy/product-detail/product-detail',
+    items: [
+      { num: '1', text: '轮播图区域 (swiper) — 多张商品图切换' },
+      { num: '2', text: '价格区 — 团购价（红）+ 原价（划线）+ 已团/成团人数' },
+      { num: '3', text: '规格选择 — 颜色/尺寸 Tag 选择' },
+      { num: '4', text: '宠物试穿预览 — 联动#2显示当前宠物穿上效果' },
+      { num: '5', text: '固定底部「立即购买」按钮' },
+    ],
+    trigger: '商品列表 → 点击商品'
+  },
+  'checkout': {
+    title: '下单/支付页',
+    path: 'pages/groupbuy/checkout/checkout',
+    items: [
+      { num: '1', text: '订单商品摘要 — 缩略图/名称/规格/数量' },
+      { num: '2', text: '收货地址 — 选择已有 / 跳转新增' },
+      { num: '3', text: '价格明细 — 商品金额/运费/合计' },
+      { num: '4', text: '微信支付按钮 — 调起微信支付' },
+      { text: '支付成功页：✓ 成功提示 + 品牌文案 + 查看穿搭/查看订单' },
+    ],
+    trigger: '商品详情 → 立即购买'
+  },
+  'order-list': {
+    title: '订单管理页',
+    path: 'pages/groupbuy/order-list/order-list',
+    items: [
+      { num: '1', text: '订单状态 Tab — 全部/待付款/已付款/已发货/已完成' },
+      { num: '2', text: '订单卡片 — 订单号/商品图/名称/规格/价格/状态+操作' },
+      { text: '待付款 → 去支付 · 已发货 → 查看物流 · 已完成 → 评价' },
+      { text: '空状态按 Tab 区分展示' },
+    ],
+    trigger: '我的 → 我的订单'
+  },
+  'tabbar': {
+    title: '底部 Tab-bar',
+    items: [
+      { num: '1', text: '穿搭 Tab — #2 模块入口，默认选中' },
+      { num: '2', text: '地图 Tab — Phase 1.5，当前显示"即将上线"' },
+      { text: '商城 Tab — #5 团购模块入口' },
+      { text: '我的 Tab — 用户中心入口' },
+    ],
+    trigger: '全局底部导航'
+  },
+  'flow-overview': {
+    title: '交互流程总览',
+    items: [
+      { text: '核心闭环：穿搭→团购→解锁' },
+      { text: '分享裂变：穿搭→生成卡片→扫码→创建宠物' },
+      { text: '新人引导：创建宠物→选2D形象→试穿→分享' },
+    ],
+    trigger: '整体导航'
+  },
+};
+
+// ========== APP LOGIC ==========
+const pageNames = Object.keys(pages);
+const navItems = document.querySelectorAll('.nav-item');
+const phoneFrame = document.getElementById('phone-frame');
+const pageLabel = document.getElementById('page-label');
+const annoContent = document.getElementById('anno-content');
+const pageIndicator = document.getElementById('page-indicator');
+
+// Initialize phone frame with all pages
+let renderedPages = {};
+pageNames.forEach(name => {
+  const div = document.createElement('div');
+  div.className = 'wf-page';
+  div.id = 'page-' + name;
+  div.innerHTML = pages[name];
+  phoneFrame.appendChild(div);
+  renderedPages[name] = div;
+});
+
+let currentPage = 'flow-overview';
+let showAnnotations = true;
+
+function showPage(name) {
+  // Hide all
+  document.querySelectorAll('.wf-page').forEach(p => p.classList.remove('active-page'));
+  // Show target
+  const target = document.getElementById('page-' + name);
+  if (target) target.classList.add('active-page');
+  
+  // Update nav
+  navItems.forEach(item => item.classList.remove('active'));
+  const activeNav = document.querySelector('.nav-item[data-page="' + name + '"]');
+  if (activeNav) activeNav.classList.add('active');
+  
+  currentPage = name;
+  updateAnnotations(name);
+  updatePageIndicator(name);
+}
+
+function updateAnnotations(pageName) {
+  const data = annotations[pageName];
+  if (!data || !showAnnotations) {
+    annoContent.innerHTML = '<div style="font-size:12px;color:var(--text-light);">点击"标注"按钮查看说明</div>';
+    return;
+  }
+  
+  let html = '<div style="font-size:15px;font-weight:600;color:var(--text-dark);margin-bottom:12px;">' + data.title + '</div>';
+  html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:12px;padding:4px 8px;background:var(--fill-light);border-radius:4px;">路径: ' + (data.path || '-') + '</div>';
+  
+  if (data.items) {
+    data.items.forEach(item => {
+      html += '<div style="margin-bottom:10px;font-size:12px;line-height:1.5;">';
+      if (item.num) {
+        html += '<span style="display:inline-block;width:18px;height:18px;background:var(--accent-dark);color:#fff;border-radius:50%;text-align:center;line-height:18px;font-size:10px;margin-right:6px;">' + item.num + '</span>';
+      }
+      html += item.text + '</div>';
+    });
+  }
+  
+  if (data.trigger) {
+    html += '<div style="margin-top:12px;padding:8px;background:var(--highlight);border-radius:4px;font-size:11px;border:1px solid var(--line-light);"><strong>触发：</strong>' + data.trigger + '</div>';
+  }
+  
+  annoContent.innerHTML = html;
+  
+  // Update page label
+  pageLabel.textContent = data.title || pageName;
+}
+
+function updatePageIndicator(name) {
+  const idx = pageNames.indexOf(name);
+  if (idx >= 0) {
+    pageIndicator.textContent = (idx + 1) + ' / ' + pageNames.length;
+  }
+}
+
+function prevPage() {
+  const idx = pageNames.indexOf(currentPage);
+  if (idx > 0) showPage(pageNames[idx - 1]);
+}
+
+function nextPage() {
+  const idx = pageNames.indexOf(currentPage);
+  if (idx < pageNames.length - 1) showPage(pageNames[idx + 1]);
+}
+
+function toggleFlow() {
+  showAnnotations = !showAnnotations;
+  const btn = document.getElementById('flow-btn');
+  if (showAnnotations) {
+    btn.classList.add('active-btn');
+    btn.textContent = '标注';
+  } else {
+    btn.classList.remove('active-btn');
+    btn.textContent = '标注';
+  }
+  updateAnnotations(currentPage);
+}
+
+// Nav click handlers
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const pageName = item.getAttribute('data-page');
+    if (pageName && pages[pageName]) showPage(pageName);
+  });
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') prevPage();
+  if (e.key === 'ArrowRight') nextPage();
+});
+
+// Init
+showPage('flow-overview');
+</script>
+</body>
+</html>

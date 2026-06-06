@@ -1,4 +1,6 @@
-<!-- components/empty-state - 空状态提示 -->
-<view class="component-container">
-  <!-- TODO: 组件内容 -->
+<!-- components/empty-state/index.wxml -->
+<view class="empty-wrap">
+  <t-icon name="{{icon}}" size="96rpx" color="#ddd" />
+  <text class="empty-text">{{text}}</text>
+  <slot />
 </view>

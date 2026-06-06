@@ -1,28 +1,66 @@
 // gb/order/detail.js
 Page({
+
+  /**
+   * 页面的初始数据
+   */
   data: {
-    loading: false,
-    pageTitle: '订单详情'
+
   },
 
+  /**
+   * 生命周期函数--监听页面加载
+   */
   onLoad(options) {
-    this.setData({ loading: true });
-    // TODO: 初始化页面数据
-    this.setData({ loading: false });
+
   },
 
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
   onShow() {
-    // TODO: 页面显示时刷新数据
+
   },
 
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
   onReachBottom() {
-    // TODO: 加载更多
+
   },
 
+  /**
+   * 用户点击右上角分享
+   */
   onShareAppMessage() {
-    return {
-      title: '订单详情 - pet-wb',
-      path: '/gb/order/detail'
-    };
+
   }
-});
+})

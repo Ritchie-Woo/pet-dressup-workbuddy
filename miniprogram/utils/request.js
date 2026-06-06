@@ -1,120 +1,195 @@
-/**
- * 云函数调用封装
- * 统一处理错误、超时、重试
- */
-
-const REQUEST_TIMEOUT = 15000;
-const MAX_RETRIES = 2;
+// 云函数请求封装 — 统一处理 error/retry/log
+const app = getApp();
 
 /**
  * 调用云函数
- * @param {string} name - 云函数名称（格式：模块_函数名，如 common_user/getInfo）
- * @param {object} data - 请求参数
- * @param {object} options - 额外选项
- * @returns {Promise<any>}
+ * @param {string} name 云函数名称
+ * @param {object} data 参数
+ * @returns {Promise} res.result = { code, data, msg }
  */
-function callCloudFunction(name, data = {}, options = {}) {
-  const { retries = MAX_RETRIES, timeout = REQUEST_TIMEOUT } = options;
-
+function callCloudFunc(name, data = {}, timeout = 20000) {
   return new Promise((resolve, reject) => {
-    function attempt(remaining) {
-      wx.cloud.callFunction({
-        name,
-        data
-      }).then((res) => {
-        if (res.result && res.result.code === 0) {
-          resolve(res.result.data);
-        } else {
-          const errMsg = (res.result && res.result.msg) || '请求失败';
-          reject(new Error(errMsg));
-        }
-      }).catch((err) => {
-        if (remaining > 0 && _isRetryable(err)) {
-          console.warn(`[Request] ${name} 重试，剩余 ${remaining} 次`, err);
-          setTimeout(() => attempt(remaining - 1), 1000);
-          return;
-        }
-        reject(err);
-      });
+    if (!wx.cloud) {
+      reject(new Error('云开发未初始化'));
+      return;
     }
-    attempt(retries);
-  });
-}
 
-/**
- * 自定义 HTTP 请求封装（非云函数场景）
- */
-function httpGet(url, data = {}, options = {}) {
-  return _request('GET', url, data, options);
-}
+    let settled = false;
+    const done = (fn, val) => {
+      if (settled) return;
+      settled = true;
+      fn(val);
+    };
 
-function httpPost(url, data = {}, options = {}) {
-  return _request('POST', url, data, options);
-}
+    // timeout for long-running AI calls
+    const timer = setTimeout(() => {
+      done(reject, new Error('请求超时'));
+    }, timeout);
 
-function _request(method, url, data, options = {}) {
-  const { timeout = REQUEST_TIMEOUT } = options;
-
-  return new Promise((resolve, reject) => {
-    wx.request({
-      url,
-      method,
-      data,
-      timeout,
-      header: {
-        'Content-Type': 'application/json',
-        ..._getAuthHeader()
-      },
-      success(res) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data);
+    wx.cloud.callFunction({ name, data })
+      .then(res => {
+        clearTimeout(timer);
+        if (res.result && res.result.code >= 0) {
+          done(resolve, res.result);
         } else {
-          reject(new Error(`HTTP ${res.statusCode}: ${res.data}`));
+          done(reject, new Error(res.result?.msg || '请求失败'));
         }
-      },
-      fail(err) {
-        reject(err);
-      }
-    });
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        done(reject, err);
+      });
   });
 }
 
 /**
- * 上传文件
+ * 调用云函数（带 loading + 重试）
+ * @param {string} name 云函数名称
+ * @param {object} data 参数
+ * @param {object} opts { retry, showLoading, loadingText }
  */
-function uploadFile(filePath, options = {}) {
-  return new Promise((resolve, reject) => {
-    wx.cloud.uploadFile({
-      cloudPath: options.cloudPath || `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.png`,
-      filePath,
-      success(res) {
-        resolve({ fileID: res.fileID, url: res.fileID });
-      },
-      fail: reject
-    });
-  });
+async function request(name, data = {}, opts = {}) {
+  const { retry = 1, showLoading = false, loadingText = '', silent = false, timeout = 20000 } = opts;
+  if (showLoading) wx.showLoading({ title: loadingText || '加载中…', mask: true });
+
+  let lastErr;
+  for (let i = 0; i <= retry; i++) {
+    try {
+      const result = await callCloudFunc(name, data, timeout);
+      if (showLoading) wx.hideLoading();
+      return result;
+    } catch (err) {
+      lastErr = err;
+      if (i < retry) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  }
+
+  if (showLoading) wx.hideLoading();
+  if (!silent) {
+    wx.showToast({ title: lastErr?.message || '网络异常', icon: 'none' });
+  }
+  throw lastErr;
 }
 
-// ===== 私有工具函数 =====
+// ===== 便捷方法 =====
 
-function _getAuthHeader() {
-  const app = getApp();
-  const token = app && app.globalData && app.globalData.token;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+// 用户登录
+function login(nickname, avatarUrl) {
+  return request('common-user', { action: 'login', nickname, avatarUrl });
 }
 
-function _isRetryable(err) {
-  const msg = (err.message || err.errMsg || '').toLowerCase();
-  return (
-    msg.includes('timeout') ||
-    msg.includes('network') ||
-    msg.includes('temporary')
-  );
+// 宠物 CRUD
+function getPetList() {
+  return request('common-pet', { action: 'list' }, { showLoading: true, loadingText: '加载中…' });
+}
+
+function getPetDetail(petId) {
+  return request('common-pet', { action: 'detail', petId });
+}
+
+function createPet(pet) {
+  return request('common-pet', { action: 'create', ...pet }, { showLoading: true, loadingText: '创建中…' });
+}
+
+function updatePet(petId, updates) {
+  return request('common-pet', { action: 'update', petId, ...updates }, { showLoading: true });
+}
+
+function deletePet(petId) {
+  return request('common-pet', { action: 'delete', petId }, { showLoading: true });
+}
+
+// ===== #2 穿搭 API =====
+function createAvatar(petId, species, breed) {
+  return request('wp-avatar', { action: 'createOrGet', petId, species, breed });
+}
+function getAvatar(petId) {
+  return request('wp-avatar', { action: 'getByPet', petId });
+}
+function getAllItems() {
+  return request('wp-items', { action: 'listAll' });
+}
+function getUserItems() {
+  return request('wp-items', { action: 'getUserItems' });
+}
+function addUserItem(userId, itemId) {
+  return request('wp-items', { action: 'addItem', userId, itemId });
+}
+function saveOutfit(avatarId, name, slots) {
+  return request('wp-outfits', { action: 'save', avatarId, name, slots });
+}
+function getOutfits(avatarId) {
+  return request('wp-outfits', { action: 'list', avatarId });
+}
+function setCurrentOutfit(outfitId) {
+  return request('wp-outfits', { action: 'setCurrent', outfitId });
+}
+
+// ===== #5 团购 API =====
+function getProducts(params) {
+  return request('gb-product', { action: 'list', ...params });
+}
+function getProductDetail(productId) {
+  return request('gb-product', { action: 'detail', productId });
+}
+function createOrder(params) {
+  return request('gb-order', { action: 'create', ...params });
+}
+function paySuccess(orderId) {
+  return request('gb-order', { action: 'paySuccess', orderId });
+}
+function getOrders(params) {
+  return request('gb-order', { action: 'list', ...params });
+}
+function getOrderDetail(orderId) {
+  return request('gb-order', { action: 'detail', orderId });
+}
+
+// ===== #3 地图 API =====
+function getNearbyPlaces(lat, lng, category) {
+  return request('mp-place', { action: 'list', lat, lng, category });
+}
+function searchPlaces(keyword) {
+  return request('mp-place', { action: 'search', keyword });
+}
+function getPlaceDetail(placeId) {
+  return request('mp-place', { action: 'detail', placeId });
+}
+function toggleFavorite(placeId) {
+  return request('mp-place', { action: 'favorite', placeId, toggle: true });
+}
+function doCheckin(placeId, petId) {
+  return request('mp-checkin', { action: 'checkin', placeId, petId });
 }
 
 module.exports = {
-  callCloudFunction,
-  httpGet,
-  httpPost,
-  uploadFile
+  request,
+  callCloudFunc,
+  login,
+  getPetList,
+  getPetDetail,
+  createPet,
+  updatePet,
+  deletePet,
+  createAvatar,
+  getAvatar,
+  getAllItems,
+  getUserItems,
+  addUserItem,
+  saveOutfit,
+  getOutfits,
+  setCurrentOutfit,
+  getProducts,
+  getProductDetail,
+  createOrder,
+  paySuccess,
+  getOrders,
+  getOrderDetail,
+  getNearbyPlaces,
+  searchPlaces,
+  getPlaceDetail,
+  toggleFavorite,
+  doCheckin
 };

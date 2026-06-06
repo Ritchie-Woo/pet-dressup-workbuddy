@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "地点详情"
+  "navigationBarTitleText": "地点详情",
+  "usingComponents": {
+    "navbar": "../../components/navbar/index"
+  }
 }

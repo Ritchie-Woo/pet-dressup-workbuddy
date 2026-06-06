@@ -1,25 +1,32 @@
-// components/navbar - 自定义导航栏
+// components/navbar/index.js — 自定义导航栏（兼容 Skyline + TDesign navbar）
 Component({
-  options: {
-    addGlobalClass: true,
-    multipleSlots: true
-  },
-
   properties: {
-    // TODO: 定义组件属性
+    title: { type: String, value: '' },
+    showBack: { type: Boolean, value: true },
+    bgColor: { type: String, value: '#ffffff' }
   },
-
   data: {
-    // 内部状态
+    statusBarHeight: 20,
+    navBarHeight: 44
   },
-
   lifetimes: {
     attached() {
-      // 组件挂载
+      const app = getApp();
+      this.setData({
+        statusBarHeight: app.globalData.statusBarHeight || 20,
+        navBarHeight: app.globalData.navBarHeight || 44
+      });
     }
   },
-
   methods: {
-    // TODO: 组件方法
+    goBack() {
+      // 如果页面栈只有 1 层则跳转到穿搭主页
+      const pages = getCurrentPages();
+      if (pages.length > 1) {
+        wx.navigateBack();
+      } else {
+        wx.switchTab({ url: '/wp/dressup/index' });
+      }
+    }
   }
 });

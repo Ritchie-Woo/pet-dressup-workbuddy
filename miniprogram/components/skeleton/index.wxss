@@ -1,5 +1,14 @@
-/* components/skeleton - 骨架屏 */
+/* components/skeleton/index.wxss — 简洁加载态 */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+  gap: 24rpx;
+}
 
-.component-container {
-  /* TODO: 组件样式 */
+.loading-text {
+  font-size: 26rpx;
+  color: var(--color-text-hint, #9B9993);
 }

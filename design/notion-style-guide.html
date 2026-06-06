@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetMini · Notion 设计风格指南</title>
+<!-- 
+  生成日期：2025-03-14
+  设计系统：Notion（温润极简）
+  基线组件库：TDesign Miniprogram v1.5.0
+  渲染引擎：Skyline + glass-easel
+  基准视口：375pt（竖屏）
+  源文件：DESIGN.md + app.wxss + 14 页 WXSS
+-->
+<style>
+/* ============================================================
+   CSS Custom Properties — Notion 设计令牌（完整版）
+   ============================================================ */
+:root {
+  /* --- 品牌色阶（10 级暖橙） --- */
+  --brand-1:  #FFF6ED;
+  --brand-2:  #FFE8D0;
+  --brand-3:  #FFD4A8;
+  --brand-4:  #FFBA78;
+  --brand-5:  #FFA344;
+  --brand-6:  #FF8C00;
+  --brand-7:  #D47300;
+  --brand-8:  #A85C00;
+  --brand-9:  #7C4400;
+  --brand-10: #502C00;
+
+  /* --- 暖灰中性色阶（14 级） --- */
+  --gray-1:  #FBFAF9;
+  --gray-2:  #F5F4F1;
+  --gray-3:  #EEEDEA;
+  --gray-4:  #E4E3DF;
+  --gray-5:  #D2D0CC;
+  --gray-6:  #B7B5AF;
+  --gray-7:  #9B9993;
+  --gray-8:  #7D7B76;
+  --gray-9:  #5F5D59;
+  --gray-10: #4A4845;
+  --gray-11: #37352F;
+  --gray-12: #252320;
+  --gray-13: #1A1815;
+  --gray-14: #0F0E0C;
+
+  /* --- 语义功能色 --- */
+  --success:    #2BA471;
+  --success-bg: #E3F9E9;
+  --error:      #D54941;
+  --error-bg:   #FFF0ED;
+  --warning:    #E37318;
+  --warning-bg: #FFF1E9;
+  --info:       #366EF4;
+  --info-bg:    #F2F3FF;
+
+  /* --- 背景体系 --- */
+  --bg-page:      #FBFAF9;
+  --bg-card:      #FFFFFF;
+  --bg-secondary: #F5F4F1;
+  --overlay:      rgba(15, 14, 12, 0.4);
+
+  /* --- 文本色 --- */
+  --text-title:       #37352F;
+  --text-body:        #5F5D59;
+  --text-secondary:   #9B9993;
+  --text-placeholder: #B7B5AF;
+  --text-brand:       #FF8C00;
+  --text-inverse:     #FFFFFF;
+
+  /* --- 间距（转 px，基准 375pt） --- */
+  --space-2xs: 4px;
+  --space-xs:  8px;
+  --space-sm:  12px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* --- 圆角 --- */
+  --radius-sm:    4px;
+  --radius-md:    6px;
+  --radius-lg:    8px;
+  --radius-round: 999px;
+
+  /* --- 字号 --- */
+  --font-caption:  11px;
+  --font-body-sm:  13px;
+  --font-body:     14px;
+  --font-body-lg:  16px;
+  --font-title:    18px;
+  --font-headline: 22px;
+
+  /* --- 字体栈 --- */
+  --font-stack: -apple-system, "PingFang SC", "Hiragino Sans GB",
+                "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+
+  /* --- 唯一阴影 --- */
+  --shadow-modal: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   全局基础重置
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-stack);
+  font-size: var(--font-body);
+  color: var(--text-body);
+  background: var(--bg-page);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   页面布局
+   ============================================================ */
+.page-wrap {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 侧边导航 */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--gray-4);
+  overflow-y: auto;
+  padding: 24px 16px;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 4px;
+}
+
+.sidebar-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-body);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.sidebar-nav a:hover { background: var(--gray-2); }
+.sidebar-nav a:active { background: var(--gray-3); }
+
+.sidebar-section {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 12px 6px;
+}
+
+/* 主内容区 */
+.main-content {
+  margin-left: 220px;
+  flex: 1;
+  padding: 48px 64px;
+  max-width: 1020px;
+}
+
+.section {
+  margin-bottom: 72px;
+}
+
+.section-header {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.section-number {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--brand-6);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-title);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.section-desc {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+}
+
+/* 子标题 */
+.subsection { margin-bottom: 40px; }
+.subsection-title {
+  font-size: var(--font-body-lg);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 16px;
+}
+.subsection-desc {
+  font-size: var(--font-body-sm);
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  max-width: 640px;
+}
+
+/* ============================================================
+   设计原则卡片
+   ============================================================ */
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-sm);
+}
+
+.principle-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.principle-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-2);
+  color: var(--brand-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.principle-name {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 4px;
+}
+
+.principle-desc {
+  font-size: var(--font-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   色板展示
+   ============================================================ */
+.swatch-row {
+  display: flex;
+  gap: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.swatch-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 8px 16px;
+  min-height: 100px;
+}
+
+.swatch-hex {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+.swatch-label {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* 语义色水平色板 */
+.color-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.color-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.color-preview {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-preview-text {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  font-family: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+.color-info {
+  padding: 12px 16px;
+}
+
+.color-name {
+  font-size: var(--font-body-sm);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 2px;
+}
+
+.color-usage {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+/* 背景色卡 */
+.bg-swatch-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+}
+
+.bg-swatch {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.bg-swatch-preview {
+  height: 56px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.bg-swatch-label {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 2px;
+}
+
+.bg-swatch-hex {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+/* ============================================================
+   排版展示
+   ============================================================ */
+.type-scale-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.type-scale-table th,
+.type-scale-table td {
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.type-scale-table th {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--gray-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.type-scale-table td {
+  font-size: var(--font-body-sm);
+  color: var(--text-body);
+}
+
+.type-sample { font-weight: 600; color: var(--text-title); }
+.type-sample.headline { font-size: var(--font-headline); line-height: 1.3; }
+.type-sample.title    { font-size: var(--font-title);    line-height: 1.4; }
+.type-sample.body-lg  { font-size: var(--font-body-lg);  line-height: 1.5; }
+.type-sample.body     { font-size: var(--font-body);     line-height: 1.6; }
+.type-sample.body-sm  { font-size: var(--font-body-sm);  line-height: 1.6; }
+.type-sample.caption  { font-size: var(--font-caption);  line-height: 1.5; }
+
+.weight-demo {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: baseline;
+}
+
+.weight-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.weight-sample {
+  font-size: 32px;
+  color: var(--text-title);
+}
+
+.weight-label {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   间距可视化
+   ============================================================ */
+.space-demo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.space-bar {
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-3);
+}
+
+.space-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.space-name {
+  font-size: var(--font-body-sm);
+  font-weight: 600;
+  color: var(--text-title);
+  min-width: 80px;
+}
+
+.space-size {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  font-family: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+/* ============================================================
+   圆角展示
+   ============================================================ */
+.radius-demo {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.radius-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.radius-box {
+  width: 72px;
+  height: 72px;
+  background: var(--brand-2);
+  border: 1px solid var(--brand-4);
+}
+
+.radius-label {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.radius-val {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+/* ============================================================
+   组件展示
+   ============================================================ */
+.component-demo {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  margin-bottom: var(--space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.component-label {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* 按钮组件 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 24px;
+  font-size: var(--font-body);
+  font-family: var(--font-stack);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn-primary {
+  background: var(--brand-6);
+  color: #FFFFFF;
+  font-weight: 500;
+}
+.btn-primary:hover { background: var(--brand-7); }
+.btn-primary:active { background: var(--brand-7); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-body);
+  font-weight: 400;
+  border: 1px solid var(--gray-4);
+}
+.btn-secondary:hover { background: var(--gray-2); }
+
+.btn-text {
+  background: transparent;
+  color: var(--brand-6);
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  height: auto;
+}
+.btn-text:hover { background: var(--brand-2); }
+
+.btn-danger {
+  background: var(--error);
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.btn-disabled {
+  background: var(--gray-4);
+  color: var(--gray-6);
+  pointer-events: none;
+}
+
+/* 卡片组件 */
+.demo-card {
+  background: #FFFFFF;
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  width: 220px;
+}
+
+.demo-card-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 4px;
+}
+
+.demo-card-desc {
+  font-size: var(--font-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.demo-card-interactive {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.demo-card-interactive:hover { background: var(--gray-2); }
+
+/* 高亮卡片 */
+.demo-card-highlight {
+  border-color: var(--brand-4);
+  background: var(--brand-1);
+}
+
+/* 输入框 */
+.input-demo {
+  height: 44px;
+  padding: 0 12px;
+  background: var(--gray-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-body);
+  font-family: var(--font-stack);
+  color: var(--text-body);
+  width: 260px;
+  outline: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.input-demo:focus {
+  background: #FFFFFF;
+  border-color: var(--brand-6);
+}
+.input-demo::placeholder {
+  color: var(--text-placeholder);
+}
+
+/* 标签 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: var(--font-caption);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+}
+
+.tag-default { background: var(--gray-2); color: var(--text-secondary); }
+.tag-brand   { background: var(--brand-2); color: var(--brand-7); }
+.tag-success { background: var(--success-bg); color: var(--success); }
+.tag-warning { background: var(--warning-bg); color: var(--warning); }
+.tag-error   { background: var(--error-bg); color: var(--error); }
+
+/* 列表项 */
+.list-item-demo {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  min-height: 48px;
+  width: 320px;
+  gap: 12px;
+}
+.list-item-demo + .list-item-demo {
+  border-top: 1px solid var(--gray-3);
+}
+.list-item-demo:hover { background: var(--gray-2); }
+
+/* 弹窗/对话框 */
+.dialog-demo {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  padding: 24px;
+  width: 320px;
+}
+
+.dialog-overlay-demo {
+  position: relative;
+  width: 320px;
+  height: 200px;
+  background: var(--gray-3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.dialog-overlay-demo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+}
+
+/* 导航 Tab */
+.tab-demo {
+  display: flex;
+  gap: 0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--gray-3);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  overflow: hidden;
+}
+
+.tab-item-demo {
+  padding: 8px 16px;
+  font-size: var(--font-body);
+  font-weight: 400;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  font-family: var(--font-stack);
+}
+
+.tab-item-demo.active {
+  color: var(--text-body);
+  font-weight: 600;
+  border-bottom-color: var(--brand-6);
+}
+
+/* 进度条 */
+.progress-bar-demo {
+  height: 4px;
+  background: var(--gray-3);
+  border-radius: var(--radius-round);
+  width: 200px;
+  overflow: hidden;
+}
+
+.progress-fill-demo {
+  height: 100%;
+  background: var(--brand-6);
+  border-radius: var(--radius-round);
+  width: 65%;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================
+   页面样式预览区
+   ============================================================ */
+.page-preview {
+  background: var(--bg-page);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.page-preview-header {
+  padding: 10px 16px;
+  background: var(--gray-2);
+  border-bottom: 1px solid var(--gray-3);
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-preview-body {
+  padding: 24px;
+}
+
+/* --- 穿搭页预览 --- */
+.dressup-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  min-height: 520px;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.dressup-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.dressup-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--gray-3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+.dressup-pet-info { flex: 1; }
+.dressup-pet-name { font-size: 14px; font-weight: 600; color: var(--text-title); }
+.dressup-pet-outfit { font-size: 11px; color: var(--text-secondary); }
+
+.dressup-canvas {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  position: relative;
+  min-height: 300px;
+}
+
+.dressup-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-lg);
+}
+
+.dressup-placeholder-icon { font-size: 48px; }
+.dressup-placeholder-text {
+  font-size: 13px; color: var(--text-secondary); text-align: center; line-height: 1.6;
+}
+
+.dressup-placeholder-btn {
+  padding: 10px 30px;
+  background: var(--brand-6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+}
+
+.dressup-actionbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 16px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--gray-3);
+}
+
+.dressup-action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; cursor: pointer; font-family: var(--font-stack);
+}
+.dressup-action-icon { font-size: 22px; }
+.dressup-action-label { font-size: 11px; color: var(--brand-6); }
+
+/* --- 团购列表预览 --- */
+.gb-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  background: var(--bg-page);
+  padding: 16px;
+}
+
+.gb-title {
+  font-size: var(--font-title);
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 16px;
+}
+
+.gb-product-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.gb-product-thumb {
+  width: 80px; height: 80px;
+  background: var(--gray-2);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+
+.gb-product-info { flex: 1; }
+.gb-product-name { font-size: 14px; font-weight: 500; color: var(--text-title); margin-bottom: 4px; }
+.gb-product-sub  { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+.gb-product-price { font-size: 16px; font-weight: 600; color: var(--brand-6); }
+
+/* --- 团购详情页预览 --- */
+.gb-detail-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  background: var(--bg-page);
+}
+
+.gb-detail-image {
+  height: 200px;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  margin: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px;
+}
+
+.gb-detail-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 0 12px 12px;
+}
+
+.gb-detail-title   { font-size: 16px; font-weight: 600; color: var(--text-title); margin-bottom: 4px; }
+.gb-detail-desc    { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+.gb-detail-price   { font-size: 22px; font-weight: 700; color: var(--text-title); }
+.gb-detail-unit    { font-size: 14px; font-weight: 400; }
+.gb-detail-progress { margin-top: 12px; }
+.gb-detail-progress-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+
+/* --- 我的页预览 --- */
+.my-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  background: var(--bg-page);
+}
+
+.my-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+}
+
+.my-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-3);
+  background: var(--gray-2);
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+
+.my-nickname { font-size: 16px; font-weight: 600; color: var(--text-title); }
+.my-id       { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+.my-menu {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  margin: 0 12px;
+  overflow: hidden;
+}
+
+.my-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  min-height: 48px;
+  gap: 12px;
+}
+
+.my-menu-item + .my-menu-item { border-top: 1px solid var(--gray-3); }
+.my-menu-icon     { font-size: 18px; width: 24px; text-align: center; }
+.my-menu-label    { flex: 1; font-size: 14px; color: var(--text-title); }
+.my-menu-arrow    { font-size: 13px; color: var(--text-secondary); }
+
+/* --- MBTI 测试页预览 --- */
+.mbti-test-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  background: var(--bg-page);
+  padding: 24px;
+}
+
+.mbti-test-title { font-size: 18px; font-weight: 600; color: var(--text-title); margin-bottom: 24px; }
+
+.mbti-progress {
+  height: 4px;
+  background: var(--gray-3);
+  border-radius: var(--radius-round);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.mbti-progress-fill {
+  height: 100%;
+  width: 40%;
+  background: var(--brand-6);
+  border-radius: var(--radius-round);
+}
+
+.mbti-q-number { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; }
+.mbti-q-text   { font-size: 16px; font-weight: 500; color: var(--text-title); line-height: 1.6; margin-bottom: 32px; }
+
+.mbti-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.mbti-option {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--text-title);
+  text-align: center;
+  cursor: pointer;
+}
+
+.mbti-option:hover { background: var(--gray-2); }
+.mbti-option.selected { border-color: var(--brand-6); background: var(--brand-2); color: var(--brand-6); }
+
+/* --- MBTI 结果卡预览 --- */
+.mbti-card-preview {
+  max-width: 375px;
+  margin: 0 auto;
+  background: var(--bg-page);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mbti-result-card {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.mbti-result-letters {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--brand-6);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.mbti-result-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-title);
+  margin-bottom: 8px;
+}
+
+.mbti-trait-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mbti-trait-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--brand-2);
+  color: var(--brand-6);
+}
+
+.mbti-result-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  text-align: center;
+}
+
+.mbti-share-btn {
+  width: 100%;
+  max-width: 240px;
+  height: 44px;
+  background: var(--brand-6);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-stack);
+}
+
+/* ============================================================
+   阴影体系展示
+   ============================================================ */
+.shadow-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.shadow-table th,
+.shadow-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-3);
+  font-size: var(--font-body-sm);
+}
+
+.shadow-table th {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--gray-2);
+}
+
+.shadow-table .strike { text-decoration: line-through; color: var(--error); }
+.shadow-table .keep   { color: var(--success); font-weight: 600; }
+
+/* ============================================================
+   TDesign 变量对照
+   ============================================================ */
+.var-map {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  font-size: var(--font-body-sm);
+}
+
+.var-map th,
+.var-map td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.var-map th {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--gray-2);
+}
+
+.var-map .old-val { font-family: "SF Mono", "Menlo", "Monaco", monospace; font-size: 12px; }
+.var-map .new-val { font-family: "SF Mono", "Menlo", "Monaco", monospace; font-size: 12px; font-weight: 600; color: var(--brand-7); }
+
+/* ============================================================
+   Do's & Don'ts
+   ============================================================ */
+.dos-donts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.dos, .donts {
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.dos-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--success);
+  margin-bottom: 12px;
+}
+
+.donts-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--error);
+  margin-bottom: 12px;
+}
+
+.dos ul, .donts ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dos li, .donts li {
+  font-size: var(--font-body-sm);
+  color: var(--text-body);
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.dos li::before   { content: '✓'; position: absolute; left: 0; color: var(--success); font-weight: 700; }
+.donts li::before { content: '✗'; position: absolute; left: 0; color: var(--error); font-weight: 700; }
+
+/* ============================================================
+   对照表
+   ============================================================ */
+.change-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-card);
+  border: 1px solid var(--gray-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.change-table th,
+.change-table td {
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-3);
+  font-size: var(--font-body-sm);
+}
+
+.change-table th {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--gray-2);
+}
+
+.change-highlight {
+  font-weight: 600;
+  color: var(--brand-7);
+}
+
+/* ============================================================
+   页脚
+   ============================================================ */
+.page-footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-3);
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 响应式：窄屏隐藏侧边栏 */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 32px 16px; }
+}
+
+/* 打印优化 */
+@media print {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; padding: 0; }
+  .section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- ====== 侧边导航 ====== -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">PetMini</div>
+    <div class="sidebar-subtitle">Notion 设计风格指南 v1.0</div>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-section">概述</div>
+      <a href="#design-philosophy">设计哲学</a>
+      <a href="#emotional-coordinate">情感坐标</a>
+
+      <div class="sidebar-section">核心令牌</div>
+      <a href="#color-palette">色彩体系</a>
+      <a href="#typography">排版体系</a>
+      <a href="#spacing">间距体系</a>
+      <a href="#border-radius">圆角体系</a>
+      <a href="#shadow-system">阴影体系</a>
+
+      <div class="sidebar-section">组件规范</div>
+      <a href="#component-buttons">按钮</a>
+      <a href="#component-cards">卡片</a>
+      <a href="#component-inputs">输入框</a>
+      <a href="#component-tags">标签</a>
+      <a href="#component-lists">列表项</a>
+      <a href="#component-tabs">导航 / Tab</a>
+      <a href="#component-dialog">弹窗 / Dialog</a>
+
+      <div class="sidebar-section">页面预览</div>
+      <a href="#page-dressup">穿搭主页</a>
+      <a href="#page-gb-list">团购列表</a>
+      <a href="#page-gb-detail">团购详情</a>
+      <a href="#page-my">我的</a>
+      <a href="#page-mbti-test">MBTI 测试</a>
+      <a href="#page-mbti-card">MBTI 结果卡</a>
+
+      <div class="sidebar-section">附录</div>
+      <a href="#tdesign-map">TDesign 变量覆盖</a>
+      <a href="#change-log">变更对照</a>
+      <a href="#dos-donts">Do's &amp; Don'ts</a>
+      <a href="#quick-ref">CSS 变量速查</a>
+    </div>
+  </nav>
+
+  <!-- ====== 主内容区 ====== -->
+  <main class="main-content">
+
+  <!-- ============================================================
+       设计哲学
+       ============================================================ -->
+  <section class="section" id="design-philosophy">
+    <div class="section-header">
+      <div class="section-number">01 · Overview</div>
+      <div class="section-title">设计哲学</div>
+      <div class="section-desc">温润、克制、内容优先。不依赖阴影和装饰建立层级，而是通过排版节奏和间距呼吸让信息自然流动。色彩作为温和的导航信号，而非视觉噪音。</div>
+    </div>
+
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-icon">1</div>
+        <div class="principle-name">内容优先</div>
+        <div class="principle-desc">让宠物穿搭图片、团购商品、MBTI 结果成为视觉主角。大图、少边框、低色彩饱和度。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-icon">2</div>
+        <div class="principle-name">间距即层级</div>
+        <div class="principle-desc">用呼吸感代替分割线和阴影。8pt 网格 + 三段间距体系，让信息架构通过留白表达。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-icon">3</div>
+        <div class="principle-name">色彩克制</div>
+        <div class="principle-desc">暖橙是导航信号，不是装饰色。仅在可交互元素和关键状态使用品牌色，拒绝色彩滥用。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-icon">4</div>
+        <div class="principle-name">排版叙事</div>
+        <div class="principle-desc">字号对比代替视觉装饰。PingFang SC 六级字号 + 精准行高，让文字本身成为视觉层级工具。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-icon">5</div>
+        <div class="principle-name">减法思维</div>
+        <div class="principle-desc">每增加一个视觉元素都要问「能否去掉」。零阴影、统一圆角、最少边框。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       情感坐标
+       ============================================================ -->
+  <section class="section" id="emotional-coordinate">
+    <div class="section-header">
+      <div class="section-number">02 · Positioning</div>
+      <div class="section-title">情感坐标</div>
+      <div class="section-desc">PetMini 位于「温暖 × 克制」象限——不烫不冰，恰好的体温感。</div>
+    </div>
+
+    <div style="max-width:400px;margin:0 auto;position:relative;height:280px;background:var(--bg-card);border:1px solid var(--gray-4);border-radius:var(--radius-md);padding:32px;">
+      <!-- 坐标轴 -->
+      <div style="position:absolute;left:50%;top:20px;bottom:20px;width:1px;background:var(--gray-4);"></div>
+      <div style="position:absolute;left:20px;right:20px;top:50%;height:1px;background:var(--gray-4);"></div>
+      <!-- 轴标签 -->
+      <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);font-size:11px;color:var(--text-secondary);">温暖 ↑</div>
+      <div style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:11px;color:var(--text-secondary);">冷静 ↓</div>
+      <div style="position:absolute;left:8px;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:11px;color:var(--text-secondary);white-space:nowrap;">冷淡 ←</div>
+      <div style="position:absolute;right:8px;top:50%;transform:translateY(-50%) rotate(90deg);font-size:11px;color:var(--text-secondary);white-space:nowrap;">→ 热情</div>
+      <!-- PetMini 位置标记 -->
+      <div style="position:absolute;left:65%;top:30%;background:var(--brand-6);color:#fff;padding:8px 16px;border-radius:var(--radius-md);font-size:13px;font-weight:600;white-space:nowrap;box-shadow:var(--shadow-modal);">
+        PetMini<br><span style="font-size:11px;font-weight:400;opacity:0.85;">(Notion 化)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       色彩体系
+       ============================================================ -->
+  <section class="section" id="color-palette">
+    <div class="section-header">
+      <div class="section-number">03 · Tokens</div>
+      <div class="section-title">色彩体系</div>
+      <div class="section-desc">基于 Notion「色彩克制」原则，品牌色仅用于可交互元素、选中态和关键强调。</div>
+    </div>
+
+    <!-- 品牌色阶 -->
+    <div class="subsection">
+      <div class="subsection-title">品牌色阶 · 10 级暖橙</div>
+      <div class="subsection-desc">主色基准 #FF8C00 — 主按钮、链接、选中文字。仅可交互元素使用品牌色。</div>
+      <div class="swatch-row" style="border-radius:6px;overflow:hidden;">
+        <div class="swatch-item" style="background:#FFF6ED;color:#7C4400;">
+          <div class="swatch-hex">#FFF6ED</div><div class="swatch-label">brand-1 · 暖底</div>
+        </div>
+        <div class="swatch-item" style="background:#FFE8D0;color:#7C4400;">
+          <div class="swatch-hex">#FFE8D0</div><div class="swatch-label">brand-2 · 选中背景</div>
+        </div>
+        <div class="swatch-item" style="background:#FFD4A8;color:#7C4400;">
+          <div class="swatch-hex">#FFD4A8</div><div class="swatch-label">brand-3 · hover</div>
+        </div>
+        <div class="swatch-item" style="background:#FFBA78;color:#7C4400;">
+          <div class="swatch-hex">#FFBA78</div><div class="swatch-label">brand-4 · 边框强调</div>
+        </div>
+        <div class="swatch-item" style="background:#FFA344;color:#fff;">
+          <div class="swatch-hex">#FFA344</div><div class="swatch-label">brand-5 · 次要 hover</div>
+        </div>
+        <div class="swatch-item" style="background:#FF8C00;color:#fff;">
+          <div class="swatch-hex">#FF8C00</div><div class="swatch-label">brand-6 · 主色 ★</div>
+        </div>
+        <div class="swatch-item" style="background:#D47300;color:#fff;">
+          <div class="swatch-hex">#D47300</div><div class="swatch-label">brand-7 · press</div>
+        </div>
+        <div class="swatch-item" style="background:#A85C00;color:#fff;">
+          <div class="swatch-hex">#A85C00</div><div class="swatch-label">brand-8</div>
+        </div>
+        <div class="swatch-item" style="background:#7C4400;color:#fff;">
+          <div class="swatch-hex">#7C4400</div><div class="swatch-label">brand-9</div>
+        </div>
+        <div class="swatch-item" style="background:#502C00;color:#fff;">
+          <div class="swatch-hex">#502C00</div><div class="swatch-label">brand-10 · 极深</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 暖灰中性色阶 -->
+    <div class="subsection">
+      <div class="subsection-title">暖灰中性色阶 · 14 级</div>
+      <div class="subsection-desc">Notion 特征：灰中带暖，拒绝纯黑纯白。页面底色 #FBFAF9，标题字 #37352F。</div>
+      <div class="swatch-row" style="border-radius:6px;overflow:hidden;">
+        <div class="swatch-item" style="background:#FBFAF9;color:#5F5D59;">
+          <div class="swatch-hex">#FBFAF9</div><div class="swatch-label">gray-1 · 页底</div>
+        </div>
+        <div class="swatch-item" style="background:#F5F4F1;color:#5F5D59;">
+          <div class="swatch-hex">#F5F4F1</div><div class="swatch-label">gray-2 · 次级背景</div>
+        </div>
+        <div class="swatch-item" style="background:#EEEDEA;color:#5F5D59;">
+          <div class="swatch-hex">#EEEDEA</div><div class="swatch-label">gray-3 · 分割填充</div>
+        </div>
+        <div class="swatch-item" style="background:#E4E3DF;color:#5F5D59;">
+          <div class="swatch-hex">#E4E3DF</div><div class="swatch-label">gray-4 · 卡片边框</div>
+        </div>
+        <div class="swatch-item" style="background:#D2D0CC;color:#5F5D59;">
+          <div class="swatch-hex">#D2D0CC</div><div class="swatch-label">gray-5 · 禁用文字</div>
+        </div>
+        <div class="swatch-item" style="background:#B7B5AF;color:#fff;">
+          <div class="swatch-hex">#B7B5AF</div><div class="swatch-label">gray-6 · 占位</div>
+        </div>
+        <div class="swatch-item" style="background:#9B9993;color:#fff;">
+          <div class="swatch-hex">#9B9993</div><div class="swatch-label">gray-7 · 辅助</div>
+        </div>
+        <div class="swatch-item" style="background:#7D7B76;color:#fff;">
+          <div class="swatch-hex">#7D7B76</div><div class="swatch-label">gray-8 · 次要正文</div>
+        </div>
+        <div class="swatch-item" style="background:#5F5D59;color:#fff;">
+          <div class="swatch-hex">#5F5D59</div><div class="swatch-label">gray-9 · 正文</div>
+        </div>
+        <div class="swatch-item" style="background:#4A4845;color:#fff;">
+          <div class="swatch-hex">#4A4845</div><div class="swatch-label">gray-10 · 标题</div>
+        </div>
+        <div class="swatch-item" style="background:#37352F;color:#fff;">
+          <div class="swatch-hex">#37352F</div><div class="swatch-label">gray-11 · 重要标题 ★</div>
+        </div>
+        <div class="swatch-item" style="background:#252320;color:#fff;">
+          <div class="swatch-hex">#252320</div><div class="swatch-label">gray-12</div>
+        </div>
+        <div class="swatch-item" style="background:#1A1815;color:#fff;">
+          <div class="swatch-hex">#1A1815</div><div class="swatch-label">gray-13</div>
+        </div>
+        <div class="swatch-item" style="background:#0F0E0C;color:#fff;">
+          <div class="swatch-hex">#0F0E0C</div><div class="swatch-label">gray-14 · 最深</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 语义功能色 -->
+    <div class="subsection">
+      <div class="subsection-title">语义功能色</div>
+      <div class="color-cards">
+        <div class="color-card">
+          <div class="color-preview" style="background:#2BA471;">
+            <span class="color-preview-text" style="color:#fff;">#2BA471</span>
+          </div>
+          <div class="color-info">
+            <div class="color-name">成功 Success</div>
+            <div class="color-usage">拼团成功、支付完成 · 背景: #E3F9E9</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-preview" style="background:#D54941;">
+            <span class="color-preview-text" style="color:#fff;">#D54941</span>
+          </div>
+          <div class="color-info">
+            <div class="color-name">错误 Error</div>
+            <div class="color-usage">删除、失败、警告 · 背景: #FFF0ED</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-preview" style="background:#E37318;">
+            <span class="color-preview-text" style="color:#fff;">#E37318</span>
+          </div>
+          <div class="color-info">
+            <div class="color-name">警告 Warning</div>
+            <div class="color-usage">即将过期、库存紧张 · 背景: #FFF1E9</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 背景体系 + 文本色 -->
+    <div class="subsection">
+      <div class="subsection-title">背景体系 + 文本色</div>
+      <div class="bg-swatch-row">
+        <div class="bg-swatch">
+          <div class="bg-swatch-preview" style="background:#FBFAF9;"></div>
+          <div class="bg-swatch-label">页面底色</div>
+          <div class="bg-swatch-hex">#FBFAF9</div>
+        </div>
+        <div class="bg-swatch">
+          <div class="bg-swatch-preview" style="background:#FFFFFF;border:1px solid var(--gray-4);"></div>
+          <div class="bg-swatch-label">卡片白</div>
+          <div class="bg-swatch-hex">#FFFFFF</div>
+        </div>
+        <div class="bg-swatch">
+          <div class="bg-swatch-preview" style="background:#F5F4F1;"></div>
+          <div class="bg-swatch-label">次级面板</div>
+          <div class="bg-swatch-hex">#F5F4F1</div>
+        </div>
+        <div class="bg-swatch">
+          <div class="bg-swatch-preview" style="background:rgba(15,14,12,0.4);"></div>
+          <div class="bg-swatch-label">遮罩层</div>
+          <div class="bg-swatch-hex">rgba(15,14,12,0.4)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文本色快捷 -->
+    <div class="subsection">
+      <div class="subsection-title">文本色（语义化快捷方式）</div>
+      <table class="type-scale-table">
+        <thead>
+          <tr><th>用途</th><th>CSS 变量</th><th>色值</th><th>预览</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>主标题</td><td><code>--color-text-title</code></td>
+            <td style="font-family:monospace;">#37352F</td>
+            <td><span style="font-size:16px;font-weight:600;color:#37352F;">Notion 特征深褐黑</span></td>
+          </tr>
+          <tr>
+            <td>正文</td><td><code>--color-text-body</code></td>
+            <td style="font-family:monospace;">#5F5D59</td>
+            <td><span style="font-size:14px;color:#5F5D59;">柔和暖灰，长时间阅读不疲劳</span></td>
+          </tr>
+          <tr>
+            <td>辅助文字</td><td><code>--color-text-secondary</code></td>
+            <td style="font-family:monospace;">#9B9993</td>
+            <td><span style="font-size:14px;color:#9B9993;">与背景区分但不抢眼</span></td>
+          </tr>
+          <tr>
+            <td>占位/禁用</td><td><code>--color-text-placeholder</code></td>
+            <td style="font-family:monospace;">#B7B5AF</td>
+            <td><span style="font-size:14px;color:#B7B5AF;">输入框占位符</span></td>
+          </tr>
+          <tr>
+            <td>品牌色文字</td><td><code>--color-text-brand</code></td>
+            <td style="font-family:monospace;">#FF8C00</td>
+            <td><span style="font-size:14px;font-weight:500;color:#FF8C00;">可点击链接</span></td>
+          </tr>
+          <tr>
+            <td>反白文字</td><td><code>--color-text-inverse</code></td>
+            <td style="font-family:monospace;">#FFFFFF</td>
+            <td><span style="font-size:14px;padding:2px 6px;background:#37352F;color:#fff;border-radius:3px;">深色背景上</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       排版体系
+       ============================================================ -->
+  <section class="section" id="typography">
+    <div class="section-header">
+      <div class="section-number">04 · Tokens</div>
+      <div class="section-title">排版体系</div>
+      <div class="section-desc">Notion 哲学：字号阶梯温和递进，拒绝跳跃感。六级字号 + 四档字重。</div>
+    </div>
+
+    <!-- 字号层级表 -->
+    <div class="subsection">
+      <div class="subsection-title">字号层级 · 6 级</div>
+      <table class="type-scale-table">
+        <thead>
+          <tr><th>层级</th><th>CSS 变量</th><th>rpx</th><th>px</th><th>预览</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>caption</td>
+            <td><code>--font-caption</code></td>
+            <td>22rpx</td><td>11px</td>
+            <td><span class="type-sample caption">辅助标注文字</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">时间戳、角标</td>
+          </tr>
+          <tr>
+            <td>body-sm</td>
+            <td><code>--font-body-sm</code></td>
+            <td>26rpx</td><td>13px</td>
+            <td><span class="type-sample body-sm">列表摘要文字</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">摘要、标签文字</td>
+          </tr>
+          <tr>
+            <td>body</td>
+            <td><code>--font-body</code></td>
+            <td>28rpx</td><td>14px</td>
+            <td><span class="type-sample body">正文基准文字</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">卡片标题、表单、列表</td>
+          </tr>
+          <tr>
+            <td>body-lg</td>
+            <td><code>--font-body-lg</code></td>
+            <td>32rpx</td><td>16px</td>
+            <td><span class="type-sample body-lg">卡片主标题</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">弹窗标题</td>
+          </tr>
+          <tr>
+            <td>title</td>
+            <td><code>--font-title</code></td>
+            <td>36rpx</td><td>18px</td>
+            <td><span class="type-sample title">页面大标题</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">关键数字</td>
+          </tr>
+          <tr>
+            <td>headline</td>
+            <td><code>--font-headline</code></td>
+            <td>44rpx</td><td>22px</td>
+            <td><span class="type-sample headline">价格 / MBTI 结果</span></td>
+            <td style="font-size:11px;color:var(--text-secondary);">价格展示、MBTI 字母</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 字重 -->
+    <div class="subsection">
+      <div class="subsection-title">字重 · 4 档</div>
+      <div class="subsection-desc">只用 400/500/600/700 四档。避免过细（300）显得瘦弱，也避免整页 600 变成「全页喊叫」。</div>
+      <div class="weight-demo">
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:400;">Aa</span>
+          <span class="weight-label">400 · 常规正文</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:500;">Aa</span>
+          <span class="weight-label">500 · 卡片标题/链接</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:600;">Aa</span>
+          <span class="weight-label">600 · 页面标题</span>
+        </div>
+        <div class="weight-item">
+          <span class="weight-sample" style="font-weight:700;">Aa</span>
+          <span class="weight-label">700 · 价格/结果</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 行高 -->
+    <div class="subsection">
+      <div class="subsection-title">行高</div>
+      <table class="type-scale-table">
+        <thead>
+          <tr><th>层级</th><th>line-height</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>caption</td><td>1.5</td><td>小字需要更多行高保证可读性</td></tr>
+          <tr><td>body-sm</td><td>1.6</td><td>列表摘要需要舒适的扫描间距</td></tr>
+          <tr><td><strong>body</strong></td><td><strong>1.6</strong></td><td><strong>基准—正文标准行高</strong></td></tr>
+          <tr><td>body-lg</td><td>1.5</td><td>标题级别，行高略收紧</td></tr>
+          <tr><td>title</td><td>1.4</td><td>页面大标题</td></tr>
+          <tr><td>headline</td><td>1.3</td><td>数字/结果字母，紧凑有力</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       间距体系
+       ============================================================ -->
+  <section class="section" id="spacing">
+    <div class="section-header">
+      <div class="section-number">05 · Tokens</div>
+      <div class="section-title">间距体系</div>
+      <div class="section-desc">8pt 基准网格。间距是隐形的信息架构——用间距代替分割线和阴影。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">2xs · 紧密</span><span class="space-size">8rpx / 4px</span></div>
+        <div class="space-bar" style="width:4px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">图标-文字间距</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">xs · 组件内</span><span class="space-size">16rpx / 8px</span></div>
+        <div class="space-bar" style="width:8px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">标签组 gap</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">sm · 卡片内</span><span class="space-size">24rpx / 12px</span></div>
+        <div class="space-bar" style="width:12px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">卡片 padding、列表项间距</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">md · 卡片间</span><span class="space-size">32rpx / 16px</span></div>
+        <div class="space-bar" style="width:16px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">卡片间距、段落间距</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">lg · 区块间</span><span class="space-size">48rpx / 24px</span></div>
+        <div class="space-bar" style="width:24px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">页面内边距 ★</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">xl · 大区分离</span><span class="space-size">64rpx / 32px</span></div>
+        <div class="space-bar" style="width:32px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">页面顶部留白</span>
+      </div>
+      <div class="space-demo-item">
+        <div class="space-meta"><span class="space-name">2xl · 整页呼吸</span><span class="space-size">96rpx / 48px</span></div>
+        <div class="space-bar" style="width:48px;"></div>
+        <span style="font-size:11px;color:var(--text-secondary);">整页级别的呼吸感</span>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">间距应用规则</div>
+      <ol style="font-size:var(--font-body-sm);color:var(--text-body);line-height:1.8;padding-left:20px;">
+        <li><strong>同组元素</strong>用 <code>xs</code> 或 <code>sm</code>（亲密性）</li>
+        <li><strong>不同组元素</strong>用 <code>md</code> 或 <code>lg</code>（分离性）</li>
+        <li><strong>有间距就不需要分割线</strong> — 如果两个区块之间已经有 <code>lg</code> 间距，绝不再加 <code>border-bottom</code></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       圆角体系
+       ============================================================ -->
+  <section class="section" id="border-radius">
+    <div class="section-header">
+      <div class="section-number">06 · Tokens</div>
+      <div class="section-title">圆角体系</div>
+      <div class="section-desc">Notion 特征：统一而克制。整个应用只有 4 种圆角值。</div>
+    </div>
+
+    <div class="radius-demo">
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:4px;"></div>
+        <div class="radius-label">sm</div>
+        <div class="radius-val">8rpx / 4px</div>
+        <div style="font-size:10px;color:var(--text-secondary);">标签、角标、输入框</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:6px;border-color:var(--brand-6);border-width:2px;"></div>
+        <div class="radius-label" style="color:var(--brand-6);">md ★</div>
+        <div class="radius-val" style="color:var(--brand-6);">12rpx / 6px</div>
+        <div style="font-size:10px;color:var(--text-secondary);">基准 — 卡片、按钮、图片</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:8px;"></div>
+        <div class="radius-label">lg</div>
+        <div class="radius-val">16rpx / 8px</div>
+        <div style="font-size:10px;color:var(--text-secondary);">弹窗、大面板</div>
+      </div>
+      <div class="radius-item">
+        <div class="radius-box" style="border-radius:999px;"></div>
+        <div class="radius-label">round</div>
+        <div class="radius-val">999rpx</div>
+        <div style="font-size:10px;color:var(--text-secondary);">药丸标签、头像</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       阴影体系
+       ============================================================ -->
+  <section class="section" id="shadow-system">
+    <div class="section-header">
+      <div class="section-number">07 · System</div>
+      <div class="section-title">阴影体系</div>
+      <div class="section-desc">核心原则：<strong>零阴影</strong>。用间距和背景色差代替 box-shadow。唯一的例外是弹窗。</div>
+    </div>
+
+    <table class="shadow-table">
+      <thead>
+        <tr><th>现有元素</th><th>当前样式</th><th>Notion 改造</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>.card</code></td>
+          <td class="strike">box-shadow: 0 2rpx 12rpx</td>
+          <td class="keep">border: 1rpx solid #E4E3DF</td>
+        </tr>
+        <tr>
+          <td><code>.pet-bar</code></td>
+          <td class="strike">box-shadow: 0 2rpx 8rpx</td>
+          <td class="keep">border-bottom: 1rpx solid #EEEDEA</td>
+        </tr>
+        <tr>
+          <td><code>.action-bar</code></td>
+          <td class="strike">box-shadow: 0 -2rpx 8rpx</td>
+          <td class="keep">border-top: 1rpx solid #EEEDEA</td>
+        </tr>
+        <tr>
+          <td><code>.canvas-placeholder</code></td>
+          <td class="strike">box-shadow: 0 4rpx 20rpx</td>
+          <td class="keep">border: 1rpx solid #E4E3DF</td>
+        </tr>
+        <tr>
+          <td><code>.ph-btn</code></td>
+          <td class="strike">box-shadow: 0 4rpx 16rpx</td>
+          <td class="keep">无阴影</td>
+        </tr>
+        <tr>
+          <td><strong>弹窗 / Dialog</strong></td>
+          <td>—</td>
+          <td class="keep">0 4rpx 24rpx rgba(0,0,0,0.08) <span style="font-weight:400;color:var(--text-secondary);font-size:11px;">（唯一保留）</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================================================
+       组件规范：按钮
+       ============================================================ -->
+  <section class="section" id="component-buttons">
+    <div class="section-header">
+      <div class="section-number">08a · Components</div>
+      <div class="section-title">按钮</div>
+    </div>
+
+    <div class="component-demo">
+      <button class="btn btn-primary">主按钮</button>
+      <button class="btn btn-secondary">次要按钮</button>
+      <button class="btn btn-text">文字按钮</button>
+      <button class="btn btn-danger">危险按钮</button>
+      <button class="btn btn-disabled">禁用态</button>
+    </div>
+  </section>
+
+  <!-- 卡片 -->
+  <section class="section" id="component-cards">
+    <div class="section-header">
+      <div class="section-number">08b · Components</div>
+      <div class="section-title">卡片</div>
+    </div>
+
+    <div class="component-demo">
+      <div class="demo-card">
+        <div class="demo-card-title">标准卡片</div>
+        <div class="demo-card-desc">1px 细边框 · 无阴影 · 12rpx 圆角</div>
+      </div>
+      <div class="demo-card demo-card-interactive">
+        <div class="demo-card-title">可点击卡片</div>
+        <div class="demo-card-desc">hover 时背景微变 #F5F4F1</div>
+      </div>
+      <div class="demo-card demo-card-highlight">
+        <div class="demo-card-title">高亮卡片</div>
+        <div class="demo-card-desc">暖橙边框 + 暖底</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 输入框 -->
+  <section class="section" id="component-inputs">
+    <div class="section-header">
+      <div class="section-number">08c · Components</div>
+      <div class="section-title">输入框</div>
+    </div>
+
+    <div class="component-demo">
+      <input class="input-demo" placeholder="输入宠物名称..." value="">
+      <input class="input-demo" placeholder="聚焦态样式" value="正在输入..." style="background:#fff;border-color:var(--brand-6);">
+    </div>
+  </section>
+
+  <!-- 标签 -->
+  <section class="section" id="component-tags">
+    <div class="section-header">
+      <div class="section-number">08d · Components</div>
+      <div class="section-title">标签</div>
+    </div>
+
+    <div class="component-demo">
+      <span class="tag tag-default">默认标签</span>
+      <span class="tag tag-brand">品牌标签</span>
+      <span class="tag tag-success">已拼成</span>
+      <span class="tag tag-warning">即将过期</span>
+      <span class="tag tag-error">已失效</span>
+    </div>
+  </section>
+
+  <!-- 列表项 -->
+  <section class="section" id="component-lists">
+    <div class="section-header">
+      <div class="section-number">08e · Components</div>
+      <div class="section-title">列表项</div>
+    </div>
+
+    <div class="component-demo" style="flex-direction:column;gap:0;padding:0;">
+      <div class="list-item-demo">
+        <span style="font-size:18px;">👤</span>
+        <span style="flex:1;font-size:14px;">我的宠物</span>
+        <span style="font-size:13px;color:var(--text-secondary);">→</span>
+      </div>
+      <div class="list-item-demo">
+        <span style="font-size:18px;">👗</span>
+        <span style="flex:1;font-size:14px;">穿搭方案</span>
+        <span style="font-size:13px;color:var(--text-secondary);">→</span>
+      </div>
+      <div class="list-item-demo">
+        <span style="font-size:18px;">🛒</span>
+        <span style="flex:1;font-size:14px;">我的订单</span>
+        <span style="font-size:13px;color:var(--text-secondary);">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 导航 -->
+  <section class="section" id="component-tabs">
+    <div class="section-header">
+      <div class="section-number">08f · Components</div>
+      <div class="section-title">导航 / Tab</div>
+    </div>
+
+    <div class="component-demo" style="flex-direction:column;gap:0;padding:0;">
+      <div class="tab-demo" style="width:320px;">
+        <button class="tab-item-demo active">推荐</button>
+        <button class="tab-item-demo">新品</button>
+        <button class="tab-item-demo">热门</button>
+        <button class="tab-item-demo">附近</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 弹窗 -->
+  <section class="section" id="component-dialog">
+    <div class="section-header">
+      <div class="section-number">08g · Components</div>
+      <div class="section-title">弹窗 / Dialog</div>
+    </div>
+
+    <div class="component-demo">
+      <div class="dialog-overlay-demo">
+        <div class="dialog-demo">
+          <div style="font-size:16px;font-weight:600;color:var(--text-title);margin-bottom:8px;">确认删除</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">删除后无法恢复，确定继续？</div>
+          <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button class="btn btn-secondary" style="height:36px;padding:0 16px;font-size:13px;">取消</button>
+            <button class="btn btn-danger" style="height:36px;padding:0 16px;font-size:13px;">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：穿搭主页
+       ============================================================ -->
+  <section class="section" id="page-dressup">
+    <div class="section-header">
+      <div class="section-number">09a · Page Preview</div>
+      <div class="section-title">穿搭主页</div>
+      <div class="section-desc">宠物画布区 flex:1 垂直居中，操作栏固定在底部。零阴影 + 边框分层。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">wp/dressup/index · 穿搭 + 编辑器 + 方案 + 收藏</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="dressup-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);overflow:hidden;">
+          <!-- 顶部宠物栏 -->
+          <div class="dressup-topbar">
+            <div class="dressup-avatar">🐱</div>
+            <div class="dressup-pet-info">
+              <div class="dressup-pet-name">小橘</div>
+              <div class="dressup-pet-outfit">今日穿搭：运动风</div>
+            </div>
+            <div style="font-size:13px;color:var(--text-secondary);">3只 ▼</div>
+          </div>
+          <!-- 画布区 -->
+          <div class="dressup-canvas">
+            <div class="dressup-placeholder">
+              <div class="dressup-placeholder-icon">🎨</div>
+              <div class="dressup-placeholder-text">还没有为小橘搭配造型<br>点击下方按钮开始吧</div>
+              <button class="dressup-placeholder-btn">开始搭配</button>
+            </div>
+          </div>
+          <!-- 底部操作栏 -->
+          <div class="dressup-actionbar">
+            <button class="dressup-action-btn">
+              <span class="dressup-action-icon">👗</span>
+              <span class="dressup-action-label">换装</span>
+            </button>
+            <button class="dressup-action-btn">
+              <span class="dressup-action-icon">📋</span>
+              <span class="dressup-action-label">方案</span>
+            </button>
+            <button class="dressup-action-btn">
+              <span class="dressup-action-icon">❤️</span>
+              <span class="dressup-action-label">收藏</span>
+            </button>
+            <button class="dressup-action-btn">
+              <span class="dressup-action-icon">📤</span>
+              <span class="dressup-action-label">分享</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：团购列表
+       ============================================================ -->
+  <section class="section" id="page-gb-list">
+    <div class="section-header">
+      <div class="section-number">09b · Page Preview</div>
+      <div class="section-title">团购列表</div>
+      <div class="section-desc">两列网格 + 无阴影卡片。物品图片优先，价格用暖橙突出。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">gb/list/index · 团购商品列表</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="gb-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);">
+          <div class="gb-title">宠物团购</div>
+          <div class="gb-product-card">
+            <div class="gb-product-thumb">🦴</div>
+            <div class="gb-product-info">
+              <div class="gb-product-name">天然磨牙棒 3支装</div>
+              <div class="gb-product-sub">已有 8 人拼团 · 距结束 2天</div>
+              <div class="gb-product-price">¥29.90</div>
+            </div>
+          </div>
+          <div class="gb-product-card">
+            <div class="gb-product-thumb">🧸</div>
+            <div class="gb-product-info">
+              <div class="gb-product-name">耐咬发声玩具</div>
+              <div class="gb-product-sub">已有 15 人拼团 · 距结束 5h</div>
+              <div class="gb-product-price">¥19.90</div>
+            </div>
+          </div>
+          <div class="gb-product-card">
+            <div class="gb-product-thumb">👔</div>
+            <div class="gb-product-info">
+              <div class="gb-product-name">宠物保暖马甲 S码</div>
+              <div class="gb-product-sub">已有 3 人拼团 · 还需 2 人</div>
+              <div class="gb-product-price">¥39.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：团购详情
+       ============================================================ -->
+  <section class="section" id="page-gb-detail">
+    <div class="section-header">
+      <div class="section-number">09c · Page Preview</div>
+      <div class="section-title">团购详情</div>
+      <div class="section-desc">大图 + 详情卡片。价格 44rpx bold，进度条暖橙填充。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">gb/detail/index · 团购商品详情 + 拼团进度</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="gb-detail-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);overflow:hidden;">
+          <div class="gb-detail-image">🧸</div>
+          <div class="gb-detail-card">
+            <div class="gb-detail-title">耐咬发声玩具 · 趣味款</div>
+            <div class="gb-detail-desc">采用食品级硅胶材质，内置发声装置，耐咬耐玩。适合中小型犬和猫咪日常玩耍。</div>
+            <div>
+              <span class="gb-detail-price">¥19.90</span>
+              <span class="gb-detail-unit">/件</span>
+              <span style="font-size:13px;color:var(--text-secondary);margin-left:8px;">原价 ¥39.90</span>
+            </div>
+            <div class="gb-detail-progress">
+              <div class="gb-detail-progress-label">已拼 3/5 人 · 还差 2 人成团</div>
+              <div class="progress-bar-demo" style="width:100%;">
+                <div class="progress-fill-demo" style="width:60%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：我的
+       ============================================================ -->
+  <section class="section" id="page-my">
+    <div class="section-header">
+      <div class="section-number">09d · Page Preview</div>
+      <div class="section-title">我的</div>
+      <div class="section-desc">头像-昵称区 + 列表式菜单。无卡片包裹，仅用 border-top 分隔列表项。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">my/index · 个人中心</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="my-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);overflow:hidden;">
+          <div class="my-profile">
+            <div class="my-avatar">🐱</div>
+            <div class="my-nickname">小橘的主人</div>
+            <div class="my-id">ID: pet_2024xxxx</div>
+          </div>
+          <div class="my-menu">
+            <div class="my-menu-item">
+              <span class="my-menu-icon">📋</span>
+              <span class="my-menu-label">我的订单</span>
+              <span class="my-menu-arrow">→</span>
+            </div>
+            <div class="my-menu-item">
+              <span class="my-menu-icon">👗</span>
+              <span class="my-menu-label">穿搭收藏</span>
+              <span class="my-menu-arrow">→</span>
+            </div>
+            <div class="my-menu-item">
+              <span class="my-menu-icon">🧠</span>
+              <span class="my-menu-label">MBTI 结果</span>
+              <span class="my-menu-arrow">→</span>
+            </div>
+            <div class="my-menu-item">
+              <span class="my-menu-icon">📍</span>
+              <span class="my-menu-label">收货地址</span>
+              <span class="my-menu-arrow">→</span>
+            </div>
+            <div class="my-menu-item">
+              <span class="my-menu-icon">⚙️</span>
+              <span class="my-menu-label">设置</span>
+              <span class="my-menu-arrow">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：MBTI 测试
+       ============================================================ -->
+  <section class="section" id="page-mbti-test">
+    <div class="section-header">
+      <div class="section-number">09e · Page Preview</div>
+      <div class="section-title">MBTI 测试</div>
+      <div class="section-desc">单题垂直居中，大段留白。题目 16px，选项两列按钮，进度条暖橙。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">mbti/test/index · 宠物性格测试</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="mbti-test-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);">
+          <div class="mbti-test-title">🐾 宠物 MBTI 性格测试</div>
+          <div class="mbti-progress">
+            <div class="mbti-progress-fill"></div>
+          </div>
+          <div class="mbti-q-number">第 3 题 / 共 12 题</div>
+          <div class="mbti-q-text">当家里来陌生人时，你的宠物通常会：</div>
+          <div class="mbti-options">
+            <div class="mbti-option selected">主动上前嗅探蹭蹭</div>
+            <div class="mbti-option">躲到角落暗中观察</div>
+            <div class="mbti-option">大声吠叫警告对方</div>
+            <div class="mbti-option">无视陌生人继续睡</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       页面预览：MBTI 结果卡
+       ============================================================ -->
+  <section class="section" id="page-mbti-card">
+    <div class="section-header">
+      <div class="section-number">09f · Page Preview</div>
+      <div class="section-title">MBTI 结果卡</div>
+      <div class="section-desc">大字母居中（22px 暖橙色 bold），描述文字行距 1.8，社交分享按钮底部。</div>
+    </div>
+
+    <div class="page-preview">
+      <div class="page-preview-header">mbti/card/index · 宠物 MBTI 结果</div>
+      <div class="page-preview-body" style="background:var(--gray-2);">
+        <div class="mbti-card-preview" style="border:1px solid var(--gray-4);border-radius:var(--radius-md);">
+          <div class="mbti-result-card">
+            <div class="mbti-result-letters">ENFP</div>
+            <div class="mbti-result-name">快乐小狗 · 社交达人</div>
+            <div class="mbti-trait-tags">
+              <span class="mbti-trait-tag">热情外向</span>
+              <span class="mbti-trait-tag">好奇心强</span>
+              <span class="mbti-trait-tag">精力充沛</span>
+              <span class="mbti-trait-tag">社交能手</span>
+            </div>
+            <div class="mbti-result-desc">
+              你的宠物是天生的社交明星！它对世界充满好奇，见到谁都像老朋友。<br>
+              喜欢探索新环境，精力充沛，是公园里的焦点。<br>
+              适合穿搭风格：亮色系、运动风、街头潮流。
+            </div>
+          </div>
+          <button class="mbti-share-btn">分享结果给好友</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TDesign 变量覆盖
+       ============================================================ -->
+  <section class="section" id="tdesign-map">
+    <div class="section-header">
+      <div class="section-number">10 · Appendix</div>
+      <div class="section-title">TDesign 变量覆盖</div>
+      <div class="section-desc">将原始 TDesign 默认变量（蓝色系/冷灰）替换为 Notion 暖橙/暖灰体系。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">品牌色覆盖</div>
+      <table class="var-map">
+        <thead><tr><th>TDesign 变量</th><th>覆盖值</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>--td-brand-color-6</code></td><td class="new-val">#FF8C00</td><td>主色从蓝→暖橙</td></tr>
+          <tr><td><code>--td-primary-color-6</code></td><td class="new-val">var(--td-brand-color-6)</td><td>主色别名链</td></tr>
+          <tr><td><code>--td-brand-color</code></td><td class="new-val">var(--td-brand-color-6)</td><td>便捷别名</td></tr>
+          <tr><td><code>--td-brand-color-light</code></td><td class="new-val">#FFE8D0</td><td>选中态背景</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">文字色覆盖</div>
+      <table class="var-map">
+        <thead><tr><th>TDesign 变量</th><th>覆盖值</th><th>语义</th></tr></thead>
+        <tbody>
+          <tr><td><code>--td-font-gray-1</code></td><td class="new-val">#37352F</td><td>标题</td></tr>
+          <tr><td><code>--td-font-gray-2</code></td><td class="new-val">#5F5D59</td><td>正文</td></tr>
+          <tr><td><code>--td-font-gray-3</code></td><td class="new-val">#9B9993</td><td>辅助</td></tr>
+          <tr><td><code>--td-font-gray-4</code></td><td class="new-val">#B7B5AF</td><td>占位</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">圆角覆盖</div>
+      <table class="var-map">
+        <thead><tr><th>TDesign 变量</th><th>覆盖值</th><th>语义</th></tr></thead>
+        <tbody>
+          <tr><td><code>--td-radius-small</code></td><td class="new-val">8rpx</td><td>标签/输入框</td></tr>
+          <tr><td><code>--td-radius-default</code></td><td class="new-val">12rpx</td><td>基准—卡片/按钮</td></tr>
+          <tr><td><code>--td-radius-extraLarge</code></td><td class="new-val">16rpx</td><td>弹窗</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       变更对照总表
+       ============================================================ -->
+  <section class="section" id="change-log">
+    <div class="section-header">
+      <div class="section-number">11 · Appendix</div>
+      <div class="section-title">变更对照总表</div>
+      <div class="section-desc">核心变化：从「阴影建立层级」转向「间距 + 色差建立层级」。这是整个改造中唯一的范式级变化。</div>
+    </div>
+
+    <table class="change-table">
+      <thead>
+        <tr><th>属性</th><th>现有值</th><th>Notion 值</th><th>变化</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>主色</td><td>#FF8C00</td><td>#FF8C00</td><td style="color:var(--text-secondary);">不变</td></tr>
+        <tr><td>页面底色</td><td>#FFF8F0</td><td>#FBFAF9</td><td style="color:var(--text-secondary);">更接近白，减少黄调</td></tr>
+        <tr><td>标题文字</td><td>#333333</td><td>#37352F</td><td style="color:var(--text-secondary);">Notion 特征暖黑</td></tr>
+        <tr><td>正文文字</td><td>#666666</td><td>#5F5D59</td><td style="color:var(--text-secondary);">更柔和的暖灰</td></tr>
+        <tr><td>辅助文字</td><td>#999999</td><td>#9B9993</td><td style="color:var(--text-secondary);">微调暖向</td></tr>
+        <tr><td class="change-highlight">卡片阴影</td><td>0 2rpx 12rpx</td><td class="change-highlight">none</td><td class="change-highlight">去阴影 ★</td></tr>
+        <tr><td class="change-highlight">卡片圆角</td><td>16rpx / 24rpx</td><td class="change-highlight">12rpx / 16rpx</td><td class="change-highlight">更克制 ★</td></tr>
+        <tr><td class="change-highlight">按钮圆角</td><td>999rpx（药丸）</td><td class="change-highlight">12rpx（统一）</td><td class="change-highlight">去药丸 ★</td></tr>
+        <tr><td class="change-highlight">分割手段</td><td>阴影为主</td><td class="change-highlight">间距 + 1rpx border</td><td class="change-highlight">范式转变 ★★★</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============================================================
+       Do's & Don'ts
+       ============================================================ -->
+  <section class="section" id="dos-donts">
+    <div class="section-header">
+      <div class="section-number">12 · Guidelines</div>
+      <div class="section-title">Do's &amp; Don'ts</div>
+    </div>
+
+    <div class="dos-donts">
+      <div class="dos">
+        <div class="dos-title">✅ Do's</div>
+        <ul>
+          <li>用 space-lg（48rpx）间距区分不同内容区块</li>
+          <li>用 #EEEDEA（1rpx border）作为区块间唯一分割手段</li>
+          <li>卡片白色 + 页面暖灰底 → 靠色差区分层级</li>
+          <li>暖橙仅用于：主按钮、链接、选中态、价格强调</li>
+          <li>正文用 #5F5D59（非纯黑），标题用 #37352F</li>
+          <li>统一圆角：主要 12rpx，小型 8rpx，大型 16rpx</li>
+          <li>拒绝阴影，除非是弹窗</li>
+        </ul>
+      </div>
+      <div class="donts">
+        <div class="donts-title">❌ Don'ts</div>
+        <ul>
+          <li>不要在卡片上使用 box-shadow</li>
+          <li>不要用超过 4 种圆角值</li>
+          <li>不要在非交互元素上使用品牌色</li>
+          <li>不要用分割线 + 间距同时分隔（二选一，间距优先）</li>
+          <li>不要用纯黑色 #000000 做文字色</li>
+          <li>不要使用渐变背景</li>
+          <li>不要在组件上加多余的装饰</li>
+          <li>不要引入波纹动效和按压缩放</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CSS 变量速查
+       ============================================================ -->
+  <section class="section" id="quick-ref">
+    <div class="section-header">
+      <div class="section-number">13 · Quick Ref</div>
+      <div class="section-title">CSS 变量速查表</div>
+      <div class="section-desc">最常用的 20 个变量，快速开发参考。</div>
+    </div>
+
+    <table class="type-scale-table">
+      <thead>
+        <tr><th>变量</th><th>值</th><th>用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--color-brand-6</code></td><td style="font-family:monospace;font-weight:600;color:var(--brand-7);">#FF8C00</td><td>主色</td></tr>
+        <tr><td><code>--color-brand-2</code></td><td style="font-family:monospace;">#FFE8D0</td><td>选中背景</td></tr>
+        <tr><td><code>--color-bg-page</code></td><td style="font-family:monospace;">#FBFAF9</td><td>页面底色</td></tr>
+        <tr><td><code>--color-bg-card</code></td><td style="font-family:monospace;">#FFFFFF</td><td>卡片白</td></tr>
+        <tr><td><code>--color-gray-3</code></td><td style="font-family:monospace;">#EEEDEA</td><td>分割填充</td></tr>
+        <tr><td><code>--color-gray-4</code></td><td style="font-family:monospace;">#E4E3DF</td><td>卡片边框</td></tr>
+        <tr><td><code>--color-gray-11</code></td><td style="font-family:monospace;">#37352F</td><td>标题文字</td></tr>
+        <tr><td><code>--color-gray-9</code></td><td style="font-family:monospace;">#5F5D59</td><td>正文</td></tr>
+        <tr><td><code>--color-gray-7</code></td><td style="font-family:monospace;">#9B9993</td><td>辅助文字</td></tr>
+        <tr><td><code>--color-success</code></td><td style="font-family:monospace;color:var(--success);">#2BA471</td><td>成功</td></tr>
+        <tr><td><code>--color-error</code></td><td style="font-family:monospace;color:var(--error);">#D54941</td><td>错误</td></tr>
+        <tr><td><code>--space-sm</code></td><td style="font-family:monospace;">24rpx / 12px</td><td>卡片内边距</td></tr>
+        <tr><td><code>--space-md</code></td><td style="font-family:monospace;">32rpx / 16px</td><td>卡片间距</td></tr>
+        <tr><td><code>--space-lg</code></td><td style="font-family:monospace;font-weight:600;">48rpx / 24px</td><td>页面内边距</td></tr>
+        <tr><td><code>--radius-sm</code></td><td style="font-family:monospace;">8rpx / 4px</td><td>标签/输入框</td></tr>
+        <tr><td><code>--radius-md</code></td><td style="font-family:monospace;font-weight:600;">12rpx / 6px</td><td>卡片/按钮</td></tr>
+        <tr><td><code>--radius-lg</code></td><td style="font-family:monospace;">16rpx / 8px</td><td>弹窗</td></tr>
+        <tr><td><code>--font-caption</code></td><td style="font-family:monospace;">22rpx / 11px</td><td>辅助标注</td></tr>
+        <tr><td><code>--font-body</code></td><td style="font-family:monospace;font-weight:600;">28rpx / 14px</td><td>正文基准</td></tr>
+        <tr><td><code>--font-headline</code></td><td style="font-family:monospace;font-weight:600;">44rpx / 22px</td><td>价格/MBTI 结果</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ====== 页脚 ====== -->
+  <footer class="page-footer">
+    <span>PetMini · Notion 设计风格指南 v1.0</span>
+    <span>设计系统：Notion（温润极简）· 生成日期：2025-03-14</span>
+  </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

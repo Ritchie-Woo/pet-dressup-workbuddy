@@ -1,25 +1,18 @@
-// components/toast - 轻提示
+// components/toast/index.js — 轻量 Toast（备用，页面优先用 wx.showToast）
 Component({
-  options: {
-    addGlobalClass: true,
-    multipleSlots: true
-  },
-
   properties: {
-    // TODO: 定义组件属性
+    show: { type: Boolean, value: false },
+    message: { type: String, value: '' },
+    icon: { type: String, value: 'success' },
+    duration: { type: Number, value: 2000 }
   },
-
-  data: {
-    // 内部状态
-  },
-
-  lifetimes: {
-    attached() {
-      // 组件挂载
+  observers: {
+    'show': function(val) {
+      if (val) {
+        setTimeout(() => {
+          this.setData({ show: false });
+        }, this.data.duration);
+      }
     }
-  },
-
-  methods: {
-    // TODO: 组件方法
   }
 });

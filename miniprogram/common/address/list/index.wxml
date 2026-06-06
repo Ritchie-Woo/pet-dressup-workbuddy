@@ -1,0 +1,35 @@
+<!-- common/address/list/index.wxml — 收货地址列表 -->
+<navbar title="收货地址" />
+
+<view class="page-address-list">
+  <empty-state wx:if="{{!loading && addresses.length === 0}}" icon="location" text="还没有收货地址">
+    <t-button theme="primary" size="medium" bindtap="goAdd">新增收货地址</t-button>
+  </empty-state>
+
+  <skeleton wx:elif="{{loading}}" row="{{3}}" />
+
+  <view wx:else class="address-list">
+    <view wx:for="{{addresses}}" wx:key="id" class="address-card card">
+      <!-- 第一行：用户信息（左） + 操作按钮（右） -->
+      <view class="addr-header">
+        <view class="addr-user">
+          <text class="addr-name">{{item.receiverName}}</text>
+          <text class="addr-phone">{{item.phone}}</text>
+          <t-tag wx:if="{{item.isDefault}}" size="small" theme="primary" variant="light" class="addr-tag">默认</t-tag>
+        </view>
+        <view class="addr-ops">
+          <text class="op-link" bindtap="goEdit" data-id="{{item.id}}">编辑</text>
+          <text class="op-link danger" bindtap="confirmDelete" data-id="{{item.id}}">删除</text>
+        </view>
+      </view>
+
+      <!-- 第二行：地址详情 -->
+      <text class="addr-detail">{{item.province}}{{item.city}}{{item.district}} {{item.detail}}</text>
+    </view>
+
+    <view class="add-btn card" bindtap="goAdd">
+      <t-icon name="add" size="36rpx" color="#FF8C00" />
+      <text class="add-text">新增收货地址</text>
+    </view>
+  </view>
+</view>

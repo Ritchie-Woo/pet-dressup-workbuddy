@@ -1,0 +1,163 @@
+{
+  "$schema": "https://raw.githubusercontent.com/amzn/style-dictionary/main/figma-tokens.schema.json",
+  "design-system": "Notion 温润极简",
+  "project": "PetMini",
+  "viewport": "375pt",
+  "tokens": {
+    "color": {
+      "brand": {
+        "1": { "value": "#FFF6ED", "type": "color" },
+        "2": { "value": "#FFE8D0", "type": "color" },
+        "3": { "value": "#FFD4A8", "type": "color" },
+        "4": { "value": "#FFBA78", "type": "color" },
+        "5": { "value": "#FFA344", "type": "color" },
+        "6": {
+          "value": "#FF8C00",
+          "type": "color",
+          "description": "主色基准 — 主按钮、链接、选中文字"
+        },
+        "7": { "value": "#D47300", "type": "color" },
+        "8": { "value": "#A85C00", "type": "color" },
+        "9": { "value": "#7C4400", "type": "color" },
+        "10": { "value": "#502C00", "type": "color" }
+      },
+      "gray": {
+        "1": {
+          "value": "#FBFAF9",
+          "type": "color",
+          "description": "页面底色"
+        },
+        "2": {
+          "value": "#F5F4F1",
+          "type": "color",
+          "description": "次级背景"
+        },
+        "3": {
+          "value": "#EEEDEA",
+          "type": "color",
+          "description": "分割填充"
+        },
+        "4": {
+          "value": "#E4E3DF",
+          "type": "color",
+          "description": "禁用态背景 / 卡片边框"
+        },
+        "5": { "value": "#D2D0CC", "type": "color" },
+        "6": {
+          "value": "#B7B5AF",
+          "type": "color",
+          "description": "占位符文字"
+        },
+        "7": {
+          "value": "#9B9993",
+          "type": "color",
+          "description": "辅助文字"
+        },
+        "8": { "value": "#7D7B76", "type": "color" },
+        "9": {
+          "value": "#5F5D59",
+          "type": "color",
+          "description": "正文"
+        },
+        "10": { "value": "#4A4845", "type": "color" },
+        "11": {
+          "value": "#37352F",
+          "type": "color",
+          "description": "标题 — Notion 特征黑"
+        },
+        "12": { "value": "#252320", "type": "color" },
+        "13": { "value": "#1A1815", "type": "color" },
+        "14": { "value": "#0F0E0C", "type": "color" }
+      },
+      "text": {
+        "title": { "value": "#37352F", "type": "color", "description": "主标题" },
+        "body": { "value": "#5F5D59", "type": "color", "description": "正文" },
+        "secondary": { "value": "#9B9993", "type": "color", "description": "辅助文字" },
+        "placeholder": { "value": "#B7B5AF", "type": "color", "description": "占位/禁用" },
+        "brand": { "value": "#FF8C00", "type": "color", "description": "品牌色文字" },
+        "inverse": { "value": "#FFFFFF", "type": "color", "description": "反白文字" }
+      },
+      "bg": {
+        "page": { "value": "#FBFAF9", "type": "color", "description": "页面底色" },
+        "card": { "value": "#FFFFFF", "type": "color", "description": "卡片白" },
+        "secondary": { "value": "#F5F4F1", "type": "color", "description": "次级面板" },
+        "overlay": { "value": "rgba(15, 14, 12, 0.4)", "type": "color", "description": "遮罩层" }
+      },
+      "semantic": {
+        "success": { "value": "#2BA471", "type": "color" },
+        "successBg": { "value": "#E3F9E9", "type": "color" },
+        "error": { "value": "#D54941", "type": "color" },
+        "errorBg": { "value": "#FFF0ED", "type": "color" },
+        "warning": { "value": "#E37318", "type": "color" },
+        "warningBg": { "value": "#FFF1E9", "type": "color" },
+        "info": { "value": "#366EF4", "type": "color" },
+        "infoBg": { "value": "#F2F3FF", "type": "color" }
+      }
+    },
+    "typography": {
+      "fontFamily": {
+        "ui": {
+          "value": "\"PingFang SC\", -apple-system, \"Hiragino Sans GB\", \"Microsoft YaHei\", sans-serif",
+          "type": "fontFamilies"
+        },
+        "number": {
+          "value": "\"SF Pro Text\", -apple-system, sans-serif",
+          "type": "fontFamilies",
+          "description": "价格数字专用"
+        }
+      },
+      "fontSize": {
+        "caption": { "value": "11px", "type": "fontSizes", "description": "辅助标注、时间戳", "rpx": "22" },
+        "bodySm": { "value": "13px", "type": "fontSizes", "description": "列表摘要、标签文字", "rpx": "26" },
+        "body": { "value": "14px", "type": "fontSizes", "description": "基准正文", "rpx": "28" },
+        "bodyLg": { "value": "16px", "type": "fontSizes", "description": "卡片主标题、弹窗标题", "rpx": "32" },
+        "title": { "value": "18px", "type": "fontSizes", "description": "页面大标题", "rpx": "36" },
+        "headline": { "value": "22px", "type": "fontSizes", "description": "价格/MBTI 结果", "rpx": "44" }
+      },
+      "fontWeight": {
+        "regular": { "value": "400", "type": "fontWeights", "description": "常规正文" },
+        "medium": { "value": "500", "type": "fontWeights", "description": "强调正文" },
+        "semibold": { "value": "600", "type": "fontWeights", "description": "标题" },
+        "bold": { "value": "700", "type": "fontWeights", "description": "特大标题/价格" }
+      },
+      "lineHeight": {
+        "caption": { "value": "1.5", "type": "lineHeights" },
+        "body": { "value": "1.6", "type": "lineHeights", "description": "正文基准" },
+        "title": { "value": "1.4", "type": "lineHeights" },
+        "headline": { "value": "1.3", "type": "lineHeights" }
+      }
+    },
+    "spacing": {
+      "2xs": { "value": "4px", "type": "spacing", "rpx": "8", "description": "紧密关联元素" },
+      "xs": { "value": "8px", "type": "spacing", "rpx": "16", "description": "组件内部间距" },
+      "sm": { "value": "12px", "type": "spacing", "rpx": "24", "description": "卡片内边距" },
+      "md": { "value": "16px", "type": "spacing", "rpx": "32", "description": "卡片间距" },
+      "lg": { "value": "24px", "type": "spacing", "rpx": "48", "description": "区块间距" },
+      "xl": { "value": "32px", "type": "spacing", "rpx": "64", "description": "页面顶部留白" },
+      "2xl": { "value": "48px", "type": "spacing", "rpx": "96", "description": "整页呼吸感" }
+    },
+    "borderRadius": {
+      "sm": { "value": "4px", "type": "borderRadius", "rpx": "8", "description": "标签、角标、输入框" },
+      "md": { "value": "6px", "type": "borderRadius", "rpx": "12", "description": "卡片、按钮、图片" },
+      "lg": { "value": "8px", "type": "borderRadius", "rpx": "16", "description": "弹窗、大面板" },
+      "round": { "value": "999px", "type": "borderRadius", "rpx": "999", "description": "药丸标签、头像" }
+    },
+    "shadow": {
+      "none": { "value": "none", "type": "boxShadow", "description": "默认无阴影" },
+      "modal": {
+        "value": "0 2px 12px rgba(0,0,0,0.08)",
+        "type": "boxShadow",
+        "description": "仅弹窗使用"
+      }
+    },
+    "border": {
+      "card": { "value": "1px solid #E4E3DF", "type": "border", "description": "卡片通用边框" },
+      "divider": { "value": "1px solid #EEEDEA", "type": "border", "description": "列表项分割" },
+      "focus": { "value": "1px solid #FF8C00", "type": "border", "description": "输入框焦点" }
+    },
+    "opacity": {
+      "disabled": { "value": "0.4", "type": "opacity", "description": "禁用态透明度" },
+      "hoverBg": { "value": "0.04", "type": "opacity", "description": "悬停背景变化" }
+    }
+  }
+}

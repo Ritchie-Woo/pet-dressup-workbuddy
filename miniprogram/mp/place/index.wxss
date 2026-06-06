@@ -1,13 +1,47 @@
-/* mp/place/index.wxss */
+/* mp/place/index.wxss — Notion 温润极简改造 */
 
 .page-container {
   min-height: 100vh;
-  padding: var(--spacing-md);
   background: var(--color-bg-page);
 }
 
-.page-title {
-  font-size: var(--font-xl);
+/* 详情卡片 — 去阴影 */
+.detail-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--color-border);
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm);
+}
+
+.place-title {
+  font-size: var(--font-lg);
   font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.place-address {
+  font-size: var(--font-sm);
+  color: var(--color-text-hint);
+}
+
+/* 详情行 */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+}
+
+.info-row + .info-row {
+  border-top: 1rpx solid var(--td-gray-color-3);
+}
+
+.info-label {
+  font-size: var(--font-md);
+  color: var(--color-text-hint);
+}
+
+.info-value {
+  font-size: var(--font-md);
   color: var(--color-text-main);
 }

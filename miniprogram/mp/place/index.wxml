@@ -1,6 +1,75 @@
-<!-- mp/place/index.wxml -->
-<t-navbar title="地点详情" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- mp/place/index.wxml — 地点详情 / 投稿表单 -->
+<!-- 投稿表单模式 -->
+<navbar wx:if="{{mode === 'submit'}}" title="投稿地点" />
+
+<view wx:if="{{mode === 'submit'}}" class="page-submit">
+  <view class="form-section">
+    <view class="form-row"><text class="label">名称 *</text><t-input value="{{form.name}}" placeholder="地点名称" bind:change="onFormChange" data-field="name" /></view>
+    <view class="form-row"><text class="label">分类 *</text>
+      <view class="cat-grid">
+        <view wx:for="{{categories}}" wx:key="value" class="cat-chip-sm {{form.category === item.value ? 'active' : ''}}" bindtap="selectCat" data-val="{{item.value}}">{{item.label}}</view>
+      </view>
+    </view>
+    <view class="form-row"><text class="label">地址 *</text><t-input value="{{form.address}}" placeholder="详细地址" bind:change="onFormChange" data-field="address" /></view>
+    <view class="form-row"><text class="label">电话</text><t-input value="{{form.phone}}" type="number" placeholder="联系电话" bind:change="onFormChange" data-field="phone" /></view>
+    <view class="form-row"><text class="label">营业时间</text><t-input value="{{form.businessHours}}" placeholder="如 09:00-22:00" bind:change="onFormChange" data-field="businessHours" /></view>
+    <view class="form-row"><text class="label">宠物政策</text><t-input value="{{form.petPolicy}}" placeholder="如 允许小型犬，需牵绳" bind:change="onFormChange" data-field="petPolicy" /></view>
+  </view>
+  <view class="btn-area safe-bottom"><t-button theme="primary" size="large" block bindtap="handleSubmit" loading="{{submitting}}">提交审核</t-button></view>
+</view>
+
+<!-- 详情模式 -->
+<view wx:else>
+  <navbar title="地点详情" />
+  <view wx:if="{{!loading}}" class="page-place-detail">
+    <!-- 图片轮播 -->
+    <t-swiper wx:if="{{place.images && place.images.length > 0}}" list="{{swiperList}}" autoplay="{{false}}" height="250" />
+    <view wx:else class="no-image">暂无照片</view>
+
+    <!-- 基本信息 -->
+    <view class="detail-section card">
+      <text class="place-name">{{place.name}}</text>
+      <view class="place-meta-row">
+        <t-tag size="small" variant="light">{{categoryLabel(place.category)}}</t-tag>
+        <text wx:if="{{place.rating > 0}}">⭐ {{place.rating}} ({{place.reviewCount}}评价)</text>
+        <text wx:if="{{place.checkinCount > 0}}"> · {{place.checkinCount}}人打卡</text>
+      </view>
+    </view>
+
+    <!-- 地址/电话 -->
+    <view class="detail-section card">
+      <view class="info-row" bindtap="openNavigation"><t-icon name="location" size="36rpx" color="#FF8C00" /><text class="info-text">{{place.address}}</text><t-icon name="chevron-right" size="28rpx" color="#ccc" /></view>
+      <view wx:if="{{place.phone}}" class="info-row" bindtap="callPhone"><t-icon name="call" size="36rpx" color="#07C160" /><text class="info-text">{{place.phone}}</text></view>
+      <view wx:if="{{place.businessHours}}" class="info-row"><t-icon name="time" size="36rpx" color="#666" /><text class="info-text">{{place.businessHours}}</text></view>
+    </view>
+
+    <!-- 宠物政策 -->
+    <view wx:if="{{place.petPolicy}}" class="detail-section card">
+      <text class="section-title">🐾 宠物政策</text>
+      <text class="policy-text">{{place.petPolicy}}</text>
+    </view>
+
+    <!-- 打卡记录 -->
+    <view wx:if="{{place.recentCheckins && place.recentCheckins.length > 0}}" class="detail-section card">
+      <text class="section-title">最近打卡的宠物</text>
+      <view class="checkin-avatars">
+        <view wx:for="{{place.recentCheckins}}" wx:key="createdAt" class="checkin-avatar-wrap">
+          <image class="checkin-avatar" src="{{item.avatarSnapshot || ''}}" mode="aspectFill" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作栏 -->
+    <view class="detail-actions safe-bottom">
+      <view class="action-half" bindtap="toggleFavorite">
+        <t-icon name="{{isFavorited ? 'heart-filled' : 'heart'}}" size="40rpx" color="{{isFavorited ? '#FF4D4F' : '#999'}}" />
+        <text>{{isFavorited ? '已收藏' : '收藏'}}</text>
+      </view>
+      <view class="action-half" bindtap="doCheckin">
+        <t-icon name="location" size="40rpx" color="#FF8C00" />
+        <text>打卡</text>
+      </view>
+    </view>
+  </view>
+  <skeleton wx:else row="{{4}}" />
 </view>

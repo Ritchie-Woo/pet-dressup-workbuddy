@@ -2,10 +2,22 @@
   "description": "pet-wb — 给宠物穿搭、给主人团购",
   "packOptions": {
     "ignore": [
-      { "type": "folder", "value": "docs" },
-      { "type": "file", "value": "PRD-四模块产品需求文档.md" },
-      { "type": "file", "value": "市场调研-*.md" },
-      { "type": "file", "value": ".gitignore" }
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "PRD-四模块产品需求文档.md",
+        "type": "file"
+      },
+      {
+        "value": "市场调研-*.md",
+        "type": "file"
+      },
+      {
+        "value": ".gitignore",
+        "type": "file"
+      }
     ],
     "include": []
   },
@@ -43,20 +55,24 @@
     "localPlugins": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
-    "condition": false
+    "condition": false,
+    "compileWorklet": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.7.0",
-  "appid": "YOUR_APPID",
+  "appid": "wxba5f7b295196db03",
   "projectname": "pet-wb",
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "cloudbaseRoot": "cloudbase/",
-  "cloudfunctionTemplateRoot": "",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "srcMiniprogramRoot": "miniprogram/"
+  "srcMiniprogramRoot": "miniprogram/",
+  "simulatorPluginLibVersion": {}
 }

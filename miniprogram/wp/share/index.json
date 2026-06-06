@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "分享卡片"
+  "navigationBarTitleText": "分享卡片",
+  "usingComponents": {
+    "navbar": "../../components/navbar/index"
+  }
 }

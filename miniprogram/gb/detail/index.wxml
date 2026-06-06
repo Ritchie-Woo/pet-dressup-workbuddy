@@ -1,6 +1,78 @@
-<!-- gb/detail/index.wxml -->
-<t-navbar title="商品详情" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- gb/detail/index.wxml — 商品详情 -->
+<view class="detail-page">
+  <!-- 轮播图 + 返回键 -->
+  <view class="swiper-wrap">
+    <swiper wx:if="{{swiperList.length > 0}}" class="detail-swiper" indicator-dots
+      indicator-color="rgba(255,255,255,.4)" indicator-active-color="#FF5A5F" autoplay circular>
+      <swiper-item wx:for="{{swiperList}}" wx:key="*this">
+        <image class="swiper-img" src="{{item.url}}" mode="aspectFill" />
+      </swiper-item>
+    </swiper>
+    <image wx:else class="swiper-img" src="{{product.thumbnail}}" mode="aspectFill" />
+    <view class="back-btn" bindtap="goBack">←</view>
+  </view>
+
+  <!-- 信息卡片 -->
+  <view class="info-card">
+    <view class="price-row">
+      <text class="price-now">¥{{product.priceGroup}}</text>
+      <text class="price-old" wx:if="{{product.priceOriginal > product.priceGroup}}">¥{{product.priceOriginal}}</text>
+      <view class="tag-off" wx:if="{{discountText}}">{{discountText}}</view>
+    </view>
+    <text class="prod-name">{{product.name}}</text>
+    <text class="prod-meta">已团 {{product.soldCount||0}} 件 · {{product.minGroupSize||3}}人成团</text>
+  </view>
+
+  <!-- 规格 -->
+  <view class="spec-card" wx:if="{{product.specs && product.specs.length > 0}}">
+    <text class="sec-title">选择规格</text>
+    <view wx:for="{{product.specs}}" wx:key="name" class="spec-group">
+      <text class="spec-label">{{item.name}}</text>
+      <view class="spec-opts">
+        <view wx:for="{{item.options}}" wx:key="*this" wx:for-item="o"
+          class="spec-pill {{selectedSpecs[item.name]===o?'active':''}}"
+          catchtap="selectSpec" data-name="{{item.name}}" data-value="{{o}}">{{o}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="desc-card">
+    <text class="sec-title">商品详情</text>
+    <text class="desc-text">{{product.description || '暂无描述'}}</text>
+  </view>
+
+  <!-- 底部操作栏 — 拼团方案 -->
+  <view class="action-bar">
+    <!-- 已有拼团（可加入） -->
+    <view wx:if="{{activeGroups.length > 0}}" class="group-progress">
+      <view wx:for="{{activeGroups}}" wx:key="groupId" class="group-row"
+        bindtap="joinGroup" data-id="{{item.groupId}}">
+        <view class="group-avatars">
+          <image wx:for="{{item.members}}" wx:key="*this" wx:for-item="avatar"
+            class="group-avatar" src="{{avatar}}" mode="aspectFill" />
+          <view class="group-avatar group-avatar-shadow">
+            <text class="group-avatar-placeholder">?</text>
+          </view>
+        </view>
+        <text class="group-remain">还差{{item.remainCount}}人成团</text>
+        <text class="group-countdown">{{item.countdownText}}</text>
+      </view>
+    </view>
+
+    <!-- 双按钮 + 加购 -->
+    <view class="action-btns">
+      <view class="btn-cart-icon" catchtap="addToCart">
+        <t-icon name="cart" size="40rpx" color="#FF5A5F" />
+      </view>
+      <view class="btn-solo" catchtap="buySolo">
+        <text class="btn-label-solo">单独购买</text>
+        <text class="btn-price-solo">¥{{product.priceOriginal || product.originalPrice}}</text>
+      </view>
+      <view class="btn-group" catchtap="startGroup">
+        <text class="btn-label-group">发起拼团</text>
+        <text class="btn-price-group">¥{{product.priceGroup || product.groupPrice}}</text>
+      </view>
+    </view>
+  </view>
 </view>

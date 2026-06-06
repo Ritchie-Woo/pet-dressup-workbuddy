@@ -1,6 +1,37 @@
-<!-- common/login/index.wxml -->
-<t-navbar title="微信登录" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- common/login/index.wxml — 粒子动效登录页 -->
+<view class="page-login">
+  <!-- Particle Canvas -->
+  <canvas type="2d" id="particleCanvas" class="particle-canvas"></canvas>
+
+  <!-- Hero -->
+  <view class="login-hero">
+    <view class="hero-pet">
+      <view class="pet-face">
+        <view class="pet-ear ear-left"></view>
+        <view class="pet-ear ear-right"></view>
+        <view class="pet-eyes">
+          <view class="eye"></view>
+          <view class="eye"></view>
+        </view>
+        <view class="pet-nose"></view>
+        <view class="pet-smile"></view>
+      </view>
+    </view>
+    <text class="brand">PetMini</text>
+    <text class="slogan">为毛孩子生成\n独一无二的穿搭</text>
+  </view>
+
+  <!-- Bottom CTA -->
+  <view class="login-bottom">
+    <button class="btn-wechat" bindtap="handleLogin" loading="{{loading}}" disabled="{{loading}}">
+      <text>微信一键登录</text>
+    </button>
+    <button class="btn-skip" catchtap="goHome">稍后再说</button>
+    <view class="agreement">
+      <text class="agree-text">登录即表示同意</text>
+      <text class="agree-link" bindtap="onAgreementTap" data-type="user">《用户协议》</text>
+      <text class="agree-text">和</text>
+      <text class="agree-link" bindtap="onAgreementTap" data-type="privacy">《隐私政策》</text>
+    </view>
+  </view>
 </view>

@@ -1,6 +1,69 @@
-<!-- wp/dressup/index.wxml -->
-<t-navbar title="穿搭页" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- wp/dressup/index.wxml — 三段式布局 -->
+<view class="pg-main">
+  <!-- Top Bar -->
+  <view class="pg-topbar">
+    <text class="topbar-brand">PetMini</text>
+  </view>
+
+  <!-- Section 1: Pet Selector Row -->
+  <view class="section-pets">
+    <view class="pet-scroll">
+      <view wx:for="{{pets}}" wx:key="petId"
+        class="pet-chip {{selectedPetId === item.petId ? 'active' : ''}}"
+        catchtap="selectPetChip" data-id="{{item.petId}}">
+        <view class="chip-avatar">
+          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" mode="aspectFill" class="chip-img" />
+          <text wx:else class="chip-emoji">{{item.species === 'dog' ? '🐶' : item.species === 'cat' ? '🐱' : '🐰'}}</text>
+        </view>
+        <text class="chip-name">{{item.name}}</text>
+      </view>
+      <view class="pet-chip pet-chip-add" catchtap="goCreatePet">
+        <view class="chip-avatar chip-add-icon">+</view>
+        <text class="chip-name">新增</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Section 2: Avatar Display (main) -->
+  <view class="section-avatar">
+    <view wx:if="{{selectedPetId && avatarCreated}}" class="avatar-wrap">
+      <canvas type="2d" id="petCanvas" class="pg-canvas" style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
+        bindtouchstart="onCanvasTap" />
+    </view>
+    <view wx:elif="{{selectedPetId}}" class="avatar-empty">
+      <text class="ae-icon">✨</text>
+      <text class="ae-title">为 {{selectedPetName}} 生成 2D 形象</text>
+      <button class="btn-gen" catchtap="createAvatar">🎨 预设形象</button>
+      <button class="btn-gen btn-photo" catchtap="photo2Avatar" loading="{{generating}}">📷 从照片生成</button>
+    </view>
+    <view wx:else class="avatar-empty">
+      <text class="ae-icon">🐾</text>
+      <text class="ae-title">选择一只宠物开始</text>
+    </view>
+  </view>
+
+  <!-- Section 3: Recommended Pets (restore) -->
+  <view class="section-recommend">
+    <text class="rec-title">推荐宠物</text>
+    <scroll-view class="rec-scroll" scroll-x>
+      <view class="rec-card" style="background:linear-gradient(135deg,#FFE8E7,#FFD5D3)">
+        <view class="rec-avatar"></view>
+        <text class="rec-name">球球</text>
+        <text class="rec-info">金毛 · 2岁</text>
+        <text class="rec-like">♥ 326</text>
+      </view>
+      <view class="rec-card" style="background:linear-gradient(135deg,#E8F8F6,#D0F0EB)">
+        <view class="rec-avatar"></view>
+        <text class="rec-name">豆豆</text>
+        <text class="rec-info">柯基 · 1岁</text>
+        <text class="rec-like">♥ 189</text>
+      </view>
+      <view class="rec-card" style="background:linear-gradient(135deg,#FFF0EE,#FFE0DD)">
+        <view class="rec-avatar"></view>
+        <text class="rec-name">棉花</text>
+        <text class="rec-info">萨摩耶 · 3岁</text>
+        <text class="rec-like">♥ 512</text>
+      </view>
+    </scroll-view>
+  </view>
 </view>

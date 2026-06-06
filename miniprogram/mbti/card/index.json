@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "MBTI卡片"
+  "navigationBarTitleText": "MBTI卡片",
+  "usingComponents": {
+    "navbar": "../../components/navbar/index"
+  }
 }

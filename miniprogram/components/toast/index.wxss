@@ -1,5 +1,4 @@
-/* components/toast - 轻提示 */
-
-.component-container {
-  /* TODO: 组件样式 */
-}
+/* components/toast/index.wxss — Notion 温润极简改造 */
+.toast-wrap { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; }
+.toast-body { display: flex; flex-direction: column; align-items: center; background: rgba(15, 14, 12, 0.75); border-radius: var(--radius-md); padding: 32rpx 48rpx; }
+.toast-msg { margin-top: 16rpx; font-size: 28rpx; color: #fff; }

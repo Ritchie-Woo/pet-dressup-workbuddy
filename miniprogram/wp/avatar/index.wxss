@@ -1,13 +1,166 @@
-/* wp/avatar/index.wxss */
+/* wp/avatar/index.wxss — Airbnb */
 
-.page-container {
-  min-height: 100vh;
-  padding: var(--spacing-md);
-  background: var(--color-bg-page);
+.pg-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  background: var(--bg);
+  border-bottom: 1rpx solid var(--bg-tertiary);
 }
 
-.page-title {
-  font-size: var(--font-xl);
+.toolbar-back {
+  font-size: var(--font-lg);
   font-weight: 600;
-  color: var(--color-text-main);
+  color: var(--text-secondary);
+  width: 60rpx;
+}
+
+.toolbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pg-body {
+  min-height: calc(100vh - 130rpx);
+  background: var(--body-bg);
+  padding: 24rpx;
+}
+
+/* Empty Card */
+.empty-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 64rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  box-shadow: var(--shadow);
+  border: 1rpx solid var(--bg-tertiary);
+  margin-top: 40rpx;
+}
+
+.empty-card-icon { font-size: 80rpx; }
+.empty-card-title { font-size: var(--font-lg); font-weight: 700; color: var(--text); }
+.empty-card-sub { font-size: var(--font-sm); color: var(--text-secondary); text-align: center; margin-bottom: 8rpx; }
+
+.btn-primary-pill {
+  width: 400rpx;
+  padding: 24rpx 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: #fff;
+  font-size: var(--font-md);
+  font-weight: 700;
+  box-shadow: 0 6rpx 20rpx rgba(255, 90, 95, 0.3);
+}
+
+.btn-primary-pill::after { border: none; }
+.btn-primary-pill:active { opacity: 0.85; transform: scale(0.97); }
+
+/* Pet Grid */
+.section-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16rpx;
+}
+
+.pet-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.pet-card {
+  width: calc(50% - 8rpx);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  padding: 24rpx 16rpx;
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1rpx solid var(--bg-tertiary);
+  transition: all 0.2s;
+}
+
+.pet-card:active {
+  transform: scale(0.96);
+  box-shadow: var(--shadow-lg);
+}
+
+.pet-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: var(--primary-lighter);
+}
+
+.pet-img-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: var(--primary-lighter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+}
+
+.pet-name {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pet-breed {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.pet-tag {
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-lighter);
+}
+
+.pet-tag.is-avatar {
+  color: #fff;
+  background: var(--primary);
+}
+
+/* Add Pet Card */
+.pet-add {
+  border: 2rpx dashed var(--bg-tertiary);
+  box-shadow: none;
+  background: transparent;
+}
+
+.pet-add:active {
+  border-color: var(--primary);
+  background: var(--primary-lighter);
+}
+
+.pet-add-icon {
+  background: var(--bg-secondary);
+}
+
+.add-symbol {
+  font-size: 48rpx;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+.pet-add-label {
+  color: var(--text-secondary);
 }

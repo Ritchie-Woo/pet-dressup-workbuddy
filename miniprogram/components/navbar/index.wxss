@@ -1,5 +1,7 @@
-/* components/navbar - 自定义导航栏 */
-
-.component-container {
-  /* TODO: 组件样式 */
-}
+/* components/navbar/index.wxss — Notion 温润极简改造 */
+.navbar-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 999; }
+.navbar-inner { display: flex; align-items: center; justify-content: center; position: relative; }
+.navbar-left { position: absolute; left: 16rpx; display: flex; align-items: center; padding: 8rpx; }
+.navbar-title { font-size: 32rpx; font-weight: 600; color: var(--color-text-main); max-width: 400rpx; }
+.navbar-right { position: absolute; right: 16rpx; }
+.navbar-divider { height: 1rpx; background: var(--color-border); }

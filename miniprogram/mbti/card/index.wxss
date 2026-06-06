@@ -1,13 +1,90 @@
-/* mbti/card/index.wxss */
+/* mbti/card/index.wxss — Notion 温润极简改造 */
 
 .page-container {
   min-height: 100vh;
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   background: var(--color-bg-page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.page-title {
-  font-size: var(--font-xl);
+/* 结果字母 — 44rpx bold 暖橙色 */
+.result-letter {
+  font-size: var(--font-xxl);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 4rpx;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* 结果名称 */
+.result-name {
+  font-size: var(--font-lg);
   font-weight: 600;
   color: var(--color-text-main);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 描述文字 — 行距 1.8 */
+.result-desc {
+  font-size: var(--font-md);
+  color: var(--color-text-sub);
+  line-height: 1.8;
+  text-align: center;
+  max-width: 560rpx;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* 结果卡片 */
+.result-card {
+  width: 100%;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--color-border);
+  padding: var(--spacing-xl) var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* 分享按钮 */
+.share-btn {
+  width: 100%;
+  max-width: 480rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: var(--font-md);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  text-align: center;
+}
+
+.share-btn:active {
+  opacity: 0.85;
+}
+
+/* 特质标签组 */
+.trait-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.trait-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 16rpx;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }

@@ -1,6 +1,69 @@
-<!-- gb/list/index.wxml -->
-<t-navbar title="商品列表" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- gb/list/index.wxml — 团购商品列表 -->
+<view class="gb-list-container">
+  <scroll-view class="gb-list-page" scroll-y type="list" enhanced show-scrollbar="{{false}}"
+    lower-threshold="80" bindscrolltolower="onReachBottom"
+    refresher-enabled refresher-triggered="{{refresherTriggered}}"
+    bindrefresherrefresh="onRefresh" refresher-threshold="{{80}}">
+    <!-- 搜索 -->
+    <view class="search-bar">
+      <t-search placeholder="搜索宠物用品" shape="round" bind:submit="onSearch" bind:clear="onSearchClear" />
+    </view>
+
+    <!-- 分类 -->
+    <scroll-view class="cate-row" scroll-x enhanced show-scrollbar="{{false}}">
+      <view wx:for="{{categories}}" wx:key="value"
+        class="cate-pill {{activeCategory===item.value?'active':''}}"
+        bindtap="switchCategory" data-val="{{item.value}}">{{item.label}}</view>
+    </scroll-view>
+
+    <!-- 商品网格 -->
+    <view wx:if="{{!loading && products.length > 0}}" class="product-grid">
+      <view wx:for="{{products}}" wx:key="productId" class="prod-card"
+        bindtap="goDetail" data-id="{{item.productId}}">
+        <image class="prod-img" src="{{item.thumbnail}}" mode="aspectFill" lazy-load />
+        <view wx:if="{{item.isSoldOut}}" class="sold-mask"><text>售罄</text></view>
+        <view class="prod-body">
+          <text class="prod-name">{{item.name}}</text>
+          <view class="prod-price-row">
+            <text class="prod-price">¥{{item.priceGroup}}</text>
+            <text wx:if="{{item.priceOriginal > item.priceGroup}}" class="prod-old">¥{{item.priceOriginal}}</text>
+          </view>
+          <view class="prod-foot">
+            <text class="prod-sold">已团{{item.soldCount}}件</text>
+            <view wx:if="{{!item.isSoldOut}}" id="addBtn-{{item.productId}}" class="add-btn" catchtap="addToCart" data-id="{{item.productId}}">+</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 加载更多 / 触底提示 -->
+      <view wx:if="{{loadingMore}}" class="end-tips">
+        <t-loading theme="circular" size="32rpx" text="加载中…" />
+      </view>
+      <view wx:elif="{{!hasMore}}" class="end-tips">
+        <text class="end-text">— 到底啦 —</text>
+      </view>
+      <view class="safe-bottom"></view>
+    </view>
+
+    <!-- 空状态 -->
+    <view wx:elif="{{!loading}}" class="empty-wrapper">
+      <t-empty icon="shop" description="暂无商品" />
+    </view>
+
+    <!-- 加载中 -->
+    <view wx:else class="loading-center">
+      <t-loading theme="circular" size="40rpx" text="加载中…" />
+    </view>
+  </scroll-view>
+
+  <!-- 右下角浮动购物车（scroll-view 外部，正确定位） -->
+  <view class="float-cart" bindtap="goCart">
+    <t-icon name="cart" size="40rpx" color="#333333" />
+    <view wx:if="{{cartCount > 0}}" class="float-cart-badge">{{cartCount > 99 ? '99+' : cartCount}}</view>
+  </view>
+
+  <!-- 加购飞入动画小球 -->
+  <view wx:if="{{fly.show}}" class="fly-ball" style="left: {{fly.x}}px; top: {{fly.y}}px; width: {{fly.w}}px; height: {{fly.h}}px; transition: {{fly.moving ? 'all 0.5s cubic-bezier(0.5, -0.5, 1, 1)' : ''}}">
+    <image class="fly-img" src="{{fly.src}}" mode="aspectFill" />
+  </view>
 </view>

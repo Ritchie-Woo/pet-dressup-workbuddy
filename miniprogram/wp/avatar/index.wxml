@@ -1,6 +1,46 @@
-<!-- wp/avatar/index.wxml -->
-<t-navbar title="形象创建" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- wp/avatar/index.wxml — Airbnb Design System -->
+<view class="pg-toolbar">
+  <view class="toolbar-back" catchtap="goBack">‹</view>
+  <text class="toolbar-title">选择宠物</text>
+  <view style="width:60rpx;"></view>
+</view>
+
+<view class="pg-body">
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="flex-center" style="min-height:60vh;">
+    <t-loading theme="dots" size="60rpx" />
+  </view>
+
+  <!-- Empty -->
+  <view wx:elif="{{pets.length === 0}}" class="empty-card">
+    <text class="empty-card-icon">🐾</text>
+    <text class="empty-card-title">还没有宠物档案</text>
+    <text class="empty-card-sub">创建一只宠物，开始搭配穿搭吧</text>
+    <button class="btn-primary-pill" catchtap="goCreatePet">去创建</button>
+  </view>
+
+  <!-- Pet Grid -->
+  <view wx:else class="pet-list">
+    <text class="section-title">选择要穿搭的宠物</text>
+    <view class="pet-grid">
+      <view wx:for="{{pets}}" wx:key="petId" class="pet-card"
+        catchtap="selectPet" data-id="{{item.petId}}">
+        <image class="pet-img" src="{{item.avatarUrl}}" mode="aspectFill" wx:if="{{item.avatarUrl}}" />
+        <view wx:else class="pet-img-placeholder">
+          <text>{{item.species === 'dog' ? '🐶' : item.species === 'cat' ? '🐱' : item.species === 'rabbit' ? '🐰' : '🐹'}}</text>
+        </view>
+        <text class="pet-name">{{item.name}}</text>
+        <text class="pet-breed">{{item.breed || item.species}}</text>
+        <view wx:if="{{item.hasAvatar}}" class="pet-tag is-avatar">已创建</view>
+        <view wx:else class="pet-tag">点击创建</view>
+      </view>
+      <!-- Add New Pet -->
+      <view class="pet-card pet-add" catchtap="goCreatePet">
+        <view class="pet-img-placeholder pet-add-icon">
+          <text class="add-symbol">＋</text>
+        </view>
+        <text class="pet-name pet-add-label">新增宠物</text>
+      </view>
+    </view>
+  </view>
 </view>

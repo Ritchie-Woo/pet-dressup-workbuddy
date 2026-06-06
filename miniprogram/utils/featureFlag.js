@@ -101,15 +101,15 @@ function refreshFlags() {
 // ===== 私有函数 =====
 
 function _fetchFromCloud() {
-  return new Promise((resolve, reject) => {
+  const cloudCall = new Promise((resolve, reject) => {
     if (!wx.cloud) {
       reject(new Error('云开发不可用'));
       return;
     }
     wx.cloud.callFunction({
-      name: 'common_featureFlag',
+      name: 'common-featureFlag',
       data: { action: 'getAll' }
-    }).then((res) => {
+    }).then(res => {
       if (res.result && res.result.data) {
         resolve(res.result.data);
       } else {
@@ -117,6 +117,13 @@ function _fetchFromCloud() {
       }
     }).catch(reject);
   });
+
+  // 3 秒快速超时，避免等 15 秒 + 红色报错
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('_FF_TIMEOUT_SILENT')), 3000);
+  });
+
+  return Promise.race([cloudCall, timeout]);
 }
 
 function _getFromCache() {

@@ -1,6 +1,22 @@
-<!-- wp/share/index.wxml -->
-<t-navbar title="分享卡片" left-arrow="{{false}}" />
-<view class="page-container">
-  <text class="page-title">{{pageTitle}}</text>
-  <!-- TODO: 页面内容 -->
+<!-- wp/share/index.wxml — 穿搭分享卡片 -->
+<navbar title="分享穿搭" />
+
+<view class="page-share" wx:if="{{!loading}}">
+  <!-- 分享卡片预览 -->
+  <view class="card-preview">
+    <canvas type="2d" id="shareCanvas" class="share-canvas" style="width:{{canvasW}}px;height:{{canvasH}}px;" />
+  </view>
+
+  <!-- 提示文字 -->
+  <text class="share-tip">长按卡片保存，或点击下方按钮</text>
+
+  <!-- 操作按钮 -->
+  <view class="share-actions safe-bottom">
+    <t-button theme="primary" size="large" block bindtap="saveToAlbum">保存到相册</t-button>
+    <t-button variant="outline" size="large" block style="margin-top:16rpx" bindtap="shareToFriend" open-type="share">发送给好友</t-button>
+  </view>
+</view>
+
+<view wx:else class="skeleton-wrap">
+  <skeleton row="{{2}}" />
 </view>
