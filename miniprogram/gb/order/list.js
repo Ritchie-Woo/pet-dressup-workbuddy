@@ -1,5 +1,6 @@
 // gb/order/list.js — 订单列表
 const storage = require('../../utils/storage');
+const { request } = require('../../utils/request');
 
 const STATUS_MAP = {
   grouping: '拼团中',
@@ -34,11 +35,36 @@ Page({
   },
 
   // 加载订单数据
-  loadOrders() {
-    const raw = storage.getSync('orders') || [];
-    // 按创建时间倒序
-    raw.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-    this.setData({ orders: raw }, () => {
+  async loadOrders() {
+    let orders = [];
+    try {
+      const res = await request('gb-order', { action: 'list' });
+      if (res.code === 1 && res.data) {
+        orders = res.data.map(o => ({
+          orderId: o.orderId || o._id,
+          name: o.productName || o.name || '',
+          thumbnail: o.productThumbnail || o.thumbnail || '',
+          amount: o.amountTotal || o.amount || 0,
+          quantity: o.quantity || 1,
+          status: o.status || 'paid',
+          createdAt: o.createdAt || o.created_at || '',
+          paidAt: o.paidAt || o.paid_at || ''
+        }));
+        console.log('☁️ 云端订单 ' + orders.length + ' 条');
+      }
+    } catch (e) {
+      console.warn('云函数订单加载失败，使用本地:', e.message);
+    }
+
+    // 降级到本地
+    if (orders.length === 0) {
+      const raw = storage.getSync('orders') || [];
+      orders = raw;
+      console.log('📦 本地订单 ' + orders.length + ' 条');
+    }
+
+    orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    this.setData({ orders }, () => {
       this.filterOrders();
     });
   },

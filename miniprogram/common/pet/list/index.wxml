@@ -1,7 +1,7 @@
 <!-- common/pet/list/index.wxml — 宠物列表 -->
-<navbar title="我的宠物" showBack="{{false}}" />
+<navbar title="我的宠物" />
 
-<view class="page-pet-list">
+<scroll-view class="page-pet-list" scroll-y enhanced show-scrollbar="{{false}}">
   <!-- 空状态 -->
   <view wx:if="{{!loading && pets.length === 0}}" class="empty-wrap">
     <empty-state icon="pet" text="还没有宠物，快来创建一只吧">
@@ -39,4 +39,4 @@
     </view>
     <view wx:else class="pet-limit-text">最多添加 5 只宠物</view>
   </view>
-</view>
+</scroll-view>

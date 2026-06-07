@@ -3,7 +3,17 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
+// 确保集合存在
+async function ensureCollection(name) {
+  try { await db.collection(name).count(); } catch (e) {
+    const res = await db.collection(name).add({ data: { _init: true, created_at: new Date() } });
+    await db.collection(name).doc(res._id).remove();
+  }
+}
+
 exports.main = async (event, context) => {
+  await ensureCollection('gb_order');
+  await ensureCollection('gb_progress');
   const { action } = event;
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;

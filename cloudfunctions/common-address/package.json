@@ -1,0 +1,8 @@
+{
+  "name": "common-address",
+  "version": "1.0.0",
+  "description": "收货地址管理",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

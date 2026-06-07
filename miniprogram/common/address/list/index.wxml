@@ -9,22 +9,31 @@
   <skeleton wx:elif="{{loading}}" row="{{3}}" />
 
   <view wx:else class="address-list">
-    <view wx:for="{{addresses}}" wx:key="id" class="address-card card">
-      <!-- 第一行：用户信息（左） + 操作按钮（右） -->
-      <view class="addr-header">
-        <view class="addr-user">
-          <text class="addr-name">{{item.receiverName}}</text>
-          <text class="addr-phone">{{item.phone}}</text>
-          <t-tag wx:if="{{item.isDefault}}" size="small" theme="primary" variant="light" class="addr-tag">默认</t-tag>
-        </view>
-        <view class="addr-ops">
-          <text class="op-link" bindtap="goEdit" data-id="{{item.id}}">编辑</text>
-          <text class="op-link danger" bindtap="confirmDelete" data-id="{{item.id}}">删除</text>
-        </view>
+    <view wx:for="{{addresses}}" wx:key="id" class="addr-wrapper">
+      <!-- 删除按钮藏在后面 -->
+      <view class="addr-delete-bg" data-index="{{index}}" catchtap="swipeDelete">
+        删除
       </view>
 
-      <!-- 第二行：地址详情 -->
-      <text class="addr-detail">{{item.province}}{{item.city}}{{item.district}} {{item.detail}}</text>
+      <!-- 可滑动卡片 -->
+      <view class="addr-card"
+        style="transform: translateX({{item.swipeX || 0}}rpx); transition: {{item.swiping ? '' : 'transform 0.25s ease'}}"
+        data-index="{{index}}"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd">
+        <view class="addr-header">
+          <view class="addr-user">
+            <text class="addr-name">{{item.receiverName}}</text>
+            <text class="addr-phone">{{item.phone}}</text>
+            <t-tag wx:if="{{item.isDefault}}" size="small" theme="primary" variant="light" class="addr-tag">默认</t-tag>
+          </view>
+          <view class="addr-ops" catchtap="goEdit" data-id="{{item.id}}">
+            <text class="op-link">编辑</text>
+          </view>
+        </view>
+        <text class="addr-detail">{{item.province}}{{item.city}}{{item.district}} {{item.detail}}</text>
+      </view>
     </view>
 
     <view class="add-btn card" bindtap="goAdd">

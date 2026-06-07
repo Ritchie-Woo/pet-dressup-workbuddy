@@ -1,0 +1,5 @@
+.page-pet-list {
+  height: 100vh;
+  background: var(--body-bg);
+  padding: 24rpx;
+}

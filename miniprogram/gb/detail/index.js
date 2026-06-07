@@ -1,6 +1,7 @@
 // gb/detail/index.js — 商品详情 & 拼团
-const { request } = require('../../utils/request');
 const storage = require('../../utils/storage');
+const { request } = require('../../utils/request');
+const LOCAL_PRODUCTS = require('../../data/products');
 
 Page({
   data: {
@@ -24,21 +25,43 @@ Page({
 
   async loadDetail(productId) {
     try {
-      const res = await request('gb-product', { action: 'detail', productId });
-      if (res.code !== 1) throw new Error(res.msg);
+      let product = null;
 
-      const product = res.data;
+      // 优先从云函数加载
+      try {
+        const res = await request('gb-product', { action: 'detail', productId });
+        if (res.code === 1 && res.data) {
+          console.log('☁️ 云端商品详情');
+          product = {
+            ...res.data,
+            priceGroup: res.data.priceGroup || res.data.price_group,
+            priceOriginal: res.data.priceOriginal || res.data.price_original,
+            soldCount: res.data.soldCount || res.data.sold_count || 0,
+            minGroupSize: res.data.minGroupSize || res.data.min_group_size || 3,
+            isSoldOut: res.data.isSoldOut !== undefined ? res.data.isSoldOut : (res.data.stock <= 0)
+          };
+        }
+      } catch (e) {
+        console.warn('云函数加载详情失败，使用本地数据:', e.message);
+      }
+
+      // 降级到本地
+      if (!product) {
+        console.log('📦 使用本地商品数据');
+        product = LOCAL_PRODUCTS.find(p => p.productId === productId);
+      }
+
+      if (!product) throw new Error('商品不存在');
+
       const swiperList = (product.images || []).map(url => ({ url }));
 
-      // 计算拼团进度
       const minGroupSize = product.minGroupSize || 2;
       const currentGroupSize = product.currentGroupSize || 0;
       const groupProgress = Math.min(Math.round((currentGroupSize / minGroupSize) * 100), 100);
       const remainCount = Math.max(minGroupSize - currentGroupSize, 0);
 
-      // 计算折扣文案（WXML不支持.toFixed）
-      const pg = product.priceGroup || product.groupPrice || 0;
-      const po = product.priceOriginal || product.originalPrice || 0;
+      const pg = product.priceGroup || 0;
+      const po = product.priceOriginal || 0;
       const discountText = (po > pg && pg > 0)
         ? Math.round((1 - pg / po) * 100) + '% OFF' : '';
 
@@ -64,15 +87,7 @@ Page({
   },
 
   async loadTryOn() {
-    try {
-      const petInfo = storage.getSync('currentDressPet');
-      if (!petInfo) return;
-
-      const avatarRes = await request('wp-avatar', { action: 'getByPet', petId: petInfo.petId });
-      if (avatarRes.code === 1) {
-        this.setData({ petAvatar: avatarRes.data, dressPetName: petInfo.petName });
-      }
-    } catch (e) { /* 试穿预览非必须 */ }
+    // TODO: 等待试穿 API 接入
   },
 
   // 模拟进行中的拼团（MVP 阶段用，后续接入真实数据）
@@ -205,22 +220,30 @@ Page({
   },
 
   // 统一下单（校验地址 + 创建订单）
-  doCreateOrder(price, mode, groupId) {
-    const addresses = wx.getStorageSync('addresses');
-    const addressList = addresses ? JSON.parse(addresses) : [];
-    if (addressList.length === 0) {
+  async doCreateOrder(price, mode, groupId) {
+    let addresses = [];
+    try {
+      const res = await request('common-address', { action: 'list' });
+      addresses = res.code === 1 ? res.data : [];
+    } catch (e) {
+      const raw = wx.getStorageSync('addresses');
+      addresses = raw ? JSON.parse(raw) : [];
+    }
+    if (addresses.length === 0) {
       wx.showModal({
         title: '需要收货地址',
         content: '请先添加收货地址',
         confirmText: '去添加',
         success: (res) => {
           if (res.confirm) wx.navigateTo({ url: '/common/address/edit/index' });
-        }
+          this._submitting = false;
+        },
+        fail: () => { this._submitting = false; }
       });
       return;
     }
 
-    this.createOrder(addressList[0], price, mode, groupId);
+    this.createOrder(addresses[0], price, mode, groupId);
   },
 
   async createOrder(address, price, mode, groupId) {
@@ -228,11 +251,31 @@ Page({
     wx.showLoading({ title: mode === 'group' ? '创建拼团…' : '创建订单…' });
 
     try {
-      // 生成订单数据（纯本地，不依赖云函数）
-      const orderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      let orderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
       const product = this.data.product;
       const now = new Date().toISOString();
+      const status = mode === 'group' ? 'grouping' : 'paid';
 
+      // 尝试云函数下单
+      try {
+        const res = await request('gb-order', {
+          action: 'create',
+          productId: product.productId,
+          quantity: 1,
+          amountTotal: price,
+          addressId: address.id,
+          specChoice: this.data.selectedSpecs,
+          orderType: mode
+        });
+        if (res.code === 1) {
+          orderId = res.data.orderId;
+          await request('gb-order', { action: 'paySuccess', orderId });
+        }
+      } catch (e) {
+        console.warn('云函数下单失败，使用本地:', e.message);
+      }
+
+      // 保存到本地订单列表
       const order = {
         orderId,
         name: product.name,
@@ -240,12 +283,10 @@ Page({
         amount: price,
         quantity: 1,
         specText: Object.values(this.data.selectedSpecs || {}).join(' / ') || '',
-        status: mode === 'group' ? 'grouping' : 'paid',
+        status,
         createdAt: now,
         paidAt: now
       };
-
-      // 保存到本地订单列表
       const existing = storage.getSync('orders') || [];
       storage.setSync('orders', [order, ...existing]);
 

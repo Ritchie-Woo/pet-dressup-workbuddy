@@ -180,9 +180,8 @@
 
 /* 空状态 */
 .order-empty {
-  height: 100vh;
-  padding-top: calc(env(safe-area-inset-top));
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 400rpx;
 }

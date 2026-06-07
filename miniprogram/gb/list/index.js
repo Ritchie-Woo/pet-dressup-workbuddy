@@ -1,6 +1,7 @@
 // gb/list/index.js — 团购商品列表
-const { request } = require('../../utils/request');
 const storage = require('../../utils/storage');
+const { request } = require('../../utils/request');
+const LOCAL_PRODUCTS = require('../../data/products');
 
 Page({
   data: {
@@ -17,10 +18,10 @@ Page({
     fly: { show: false, x: 0, y: 0, w: 60, h: 60, src: '', moving: false },
     categories: [
       { value: 'all', label: '全部' },
+      { value: 'clothing', label: '服饰' },
+      { value: 'accessory', label: '项圈' },
       { value: 'food', label: '食品' },
       { value: 'toy', label: '玩具' },
-      { value: 'clothing', label: '服饰' },
-      { value: 'accessory', label: '用品' },
       { value: 'grooming', label: '洗护' }
     ]
   },
@@ -50,20 +51,49 @@ Page({
   },
 
   async loadProducts() {
-    // 首次加载或刷新：全量拉取并缓存，分页展示首页
     this.setData({ loading: true, page: 1, hasMore: true });
     try {
-      const params = {};
-      if (this.data.activeCategory !== 'all') params.category = this.data.activeCategory;
-      if (this.data.keyword) params.keyword = this.data.keyword;
+      const { activeCategory, keyword } = this.data;
+      let all = [];
 
-      const res = await request('gb-product', { action: 'list', ...params });
-      const all = (res.data.products || []).map(p => ({
-        ...p,
-        thumbnail: p.thumbnail || ''
-      }));
+      // 优先从云函数加载
+      try {
+        const params = { pageSize: 50 };
+        if (activeCategory !== 'all') params.category = activeCategory;
+        if (keyword) params.keyword = keyword;
+        const res = await request('gb-product', { action: 'list', ...params });
+        if (res.code === 1 && res.data.products) {
+          console.log('☁️ 云端数据 ' + res.data.products.length + ' 条');
+          all = res.data.products.map(p => ({
+            ...p,
+            thumbnail: p.thumbnail || '',
+            priceOriginal: p.priceOriginal || p.price_original,
+            priceGroup: p.priceGroup || p.price_group,
+            soldCount: p.soldCount || p.sold_count || 0,
+            minGroupSize: p.minGroupSize || p.min_group_size || 3,
+            isSoldOut: p.isSoldOut !== undefined ? p.isSoldOut : (p.stock <= 0)
+          }));
+        }
+      } catch (e) {
+        console.warn('云函数加载失败，使用本地数据:', e.message);
+      }
 
-      // 缓存全量数据
+      // 云函数无数据时降级到本地
+      if (all.length === 0) {
+        console.log('📦 使用本地数据');
+        all = LOCAL_PRODUCTS;
+        if (activeCategory !== 'all') {
+          all = all.filter(p => p.category === activeCategory);
+        }
+        if (keyword) {
+          const kw = keyword.toLowerCase();
+          all = all.filter(p => p.name.toLowerCase().includes(kw));
+        }
+        // 本地数据做加权随机排序
+        all = this.shuffleWithWeight(all);
+      }
+
+      // 缓存全量结果
       this._cache = all;
       const { pageSize } = this.data;
       const products = all.slice(0, pageSize);
@@ -159,6 +189,26 @@ Page({
   // 跳转购物车
   goCart() {
     wx.navigateTo({ url: '/gb/cart/index' });
+  },
+
+  // Fisher-Yates 加权洗牌：热门商品靠前 + 随机打散
+  shuffleWithWeight(arr) {
+    const list = [...arr];
+
+    // 1. 按销量降序（热门优先）
+    list.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
+
+    // 2. 前 70% 保持有序（热门），后 30% Fisher-Yates 随机打散
+    const splitIdx = Math.floor(list.length * 0.7);
+    const top = list.slice(0, splitIdx);
+    const rest = list.slice(splitIdx);
+
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [rest[i], rest[j]] = [rest[j], rest[i]];
+    }
+
+    return [...top, ...rest];
   },
 
   // 加入购物车（含飞入动画）
