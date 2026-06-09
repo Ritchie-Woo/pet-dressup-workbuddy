@@ -1,5 +1,7 @@
 {
   "navigationStyle": "custom",
   "navigationBarTitleText": "团购商城",
-  "usingComponents": {}
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search"
+  }
 }

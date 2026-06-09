@@ -1,22 +1,32 @@
 <!-- gb/list/index.wxml — 团购商品列表 -->
 <view class="gb-list-container">
-  <scroll-view class="gb-list-page" scroll-y type="list" enhanced show-scrollbar="{{false}}"
-    lower-threshold="80" bindscrolltolower="onReachBottom"
-    refresher-enabled refresher-triggered="{{refresherTriggered}}"
-    bindrefresherrefresh="onRefresh" refresher-threshold="{{80}}">
-    <!-- 搜索 -->
-    <view class="search-bar">
+  <!-- 固定头部：品牌 + 搜索 + 分类 -->
+  <view class="gb-header">
+    <!-- 品牌标识 -->
+    <view class="gb-brandbar">
+      <text class="brand-text">PetMini</text>
+    </view>
+
+    <!-- 搜索栏 -->
+    <view class="gb-search-wrap">
       <t-search placeholder="搜索宠物用品" shape="round" bind:submit="onSearch" bind:clear="onSearchClear" />
     </view>
 
-    <!-- 分类 -->
-    <scroll-view class="cate-row" scroll-x enhanced show-scrollbar="{{false}}">
+    <!-- 分类标签 -->
+    <scroll-view class="gb-cate-row" scroll-x enhanced show-scrollbar="{{false}}">
       <view wx:for="{{categories}}" wx:key="value"
         class="cate-pill {{activeCategory===item.value?'active':''}}"
         bindtap="switchCategory" data-val="{{item.value}}">{{item.label}}</view>
     </scroll-view>
+  </view>
 
-    <!-- 商品网格 -->
+  <!-- 商品列表（可滚动区域） -->
+  <scroll-view class="gb-list-page" scroll-y enhanced show-scrollbar="{{false}}"
+    lower-threshold="80" bindscrolltolower="onReachBottom"
+    refresher-enabled refresher-triggered="{{refresherTriggered}}"
+    bindrefresherrefresh="onRefresh" refresher-threshold="{{80}}">
+    <!-- 顶部占位，避开固定头部 -->
+    <view class="gb-list-spacer"></view>
     <view wx:if="{{!loading && products.length > 0}}" class="product-grid">
       <view wx:for="{{products}}" wx:key="productId" class="prod-card"
         bindtap="goDetail" data-id="{{item.productId}}">
@@ -56,7 +66,7 @@
     </view>
   </scroll-view>
 
-  <!-- 右下角浮动购物车（scroll-view 外部，正确定位） -->
+  <!-- 右下角浮动购物车 -->
   <view class="float-cart" bindtap="goCart">
     <t-icon name="cart" size="40rpx" color="#333333" />
     <view wx:if="{{cartCount > 0}}" class="float-cart-badge">{{cartCount > 99 ? '99+' : cartCount}}</view>

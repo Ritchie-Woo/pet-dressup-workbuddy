@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "添加宠物"
+  "navigationBarTitleText": "创建宠物",
+  "usingComponents": {
+    "t-input": "tdesign-miniprogram/input/input"
+  }
 }

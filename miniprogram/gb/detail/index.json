@@ -1,5 +1,7 @@
 {
   "navigationStyle": "custom",
   "navigationBarTitleText": "商品详情",
-  "usingComponents": {}
+  "usingComponents": {
+    "pay-sheet": "/components/pay-sheet/index"
+  }
 }

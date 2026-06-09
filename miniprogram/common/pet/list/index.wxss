@@ -1,5 +1,146 @@
 .page-pet-list {
   height: 100vh;
-  background: var(--body-bg);
-  padding: 24rpx;
+  background: #FFF0F3;
+  box-sizing: border-box;
+  padding: 24rpx 32rpx;
+}
+
+.pet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 0 8rpx;
+}
+
+/* 宠物卡片 - 共用 */
+.pet-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,.04);
+  padding: 28rpx 24rpx;
+}
+
+/* ===== 男孩卡片 ===== */
+.card-male .pet-avatar-wrap { border-color: #6EB5F7; }
+.card-male .pet-breed-tag { background: #EBF5FF; color: #3A8AD4; }
+.card-male .info-dot { color: #6EB5F7; }
+
+/* ===== 女孩卡片 ===== */
+.card-female .pet-avatar-wrap { border-color: #F0A8B6; }
+.card-female .pet-breed-tag { background: #FDF0F1; color: #D4828A; }
+.card-female .info-dot { color: #F0A8B6; }
+
+/* 头像外圈 */
+.pet-avatar-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 4rpx solid #F0A8B6;
+  padding: 6rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #F5F0EB;
+}
+
+/* 信息区域 */
+.pet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding-left: 24rpx;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.info-top {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  overflow: hidden;
+}
+
+.pet-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3D2E24;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.pet-breed-tag {
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* 信息底部 */
+.info-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  overflow: hidden;
+}
+
+.info-item {
+  font-size: 24rpx;
+  color: #8B7B6F;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-dot {
+  font-size: 16rpx;
+  margin-right: 6rpx;
+}
+
+.info-divider {
+  color: #E0D6CC;
+  font-size: 20rpx;
+}
+
+/* 圆形箭头 */
+.pet-arrow-circle {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  border: 2rpx solid #E8DDD3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+}
+
+/* 添加按钮 */
+.add-pet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 40rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  border: 2rpx dashed #E0D6CC;
+}
+
+.add-text {
+  font-size: 28rpx;
+  color: #8B7B6F;
 }

@@ -1,7 +1,13 @@
 <!-- gb/order/list/index.wxml — 订单列表 -->
-<navbar title="我的订单" />
-
 <view class="order-list-page">
+  <!-- 品牌顶栏 -->
+  <view class="order-brandbar brandbar-has-back">
+    <view class="brandbar-back" bindtap="goBack">
+      <t-icon name="chevron-left" size="40rpx" color="#333" />
+    </view>
+    <text class="brand-text">PetMini</text>
+    <view class="brandbar-spacer"></view>
+  </view>
   <!-- 状态筛选 Tab -->
   <view class="tabs-wrapper">
     <t-tabs value="{{activeTab}}" bind:change="switchTab" space="{{false}}">

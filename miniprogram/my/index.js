@@ -1,4 +1,5 @@
 // my/index.js — 个人中心
+
 Page({
   data: {
     userInfo: {}
@@ -19,13 +20,15 @@ Page({
     wx.navigateTo({ url: '/common/pet/list/index' });
   },
 
-  goAddress() {
-    wx.navigateTo({ url: '/common/address/list/index' });
-  },
+  // 支付功能隐藏：收货地址
+  // goAddress() {
+  //   wx.navigateTo({ url: '/common/address/list/index' });
+  // },
 
-  goOrders() {
-    wx.navigateTo({ url: '/gb/order/list/index' });
-  },
+  // 支付功能隐藏：我的订单
+  // goOrders() {
+  //   wx.navigateTo({ url: '/gb/order/list/index' });
+  // },
 
   switchAccount() {
     wx.showModal({

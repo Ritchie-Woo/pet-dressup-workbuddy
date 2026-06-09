@@ -1,4 +1,7 @@
 {
   "navigationStyle": "custom",
-  "navigationBarTitleText": "地图首页"
+  "navigationBarTitleText": "地图首页",
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search"
+  }
 }

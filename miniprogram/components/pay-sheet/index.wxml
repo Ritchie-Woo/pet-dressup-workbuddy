@@ -1,0 +1,42 @@
+<!-- components/pay-sheet/index.wxml — 支付半屏弹窗 -->
+<view wx:if="{{visible}}" class="pay-mask" bindtap="close">
+  <view class="pay-sheet safe-bottom" catchtap="">
+    <!-- 顶部标题栏 -->
+    <view class="pay-top">
+      <text class="pay-title">确认支付</text>
+      <view class="pay-close" bindtap="close">
+        <t-icon name="close" size="36rpx" color="#999" />
+      </view>
+    </view>
+
+    <!-- 金额 -->
+    <view class="pay-amount-row">
+      <text class="pay-symbol">¥</text>
+      <text class="pay-amount">{{amount}}</text>
+    </view>
+
+    <!-- 商品摘要 -->
+    <view class="pay-summary">
+      <text class="pay-summary-text">{{title}}</text>
+    </view>
+
+    <!-- 支付方式 -->
+    <view class="pay-method">
+      <text class="pay-label">支付方式</text>
+      <view class="pay-method-row">
+        <view class="pay-method-left">
+          <view class="pay-method-icon wxpay">微</view>
+          <text class="pay-method-name">微信支付</text>
+        </view>
+        <view class="pay-method-check checked">
+          <t-icon name="check" size="28rpx" color="#fff" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="pay-btn" bindtap="confirm">
+      <text class="pay-btn-text">确认支付 ¥{{amount}}</text>
+    </view>
+  </view>
+</view>

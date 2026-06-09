@@ -14,7 +14,10 @@ Page({
     loading: true,
     groupProgress: 0,
     remainCount: 0,
-    activeGroups: []  // 进行中的拼团列表
+    activeGroups: [],
+    payVisible: false,
+    payAmount: '0',
+    payTitle: ''
   },
 
   onLoad(options) {
@@ -173,7 +176,6 @@ Page({
   goCheckout(mode) {
     const { product, selectedSpecs } = this.data;
 
-    // 规格校验
     if (product.specs && product.specs.length > 0) {
       for (const spec of product.specs) {
         if (!selectedSpecs[spec.name]) {
@@ -188,7 +190,6 @@ Page({
       ? (product.groupPrice || product.priceGroup)
       : (product.originalPrice || product.priceOriginal);
 
-    // 检查是否登录
     const app = getApp();
     if (!app.globalData.token) {
       this._submitting = false;
@@ -196,27 +197,31 @@ Page({
       return;
     }
 
-    // 弹出支付确认
+    // 弹出支付面板
     const label = mode === 'group' ? '发起拼团' : '单独购买';
-    const specText = Object.values(selectedSpecs || {}).join(' / ') || '默认';
-
-    wx.showModal({
-      title: '确认订单',
-      content: product.name + '\n' + specText + '\n' + label + '：¥' + price,
-      confirmText: '确认支付 ¥' + price,
-      cancelText: '取消',
-      confirmColor: '#FF5A5F',
-      success: (res) => {
-        if (res.confirm) {
-          this.doCreateOrder(price, mode);
-        } else {
-          this._submitting = false;
-        }
-      },
-      fail: () => {
-        this._submitting = false;
-      }
+    this._payMode = mode;
+    this.setData({
+      payVisible: true,
+      payAmount: String(price),
+      payTitle: product.name + ' · ' + label
     });
+  },
+
+  // 支付面板关闭
+  onPayClose() {
+    this._submitting = false;
+    this.setData({ payVisible: false });
+  },
+
+  // 支付面板确认
+  onPayConfirm() {
+    const mode = this._payMode;
+    const price = mode === 'group'
+      ? (this.data.product.groupPrice || this.data.product.priceGroup)
+      : (this.data.product.originalPrice || this.data.product.priceOriginal);
+
+    this.setData({ payVisible: false });
+    this.doCreateOrder(price, mode);
   },
 
   // 统一下单（校验地址 + 创建订单）

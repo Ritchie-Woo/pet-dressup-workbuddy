@@ -95,26 +95,27 @@ Page({
       return;
     }
     const pool = BREEDS[species] || [];
-    const matches = val ? pool.filter(b => b.includes(val)) : pool;
+    let matches = val ? pool.filter(b => b.includes(val)) : pool;
+    matches = [...matches.slice(0, 15), '其他'];
     this.setData({
       breedInput: val,
-      breed: val,
-      breedSuggestions: matches.slice(0, 6),
-      showBreedDrop: matches.length > 0
+      breedSuggestions: matches,
+      showBreedDrop: true
     });
   },
 
   onBreedFocus() {
-    const { species, breedInput } = this.data;
+    const { species } = this.data;
     if (!species) {
       wx.showToast({ title: '请先选择物种', icon: 'none' });
       return;
     }
     const pool = BREEDS[species] || [];
-    const matches = breedInput ? pool.filter(b => b.includes(breedInput)) : pool;
+    const matches = [...pool.slice(0, 15), '其他'];
     this.setData({
-      breedSuggestions: matches.slice(0, 6),
-      showBreedDrop: matches.length > 0
+      breedInput: '',
+      breedSuggestions: matches,
+      showBreedDrop: true
     });
   },
 
@@ -146,6 +147,10 @@ Page({
     const { name, species, breed, gender, birthday, avatarUrl } = this.data;
     if (!name || !species) {
       wx.showToast({ title: '请填写宠物名和物种', icon: 'none' });
+      return;
+    }
+    if (name.length > 8) {
+      wx.showToast({ title: '宠物名不能超过8个字', icon: 'none' });
       return;
     }
 

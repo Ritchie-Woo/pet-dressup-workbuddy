@@ -49,3 +49,6 @@ taobaosku/
 
 # 制品文件（非项目源码）
 overview.md
+
+# CodeGraph 本地数据
+.codegraph/

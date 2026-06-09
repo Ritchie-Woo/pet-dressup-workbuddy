@@ -1,0 +1,99 @@
+<!-- gb/groupbuy/order/detail — 卖家订单详情 -->
+<view class="page-brandbar brandbar-has-back">
+  <view class="brandbar-back" bindtap="goBack">
+    <t-icon name="chevron-left" size="40rpx" color="#333" />
+  </view>
+  <text class="brand-text">PetMini</text>
+  <view class="brandbar-spacer"></view>
+</view>
+
+<view class="order-detail-page">
+  <!-- 状态卡片 -->
+  <view class="status-card {{order.status}}">
+    <text class="status-label">{{statusLabel[order.status]}}</text>
+    <text class="status-desc">{{statusDesc[order.status]}}</text>
+  </view>
+
+  <!-- 收货地址 -->
+  <view class="info-card" wx:if="{{order.address}}">
+    <text class="card-title">收货地址</text>
+    <view class="addr-row">
+      <text class="addr-name">{{order.address.receiverName}}</text>
+      <text class="addr-phone">{{order.address.phone}}</text>
+    </view>
+    <text class="addr-detail">{{order.address.fullAddress}}</text>
+  </view>
+
+  <!-- 商品信息 -->
+  <view class="info-card">
+    <text class="card-title">商品信息</text>
+    <view class="product-row">
+      <text class="product-name">{{order.productName}}</text>
+      <text class="product-qty">x{{order.quantity}}</text>
+    </view>
+    <view class="detail-row" wx:if="{{specText}}">
+      <text class="detail-label">规格</text>
+      <text class="detail-value">{{specText}}</text>
+    </view>
+    <view class="detail-row">
+      <text class="detail-label">实付金额</text>
+      <text class="detail-value price">¥{{order.amountTotal}}</text>
+    </view>
+  </view>
+
+  <!-- 订单信息 -->
+  <view class="info-card">
+    <text class="card-title">订单信息</text>
+    <view class="detail-row">
+      <text class="detail-label">订单编号</text>
+      <text class="detail-value">{{order.orderId}}</text>
+    </view>
+    <view class="detail-row" wx:if="{{order.trackingNo}}">
+      <text class="detail-label">快递单号</text>
+      <text class="detail-value">{{order.trackingNo}}</text>
+      <t-button wx:if="{{order.trackingNo}}" theme="default" size="extra-small" bindtap="copyTracking" style="margin-left:12rpx">复制</t-button>
+    </view>
+  </view>
+
+  <!-- 发货按钮 -->
+  <view class="ship-section" wx:if="{{order.status === 'paid'}}">
+    <t-button theme="primary" size="large" block bindtap="openShipPopup">去发货</t-button>
+  </view>
+</view>
+
+<!-- 发货弹窗 -->
+<t-popup visible="{{showShipPopup}}" placement="bottom" bind:visible-change="closeShipPopup">
+  <view class="ship-popup">
+    <text class="ship-title">选择发货方式</text>
+
+    <view class="ship-methods">
+      <view class="ship-method {{shipMethod === 'manual' ? 'active' : ''}}" catchtap="onShipMethod" data-method="manual">
+        <text class="method-title">🚚 自行寄出</text>
+        <text class="method-desc">手动填写快递公司及单号</text>
+      </view>
+      <view class="ship-method {{shipMethod === 'none' ? 'active' : ''}}" catchtap="onShipMethod" data-method="none">
+        <text class="method-title">📦 无需物流</text>
+        <text class="method-desc">标记已发货，无需填写单号</text>
+      </view>
+    </view>
+
+    <view wx:if="{{shipMethod === 'manual'}}">
+      <view class="form-group">
+        <text class="form-label">快递公司</text>
+        <picker mode="selector" range="{{carrierNames}}" value="{{carrierIndex}}" bindchange="onCarrierChange">
+          <view class="picker-value">{{carrierNames[carrierIndex]}}</view>
+        </picker>
+      </view>
+      <view class="form-group">
+        <text class="form-label">快递单号</text>
+        <t-input value="{{trackingNo}}" placeholder="请输入快递单号" bindchange="onTrackingInput" />
+      </view>
+    </view>
+
+    <t-button theme="primary" size="large" block loading="{{shipping}}" bindtap="onShip" style="margin-top:24rpx">
+      确认发货
+    </t-button>
+  </view>
+</t-popup>
+
+<t-toast id="t-toast" />

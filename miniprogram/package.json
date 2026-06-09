@@ -1,8 +1,0 @@
-{
-  "name": "pet-wb-miniprogram",
-  "version": "1.0.0",
-  "description": "pet-wb 微信小程序",
-  "dependencies": {
-    "tdesign-miniprogram": "^1.5.0"
-  }
-}

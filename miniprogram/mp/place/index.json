@@ -2,6 +2,9 @@
   "navigationStyle": "custom",
   "navigationBarTitleText": "地点详情",
   "usingComponents": {
-    "navbar": "../../components/navbar/index"
+    "navbar": "../../components/navbar/index",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-swiper": "tdesign-miniprogram/swiper/swiper",
+    "t-swiper-nav": "tdesign-miniprogram/swiper-nav/swiper-nav"
   }
 }

@@ -1,4 +1,4 @@
-// common/login/index.js — 粒子+真实照片混合动效
+// common/login/index.js — 粒子动效（真实用户宠物头像 + 纯色粒子混合）
 const { login } = require('../../utils/request');
 const storage = require('../../utils/storage');
 
@@ -6,7 +6,7 @@ Page({
   data: { loading: false },
 
   onReady() {
-    this.loadPhotos();
+    this.loadParticlePhotos();
   },
 
   onUnload() {
@@ -15,36 +15,41 @@ Page({
     }
   },
 
-  async loadPhotos() {
-    // 直接从 manifest.json 读取文件路径
-    const images = [];
+  async loadParticlePhotos() {
     try {
-      const fs = wx.getFileSystemManager();
-      const data = fs.readFileSync('images/particles/manifest.json', 'utf8');
-      const manifest = JSON.parse(data);
-      console.log('[Login] manifest 加载成功，共', manifest.length, '张');
-      for (const path of manifest) images.push({ path });
-    } catch (e) {
-      console.log('[Login] manifest 读取失败，用内置列表', e.message);
-      // 内置 JPEG 文件列表
-      const builtin = [
-        '/images/particles/微信图片_20260527223055_23_7.jpg',
-        '/images/particles/微信图片_20260529120049_24_7.jpg',
-        '/images/particles/微信图片_20260531153211_28_7.jpg',
-        '/images/particles/微信图片_20260531153212_29_7.jpg',
-        '/images/particles/微信图片_20260601182319_31_7.jpg',
-        '/images/particles/微信图片_20260603231537_209_154.jpg',
-        '/images/particles/微信图片_20260603231557_210_154.jpg',
-        '/images/particles/微信图片_20260603231624_211_154.jpg',
-        '/images/particles/微信图片_20260603231718_212_154.jpg'
-      ];
-      for (const path of builtin) images.push({ path });
+      const res = await wx.cloud.callFunction({
+        name: 'login-resources',
+        data: { count: 12 }
+      });
+      const data = (res.result && res.result.data) || {};
+      const urls = data.urls || [];
+      const fileIDs = data.fileIDs || [];
+
+      // 将 cloud fileID → temp URL 映射写入缓存（后续页面复用）
+      if (fileIDs.length > 0 && urls.length === fileIDs.length) {
+        const cache = require('../../utils/imageCache');
+        // 通过 getTempUrls 触发缓存写入
+        // 由于已有 urls，直接通过内部机制缓存
+        fileIDs.forEach((_fid, i) => {
+          // 存储到 Storage 以便下次复用
+          try {
+            const raw = wx.getStorageSync('_img_cache');
+            const map = raw ? JSON.parse(raw) : {};
+            map[fileIDs[i]] = { url: urls[i], ts: Date.now() };
+            wx.setStorageSync('_img_cache', JSON.stringify(map));
+          } catch (e) {}
+        });
+      }
+
+      console.log('[Login] 获取到', urls.length, '张真实宠物头像');
+      this.initParticles(urls);
+    } catch (err) {
+      console.warn('[Login] 获取宠物头像失败，使用纯色粒子', err);
+      this.initParticles([]);
     }
-    console.log('[Login] 将使用', images.length, '张照片作为粒子');
-    this.initParticles(images);
   },
 
-  initParticles(avatarImages) {
+  initParticles(photoUrls) {
     const query = wx.createSelectorQuery();
     query.select('#particleCanvas').fields({ node: true, size: true }).exec((res) => {
       if (!res[0] || !res[0].node) return;
@@ -58,40 +63,29 @@ Page({
       ctx.scale(dpr, dpr);
 
       this._canvasNode = canvas;
-      this._cx = w / 2;
-      this._cy = h / 2 - 40;
-
+      const cx = w / 2;
+      const cy = h / 2 - 40;
       const COLORS = ['#FF5A5F', '#FF8A8E', '#FFB8B3', '#FFE5E3', '#00A699', '#4DD4C6'];
 
-      // 预加载照片（用 wx.getImageInfo 获取可靠路径）
-      const photoPaths = avatarImages.map(av => av.path);
-      console.log('[Login] 开始预加载', photoPaths.length, '张照片');
-      const photoPromises = photoPaths.map(path => new Promise((resolve) => {
+      // 预加载真实宠物照片
+      const photoPromises = photoUrls.map(url => new Promise((resolve) => {
         const img = canvas.createImage();
-        img.onload = () => { console.log('[Login] 加载成功:', path); resolve(img); };
-        img.onerror = (e) => { console.log('[Login] 加载失败:', path, e); resolve(null); };
-        img.src = path;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = url;
       }));
+
       Promise.all(photoPromises).then(loadedPhotos => {
         const validPhotos = loadedPhotos.filter(img => img !== null);
-        console.log('[Login] 成功预加载', validPhotos.length, '/', photoPaths.length, '张照片');
+        console.log('[Login] 照片预加载:', validPhotos.length, '/', photoUrls.length);
 
+        // 减少总粒子数，降低照片比例（5%），避免过于密集
+        const TOTAL_PARTICLES = 150;
+        const PHOTO_RATIO = 0.05;
         const particles = [];
-        for (let i = 0; i < 300; i++) {
-          const p = mkParticle(COLORS, validPhotos);
-          // 粒子从中心，照片从全屏边缘随机位置
-          p.x = p.isPhoto ? (Math.random() * w) : this._cx;
-          p.y = p.isPhoto ? (Math.random() * h) : this._cy;
-          // 照片朝向中心飘，速度方向重算
-          if (p.isPhoto) {
-            const dx = this._cx - p.x;
-            const dy = this._cy - p.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) + 1;
-            const sp = 0.3 + Math.random() * 0.8;
-            p.vx = (dx / dist) * sp;
-            p.vy = (dy / dist) * sp;
-          }
-          particles.push(p);
+        for (let i = 0; i < TOTAL_PARTICLES; i++) {
+          const isPhoto = validPhotos.length > 0 && i < Math.max(3, Math.floor(TOTAL_PARTICLES * PHOTO_RATIO));
+          particles.push(this._makeParticle(cx, cy, w, h, COLORS, validPhotos, isPhoto));
         }
 
         const animate = () => {
@@ -102,51 +96,87 @@ Page({
             p.life -= 0.005;
 
             if (p.life <= 0 || p.x < -80 || p.x > w + 80 || p.y < -80 || p.y > h + 80) {
-              const np = mkParticle(COLORS, validPhotos);
-              Object.assign(p, np);
-              p.x = p.isPhoto ? (Math.random() * w) : this._cx;
-              p.y = p.isPhoto ? (Math.random() * h) : this._cy;
-              if (p.isPhoto) {
-                const dx = this._cx - p.x;
-                const dy = this._cy - p.y;
-                const dist = Math.sqrt(dx * dx + dy * dy) + 1;
-                const sp = 0.3 + Math.random() * 0.8;
-                p.vx = (dx / dist) * sp;
-                p.vy = (dy / dist) * sp;
-              }
+              Object.assign(p, this._makeParticle(cx, cy, w, h, COLORS, validPhotos));
             }
 
-            if (p.isPhoto && p.photoIdx >= 0 && validPhotos[p.photoIdx] && validPhotos[p.photoIdx].complete) {
-            // 圆形真实照片
-            const r = 18;
-            ctx.globalAlpha = Math.min(p.life * 1.2, 0.85);
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(validPhotos[p.photoIdx], p.x - r, p.y - r, r * 2, r * 2);
-            ctx.restore();
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          } else {
-            // 彩色粒子点
-            ctx.globalAlpha = Math.min(p.life, 0.55);
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
+            if (p.isPhoto && p.photo && p.photo.complete) {
+              const r = 10;
+              ctx.globalAlpha = Math.min(p.life * 1.2, 0.85);
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+              ctx.closePath();
+              ctx.clip();
+              ctx.drawImage(p.photo, p.x - r, p.y - r, r * 2, r * 2);
+              ctx.restore();
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+              ctx.strokeStyle = '#fff';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            } else {
+              ctx.globalAlpha = Math.min(p.life, 0.55);
+              ctx.fillStyle = p.color;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
-        }
-        ctx.globalAlpha = 1;
-        this._animId = canvas.requestAnimationFrame(animate);
+          ctx.globalAlpha = 1;
+          this._animId = canvas.requestAnimationFrame(animate);
+        };
+        animate();
+      });
+    });
+  },
+
+  _makeParticle(cx, cy, w, h, colors, photos, isPhoto) {
+    const a = Math.random() * Math.PI * 2;
+    // 照片粒子：照片半径缩小到 10px，从画面边缘随机位置出发向中心移动
+    if (isPhoto === undefined) {
+      isPhoto = photos.length > 0 && Math.random() < 0.05;
+    }
+
+    if (isPhoto) {
+      const photo = photos[Math.floor(Math.random() * photos.length)];
+      // 从边缘随机位置出现
+      const edge = Math.floor(Math.random() * 4);
+      let x, y;
+      const margin = 60;
+      switch (edge) {
+        case 0: x = Math.random() * w; y = -margin; break;       // top
+        case 1: x = w + margin; y = Math.random() * h; break;     // right
+        case 2: x = Math.random() * w; y = h + margin; break;     // bottom
+        case 3: x = -margin; y = Math.random() * h; break;        // left
+      }
+      const dx = cx - x;
+      const dy = cy - y;
+      const dist = Math.sqrt(dx * dx + dy * dy) + 1;
+      const sp = 0.15 + Math.random() * 0.3;
+      return {
+        x, y,
+        vx: (dx / dist) * sp,
+        vy: (dy / dist) * sp,
+        size: 0,
+        color: '',
+        life: 0.4 + Math.random() * 0.6,
+        isPhoto: true,
+        photo
       };
-          animate();
-        }); // Promise.all.then
-      }); // exec callback
+    }
+
+    const speed = 0.6 + Math.random() * 1.4;
+    const size = 0.5 + Math.random() * 1.4;
+    return {
+      x: cx, y: cy,
+      vx: Math.cos(a) * speed,
+      vy: Math.sin(a) * speed,
+      size,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 0.4 + Math.random() * 0.6,
+      isPhoto: false,
+      photo: null
+    };
   },
 
   async handleLogin() {
@@ -185,22 +215,3 @@ Page({
     wx.reLaunch({ url: '/wp/dressup/index' });
   }
 });
-
-function mkParticle(colors, photos) {
-  const a = Math.random() * Math.PI * 2;
-  const isPhoto = photos.length > 0 && Math.random() < 0.05;
-  // 粒子快，照片慢
-  const s = isPhoto ? (0.4 + Math.random() * 1.0) : (1.2 + Math.random() * 3.0);
-  // 粒子粗，照片固定大小
-  const size = isPhoto ? 12 : (0.8 + Math.random() * 2.2);
-  return {
-    x: 0, y: 0,
-    vx: Math.cos(a) * s,
-    vy: Math.sin(a) * s,
-    size,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    life: 0.4 + Math.random() * 0.6,
-    isPhoto,
-    photoIdx: isPhoto ? Math.floor(Math.random() * photos.length) : -1
-  };
-}

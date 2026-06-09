@@ -1,0 +1,56 @@
+<!-- gb/groupbuy/index — 开团首页 -->
+<view class="page-brandbar">
+  <text class="brand-text">PetMini</text>
+</view>
+
+<view class="groupbuy-index">
+  <!-- 开团类型选择 -->
+  <view class="section-title">请选择开团类型</view>
+
+  <view class="type-list">
+    <!-- 普通团购 -->
+    <view class="type-card active" catchtap="goCreate">
+      <text class="type-icon">🛍️</text>
+      <view class="type-info">
+        <text class="type-name">普通团购</text>
+        <text class="type-desc">实物商品，快递发货</text>
+      </view>
+      <text class="type-badge">✅</text>
+    </view>
+
+    <!-- 预售团购 -->
+    <view class="type-card locked" catchtap="onLocked" data-type="预售团购">
+      <text class="type-icon">⏰</text>
+      <view class="type-info">
+        <text class="type-name">预售团购</text>
+        <text class="type-desc">先收款后采购，指定发货日期</text>
+      </view>
+      <text class="type-badge">🔒</text>
+    </view>
+
+    <!-- 自提团购 -->
+    <view class="type-card locked" catchtap="onLocked" data-type="自提团购">
+      <text class="type-icon">📍</text>
+      <view class="type-info">
+        <text class="type-name">自提团购</text>
+        <text class="type-desc">线下取货，无需快递</text>
+      </view>
+      <text class="type-badge">🔒</text>
+    </view>
+  </view>
+
+  <!-- 我已开团 -->
+  <view class="section-title" wx:if="{{hasProducts}}">我已开团</view>
+  <view class="my-products" wx:if="{{hasProducts}}">
+    <view class="product-row" wx:for="{{myProducts}}" wx:key="productId" catchtap="goProductList">
+      <image class="product-thumb" src="{{item.thumbnail}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-price">¥{{item.priceGroup}}</text>
+      </view>
+      <text class="product-arrow">›</text>
+    </view>
+  </view>
+
+  <t-loading wx:if="{{loading}}" theme="circular" size="48rpx" class="loading-wrap" />
+</view>

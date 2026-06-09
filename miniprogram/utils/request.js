@@ -147,6 +147,35 @@ function getOrderDetail(orderId) {
   return request('gb-order', { action: 'detail', orderId });
 }
 
+// ===== 卖家端（开团） API =====
+function sellerGetProducts(params) {
+  return request('gb-product', { action: 'myProductList', ...params });
+}
+function sellerCreateProduct(params) {
+  return request('gb-product', { action: 'createProduct', ...params }, { showLoading: true, loadingText: '创建中…' });
+}
+function sellerUpdateProduct(params) {
+  return request('gb-product', { action: 'updateProduct', ...params }, { showLoading: true, loadingText: '保存中…' });
+}
+function sellerToggleProduct(productId) {
+  return request('gb-product', { action: 'toggleProductStatus', productId });
+}
+function sellerGetOrders(params) {
+  return request('gb-order', { action: 'myProductOrders', ...params });
+}
+function sellerGetOrderDetail(orderId) {
+  return request('gb-order', { action: 'sellerOrderDetail', orderId });
+}
+function sellerShip(orderId, shipMethod, carrierCode, carrierName, trackingNo) {
+  return request('gb-order', { action: 'ship', orderId, shipMethod, carrierCode, carrierName, trackingNo }, { showLoading: true, loadingText: '发货中…' });
+}
+function sellerGetStats() {
+  return request('gb-order', { action: 'mySalesStats' });
+}
+function sellerGetProgress() {
+  return request('gb-progress', { action: 'myProgress' });
+}
+
 // ===== #3 地图 API =====
 function getNearbyPlaces(lat, lng, category) {
   return request('mp-place', { action: 'list', lat, lng, category });
@@ -187,6 +216,15 @@ module.exports = {
   paySuccess,
   getOrders,
   getOrderDetail,
+  sellerGetProducts,
+  sellerCreateProduct,
+  sellerUpdateProduct,
+  sellerToggleProduct,
+  sellerGetOrders,
+  sellerGetOrderDetail,
+  sellerShip,
+  sellerGetStats,
+  sellerGetProgress,
   getNearbyPlaces,
   searchPlaces,
   getPlaceDetail,

@@ -11,13 +11,17 @@ FUNCTIONS=(
   "common-user"
   "common-pet"
   "common-featureFlag"
+  "login-resources"
   "wp-avatar"
   "wp-items"
   "wp-outfits"
+  "wp-recommend"
   "gb-product"
   "gb-order"
+  "gb-progress"
   "mp-place"
   "mp-checkin"
+  "mp-place-stats"
   "mbti-test"
 )
 

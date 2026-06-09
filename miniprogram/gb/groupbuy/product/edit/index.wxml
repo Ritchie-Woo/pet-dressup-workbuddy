@@ -1,0 +1,98 @@
+<!-- 商品编辑/新建 -->
+<view class="page-brandbar brandbar-has-back">
+  <view class="brandbar-back" bindtap="goBack">
+    <t-icon name="chevron-left" size="40rpx" color="#333" />
+  </view>
+  <text class="brand-text">PetMini</text>
+  <view class="brandbar-spacer"></view>
+</view>
+
+<view class="product-edit-page">
+  <!-- 基本信息 -->
+  <view class="form-section">
+    <text class="form-title">基本信息</text>
+    <view class="form-item">
+      <text class="form-label">商品名称</text>
+      <t-input value="{{form.name}}" placeholder="请输入商品名称" maxlength="64" bindchange="onInput" data-field="name" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">商品描述</text>
+      <t-textarea value="{{form.description}}" placeholder="请输入商品描述" maxlength="500" bindchange="onInput" data-field="description" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">分类</text>
+      <view class="category-grid">
+        <view class="category-tag {{form.category === item.value ? 'active' : ''}}"
+              wx:for="{{categories}}" wx:key="value"
+              catchtap="onCategory" data-value="{{item.value}}">
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 价格与库存 -->
+  <view class="form-section">
+    <text class="form-title">价格与库存</text>
+    <view class="form-item">
+      <text class="form-label">团购价（元）</text>
+      <t-input type="digit" value="{{form.priceGroup}}" placeholder="0.00" bindchange="onInput" data-field="priceGroup" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">原价（元）</text>
+      <t-input type="digit" value="{{form.priceOriginal}}" placeholder="0.00" bindchange="onInput" data-field="priceOriginal" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">库存</text>
+      <t-stepper value="{{form.stock}}" min="0" step="1" bindchange="onStepper" data-field="stock" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">成团人数</text>
+      <t-stepper value="{{form.minGroupSize}}" min="2" step="1" bindchange="onStepper" data-field="minGroupSize" />
+    </view>
+  </view>
+
+  <!-- 规格 -->
+  <view class="form-section">
+    <text class="form-title">商品规格</text>
+    <view class="spec-list" wx:if="{{form.specs.length > 0}}">
+      <view class="spec-item" wx:for="{{form.specs}}" wx:key="index">
+        <view class="spec-header">
+          <t-input value="{{item.name}}" placeholder="规格名（如颜色）" bindchange="onSpecName" data-index="{{index}}" />
+          <text class="spec-delete" catchtap="deleteSpec" data-index="{{index}}">删除</text>
+        </view>
+        <view class="spec-options">
+          <view class="spec-option-tag" wx:for="{{item.options}}" wx:for-item="opt" wx:for-index="optIdx" wx:key="optIdx">
+            <text>{{opt}}</text>
+            <text class="opt-delete" catchtap="deleteSpecOption" data-spec="{{index}}" data-opt="{{optIdx}}">×</text>
+          </view>
+          <view class="spec-option-add">
+            <t-input placeholder="添加选项" bindconfirm="addSpecOption" data-index="{{index}}" />
+          </view>
+        </view>
+      </view>
+    </view>
+    <t-button theme="default" size="small" block bindtap="addSpec">+ 添加规格</t-button>
+  </view>
+
+  <!-- 商品图片 -->
+  <view class="form-section">
+    <text class="form-title">商品图片</text>
+    <t-upload
+      mediaType="{{['image']}}"
+      files="{{uploadFiles}}"
+      max="{{9}}"
+      bind:add="onUploadAdd"
+      bind:remove="onUploadRemove"
+    />
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-bar">
+    <t-button theme="primary" size="large" block loading="{{submitting}}" bindtap="onSubmit">
+      {{isEdit ? '保存修改' : '创建商品'}}
+    </t-button>
+  </view>
+</view>
+
+<t-toast id="t-toast" />

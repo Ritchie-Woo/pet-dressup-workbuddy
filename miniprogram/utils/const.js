@@ -136,11 +136,11 @@ const MBTI_DIMENSIONS = [
 // 页面路径常量
 const PAGES = {
   LOGIN: '/common/login/index',
-  PET_LIST: '/common/pet/list',
-  PET_CREATE: '/common/pet/create',
-  PET_DETAIL: '/common/pet/detail',
-  ADDRESS_LIST: '/common/address/list',
-  ADDRESS_EDIT: '/common/address/edit',
+  PET_LIST: '/common/pet/list/index',
+  PET_CREATE: '/common/pet/create/index',
+  PET_DETAIL: '/common/pet/detail/index',
+  ADDRESS_LIST: '/common/address/list/index',
+  ADDRESS_EDIT: '/common/address/edit/index',
   WP_DRESS: '/wp/dressup/index',
   WP_AVATAR: '/wp/avatar/index',
   WP_SHARE: '/wp/share/index',

@@ -1,0 +1,9 @@
+{
+  "name": "cf-login-resources",
+  "version": "1.0.0",
+  "description": "登录页粒子动效素材",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

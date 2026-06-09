@@ -1,0 +1,45 @@
+<!-- gb/groupbuy/order/list — 我卖出的订单 -->
+<view class="page-brandbar brandbar-has-back">
+  <view class="brandbar-back" bindtap="goBack">
+    <t-icon name="chevron-left" size="40rpx" color="#333" />
+  </view>
+  <text class="brand-text">PetMini</text>
+  <view class="brandbar-spacer"></view>
+</view>
+
+<view class="order-list-page">
+  <view class="tabs-wrapper">
+    <t-tabs value="{{activeTab}}" bind:change="switchTab" space="{{false}}">
+      <t-tab-panel wx:for="{{statusTabs}}" wx:key="value" label="{{item.label}}" value="{{item.value}}" />
+    </t-tabs>
+  </view>
+
+  <view wx:if="{{!loading && orders.length > 0}}">
+    <view class="order-card" wx:for="{{orders}}" wx:key="orderId">
+      <view class="order-header">
+        <text class="order-no">订单号: {{item.orderId}}</text>
+        <t-tag size="small" variant="light" theme="{{item.status === 'paid' ? 'warning' : item.status === 'shipped' ? 'primary' : item.status === 'completed' ? 'success' : 'default'}}">
+          {{statusLabel[item.status]}}
+        </t-tag>
+      </view>
+      <view class="order-body" catchtap="goDetail" data-id="{{item.orderId}}">
+        <view class="order-info">
+          <text class="order-product">{{item.productName}}</text>
+          <text class="order-spec" wx:if="{{item.specText}}">{{item.specText}}</text>
+          <text class="order-buyer">买家: {{item.buyerNickname}}</text>
+        </view>
+        <view class="order-right">
+          <text class="order-amount">¥{{item.amountTotal}}</text>
+          <text class="order-qty">x{{item.quantity}}</text>
+        </view>
+      </view>
+      <view class="order-footer" wx:if="{{item.status === 'paid'}}">
+        <t-button theme="primary" size="small" catchtap="goShip" data-id="{{item.orderId}}">去发货</t-button>
+      </view>
+    </view>
+  </view>
+
+  <t-loading wx:if="{{loadingMore}}" theme="circular" size="48rpx" class="loading-wrap" />
+  <t-loading wx:if="{{loading}}" theme="circular" size="48rpx" class="loading-wrap" />
+  <t-empty wx:if="{{!loading && orders.length === 0}}" description="暂无订单" />
+</view>

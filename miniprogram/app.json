@@ -4,22 +4,48 @@
     "wp/dressup/index",
     "wp/avatar/index",
     "wp/share/index",
-    "gb/list/index",
-    "gb/detail/index",
-    "gb/cart/index",
-    "gb/order/list",
-    "gb/order/detail",
+    "wp/deskpet/index",
     "mp/map/index",
     "mp/place/index",
-    "mbti/test/index",
-    "mbti/card/index",
+    "my/index",
     "common/pet/list/index",
     "common/pet/create/index",
     "common/pet/detail/index",
     "common/address/list/index",
-    "common/address/edit/index",
-    "my/index"
+    "common/address/edit/index"
   ],
+  "subPackages": [
+    {
+      "root": "gb",
+      "name": "subpackage-gb",
+      "pages": [
+        "list/index",
+        "detail/index",
+        "cart/index",
+        "order/list/index",
+        "order/detail/index",
+        "groupbuy/index/index",
+        "groupbuy/product/list/index",
+        "groupbuy/product/edit/index",
+        "groupbuy/order/list/index",
+        "groupbuy/order/detail/index"
+      ]
+    },
+    {
+      "root": "mbti",
+      "name": "subpackage-mbti",
+      "pages": [
+        "test/index",
+        "card/index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "my/index": {
+      "network": "all",
+      "packages": ["subpackage-gb", "subpackage-mbti"]
+    }
+  },
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "dark",
@@ -39,18 +65,6 @@
         "selectedIconPath": "images/tab/wp-active.png"
       },
       {
-        "pagePath": "gb/list/index",
-        "text": "团购",
-        "iconPath": "images/tab/gb.png",
-        "selectedIconPath": "images/tab/gb-active.png"
-      },
-      {
-        "pagePath": "gb/order/list",
-        "text": "订单",
-        "iconPath": "images/tab/order.png",
-        "selectedIconPath": "images/tab/order-active.png"
-      },
-      {
         "pagePath": "mp/map/index",
         "text": "地图",
         "iconPath": "images/tab/mp.png",
@@ -67,33 +81,12 @@
   "usingComponents": {
     "t-icon": "tdesign-miniprogram/icon/icon",
     "t-button": "tdesign-miniprogram/button/button",
-    "t-cell": "tdesign-miniprogram/cell/cell",
-    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
-    "t-navbar": "tdesign-miniprogram/navbar/navbar",
-    "t-image": "tdesign-miniprogram/image/image",
-    "t-tag": "tdesign-miniprogram/tag/tag",
-    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
     "t-loading": "tdesign-miniprogram/loading/loading",
     "t-toast": "tdesign-miniprogram/toast/toast",
     "t-empty": "tdesign-miniprogram/empty/empty",
-    "t-dialog": "tdesign-miniprogram/dialog/dialog",
     "t-popup": "tdesign-miniprogram/popup/popup",
-    "t-tabs": "tdesign-miniprogram/tabs/tabs",
-    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
-    "t-grid": "tdesign-miniprogram/grid/grid",
-    "t-grid-item": "tdesign-miniprogram/grid-item/grid-item",
-    "t-avatar": "tdesign-miniprogram/avatar/avatar",
-    "t-badge": "tdesign-miniprogram/badge/badge",
-    "t-input": "tdesign-miniprogram/input/input",
-    "t-upload": "tdesign-miniprogram/upload/upload",
-    "t-radio": "tdesign-miniprogram/radio/radio",
-    "t-radio-group": "tdesign-miniprogram/radio-group/radio-group",
-    "t-picker": "tdesign-miniprogram/picker/picker",
-    "t-rate": "tdesign-miniprogram/rate/rate",
-    "t-search": "tdesign-miniprogram/search/search",
-    "t-stepper": "tdesign-miniprogram/stepper/stepper",
-    "t-swiper": "tdesign-miniprogram/swiper/swiper",
-    "t-swiper-nav": "tdesign-miniprogram/swiper-nav/swiper-nav"
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "pet-widget": "/components/pet-widget/index"
   },
   "networkTimeout": {
     "request": 15000,
@@ -106,7 +99,7 @@
       "desc": "需要获取您的位置以展示附近宠物友好场所"
     }
   },
-  "requiredPrivateInfos": [],
+  "requiredPrivateInfos": ["getLocation", "chooseLocation"],
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "renderer": "skyline",

@@ -1,4 +1,8 @@
 <!-- mp/map/index.wxml — 宠物友好地图主页面 -->
+<view class="page-brandbar">
+  <text class="brand-text">PetMini</text>
+</view>
+
 <view class="page-map">
   <!-- 搜索栏 -->
   <view class="map-search-bar">
@@ -7,7 +11,7 @@
 
   <!-- 分类筛选 -->
   <scroll-view class="map-cats" scroll-x>
-    <view wx:for="{{categories}}" wx:key="value" class="cat-chip {{activeCategory === item.value ? 'active' : ''}}" bindtap="switchCategory" data-val="{{item.value}}">
+    <view wx:for="{{categories}}" wx:key="value" class="cat-chip {{activeCategory === item.value ? 'active' : ''}} {{item.value === 'all' && !categoryActive ? 'inactive' : ''}}" bindtap="switchCategory" data-val="{{item.value}}">
       {{item.icon}} {{item.label}}
     </view>
   </scroll-view>
@@ -15,22 +19,43 @@
   <!-- 地图 -->
   <map id="myMap" class="map-view" latitude="{{latitude}}" longitude="{{longitude}}" scale="{{14}}" markers="{{markers}}" show-location="{{true}}" bindmarkertap="onMarkerTap" bindregionchange="onRegionChange" />
 
-  <!-- 底部投稿按钮 -->
-  <view class="map-submit-btn" bindtap="goSubmit">
-    <t-icon name="add" size="40rpx" color="#fff" />
-    <text>投稿地点</text>
+  <!-- 定位按钮 -->
+  <view class="map-locate-btn" bindtap="locateMe">
+    <t-icon name="location" size="40rpx" color="#333" />
   </view>
 
-  <!-- 附近地点列表 -->
-  <view class="map-place-list" wx:if="{{places.length > 0}}">
-    <text class="list-title">附近宠物友好地点 ({{places.length}})</text>
-    <view wx:for="{{places}}" wx:key="placeId" class="place-mini-card" bindtap="goDetail" data-id="{{item.placeId}}">
-      <image class="place-thumb" src="{{item.images[0] || ''}}" mode="aspectFill" />
-      <view class="place-info">
-        <text class="place-name">{{item.name}}</text>
-        <text class="place-meta">{{categoryLabel(item.category)}} · {{item.distance}}m</text>
+  <!-- 投稿按钮（圆形纯图标） -->
+  <view class="map-submit-btn" bindtap="goSubmit">
+    <t-icon name="edit" size="40rpx" color="#fff" />
+  </view>
+
+  <!-- 列表完全收起时显示的"把手"小条 -->
+  <view class="list-handle {{listSnap === 0 ? 'visible' : ''}}"
+        catchtouchstart="onHandleDragStart"
+        catchtouchmove="onHandleDragMove"
+        catchtouchend="onHandleDragEnd">
+    <view class="list-handle-bar"></view>
+  </view>
+
+  <!-- 附近地点列表（三段式拖动展开：0 / 30vh / 80vh） -->
+  <view class="map-place-list {{places.length === 0 ? 'hidden' : ''}}" wx:if="{{places.length > 0}}"
+        style="height: {{_dragVh != null ? _dragVh : (listSnap === 0 ? 0 : listSnap === 1 ? 30 : listSnap === 2 ? 50 : 80)}}vh; transition: {{_dragging ? 'none' : 'height 250ms ease'}};"
+        bind:touchstart="onDragStart"
+        bind:touchmove="onDragMove"
+        bind:touchend="onDragEnd">
+    <view class="list-header">
+      <text class="list-title">当前区域内地点 ({{places.length}})</text>
+      <text class="list-tip" wx:if="{{truncated}}">结果较多，请缩小范围</text>
+    </view>
+    <view class="list-scroll">
+      <view wx:for="{{places}}" wx:key="placeId" id="card-{{item.placeId}}" class="place-mini-card" data-id="{{item.placeId}}" catchtap="onCardTap">
+        <image class="place-thumb" src="{{item.images[0] || ''}}" mode="aspectFill" />
+        <view class="place-info">
+          <text class="place-name">{{item.name}}</text>
+          <text class="place-meta">{{categoryLabel(item.category)}} · {{item.distanceText}}</text>
+        </view>
+        <t-tag wx:if="{{item.rating > 0}}" size="small" variant="light">⭐{{item.rating}}</t-tag>
       </view>
-      <t-tag wx:if="{{item.rating > 0}}" size="small" variant="light">⭐{{item.rating}}</t-tag>
     </view>
   </view>
 </view>

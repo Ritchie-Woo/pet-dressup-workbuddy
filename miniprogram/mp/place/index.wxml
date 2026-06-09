@@ -1,7 +1,7 @@
-<!-- mp/place/index.wxml — 地点详情 / 投稿表单 -->
-<!-- 投稿表单模式 -->
+<!-- mp/place/index.wxml — POI 详情（P0 + P1） -->
 <navbar wx:if="{{mode === 'submit'}}" title="投稿地点" />
 
+<!-- 投稿表单 -->
 <view wx:if="{{mode === 'submit'}}" class="page-submit">
   <view class="form-section">
     <view class="form-row"><text class="label">名称 *</text><t-input value="{{form.name}}" placeholder="地点名称" bind:change="onFormChange" data-field="name" /></view>
@@ -10,7 +10,29 @@
         <view wx:for="{{categories}}" wx:key="value" class="cat-chip-sm {{form.category === item.value ? 'active' : ''}}" bindtap="selectCat" data-val="{{item.value}}">{{item.label}}</view>
       </view>
     </view>
-    <view class="form-row"><text class="label">地址 *</text><t-input value="{{form.address}}" placeholder="详细地址" bind:change="onFormChange" data-field="address" /></view>
+
+    <!-- 位置选择：按钮 + 选中后展示已选信息 -->
+    <view class="form-row"><text class="label">位置 *（点击下方按钮选点）</text>
+      <view class="picker-btn {{form.latitude ? 'picker-btn-filled' : ''}}" bindtap="openMapPicker">
+        <block wx:if="{{form.latitude}}">
+          <t-icon name="location" size="36rpx" color="#FF8C00" />
+          <view class="picker-btn-text">
+            <text class="picker-addr">{{form.geoAddress || '已选位置'}}</text>
+          </view>
+          <text class="picker-btn-repick">重新选</text>
+        </block>
+        <block wx:else>
+          <t-icon name="add" size="36rpx" color="#FF8C00" />
+          <text>选择地点</text>
+        </block>
+      </view>
+    </view>
+
+    <!-- 详细地址描述（楼层/xx旁边） -->
+    <view class="form-row"><text class="label">详细地址说明 *</text>
+      <textarea class="form-textarea" value="{{form.detailAddress}}" placeholder="如：南京华采天地 B1 层星巴克隔壁" bindinput="onFormChange" data-field="detailAddress" maxlength="100" />
+    </view>
+
     <view class="form-row"><text class="label">电话</text><t-input value="{{form.phone}}" type="number" placeholder="联系电话" bind:change="onFormChange" data-field="phone" /></view>
     <view class="form-row"><text class="label">营业时间</text><t-input value="{{form.businessHours}}" placeholder="如 09:00-22:00" bind:change="onFormChange" data-field="businessHours" /></view>
     <view class="form-row"><text class="label">宠物政策</text><t-input value="{{form.petPolicy}}" placeholder="如 允许小型犬，需牵绳" bind:change="onFormChange" data-field="petPolicy" /></view>
@@ -21,22 +43,36 @@
 <!-- 详情模式 -->
 <view wx:else>
   <navbar title="地点详情" />
-  <view wx:if="{{!loading}}" class="page-place-detail">
+  <scroll-view wx:if="{{!loading}}" class="detail-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="page-place-detail">
     <!-- 图片轮播 -->
-    <t-swiper wx:if="{{place.images && place.images.length > 0}}" list="{{swiperList}}" autoplay="{{false}}" height="250" />
-    <view wx:else class="no-image">暂无照片</view>
+    <swiper wx:if="{{swiperList.length > 0}}" class="detail-swiper" indicator-dots="{{swiperList.length > 1}}" autoplay="{{false}}" style="height:250px">
+      <swiper-item wx:for="{{swiperList}}" wx:key="index">
+        <image src="{{item.image}}" mode="aspectFill" style="width:100%;height:100%" />
+      </swiper-item>
+    </swiper>
+    <view wx:else class="no-image">
+      <text>暂无照片</text>
+      <text class="no-image-upload" bindtap="uploadPhoto">📷 上传照片</text>
+    </view>
 
-    <!-- 基本信息 -->
+    <!-- 基本信息 + 统计 -->
     <view class="detail-section card">
       <text class="place-name">{{place.name}}</text>
       <view class="place-meta-row">
         <t-tag size="small" variant="light">{{categoryLabel(place.category)}}</t-tag>
         <text wx:if="{{place.rating > 0}}">⭐ {{place.rating}} ({{place.reviewCount}}评价)</text>
-        <text wx:if="{{place.checkinCount > 0}}"> · {{place.checkinCount}}人打卡</text>
+      </view>
+      <view wx:if="{{checkinCount > 0}}" class="place-stats-bar">
+        <text class="checkin-count-text">{{checkinCount}}人踩点</text>
+        <text wx:if="{{lastCheckinTime}}" class="checkin-time-text"> · 最近踩点：{{lastCheckinTime}}</text>
+      </view>
+      <view wx:elif="{{checkinCount === 0}}" class="empty-checkin-hint">
+        <text>还没有人来踩点，来做第一个吧！</text>
       </view>
     </view>
 
-    <!-- 地址/电话 -->
+    <!-- 地址/电话/时间 -->
     <view class="detail-section card">
       <view class="info-row" bindtap="openNavigation"><t-icon name="location" size="36rpx" color="#FF8C00" /><text class="info-text">{{place.address}}</text><t-icon name="chevron-right" size="28rpx" color="#ccc" /></view>
       <view wx:if="{{place.phone}}" class="info-row" bindtap="callPhone"><t-icon name="call" size="36rpx" color="#07C160" /><text class="info-text">{{place.phone}}</text></view>
@@ -49,27 +85,101 @@
       <text class="policy-text">{{place.petPolicy}}</text>
     </view>
 
+    <!-- P1: 标签云（全量展示，按票数着色） -->
+    <view class="detail-section card">
+      <text class="section-title">🏷️ 标签云</text>
+      <view class="tag-cloud-grid">
+        <view wx:for="{{tagListWithStats}}" wx:key="id" class="tag-card tag-{{item.color}}">
+          <text class="tag-card-name">{{item.name}}</text>
+          <text class="tag-card-vote" wx:if="{{item.total > 0}}">
+            <text wx:if="{{item.pos > 0}}">👍 {{item.pos}}</text>
+            <text wx:if="{{item.neg > 0}}">  👎 {{item.neg}}</text>
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- P1: 品种分布 -->
+    <view wx:if="{{shouldShowBreed}}" class="detail-section card">
+      <text class="section-title">🐕 品种分布</text>
+      <view class="breed-bar">
+        <text wx:for="{{breedList}}" wx:key="name" class="breed-item">{{item.name}} {{item.count}}次 |
+        </text>
+      </view>
+    </view>
+
+    <!-- P1: 时段热度 -->
+    <view wx:if="{{hourlyHeatmap && Object.keys(hourlyHeatmap).length > 0}}" class="detail-section card">
+      <text class="section-title">🔥 时段热度</text>
+      <view class="heatmap-table">
+        <view class="heatmap-row heatmap-header">
+          <text class="heatmap-cell heatmap-label"></text>
+          <text wx:for="{{weekdays}}" wx:key="*this" class="heatmap-cell heatmap-header-cell">{{item}}</text>
+        </view>
+        <view wx:for="{{hourSlots}}" wx:for-item="hour" wx:for-index="ri" wx:key="hour" class="heatmap-row">
+          <text class="heatmap-cell heatmap-label">{{hourLabels[ri]}}</text>
+          <text wx:for="{{weekdays}}" wx:for-item="wd" wx:for-index="di" wx:key="di" class="heatmap-cell" style="background:{{getHeatColor(di + 1, hour)}}">{{getHeatValue(di + 1, hour)}}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 打卡记录 -->
-    <view wx:if="{{place.recentCheckins && place.recentCheckins.length > 0}}" class="detail-section card">
+    <view wx:if="{{recentCheckins.length > 0}}" class="detail-section card">
       <text class="section-title">最近打卡的宠物</text>
       <view class="checkin-avatars">
-        <view wx:for="{{place.recentCheckins}}" wx:key="createdAt" class="checkin-avatar-wrap">
+        <view wx:for="{{recentCheckins}}" wx:key="createdAt" class="checkin-avatar-wrap">
           <image class="checkin-avatar" src="{{item.avatarSnapshot || ''}}" mode="aspectFill" />
         </view>
       </view>
     </view>
 
-    <!-- 操作栏 -->
-    <view class="detail-actions safe-bottom">
-      <view class="action-half" bindtap="toggleFavorite">
-        <t-icon name="{{isFavorited ? 'heart-filled' : 'heart'}}" size="40rpx" color="{{isFavorited ? '#FF4D4F' : '#999'}}" />
-        <text>{{isFavorited ? '已收藏' : '收藏'}}</text>
-      </view>
-      <view class="action-half" bindtap="doCheckin">
+    <!-- 底部留白（占位底部 fixed 操作栏高度） -->
+    <view class="detail-bottom-spacer"></view>
+  </view>
+  </scroll-view>
+
+  <!-- 操作栏：position: fixed 浮在底部，给内部留 180rpx padding-bottom -->
+  <view class="detail-actions safe-bottom">
+    <view class="action-half" bindtap="toggleFavorite">
+      <t-icon name="{{isFavorited ? 'heart-filled' : 'heart'}}" size="40rpx" color="{{isFavorited ? '#FF4D4F' : '#999'}}" />
+      <text class="action-label">{{isFavorited ? '已收藏' : '收藏'}}</text>
+    </view>
+    <view class="action-half {{checkedInToday ? 'action-disabled' : ''}}" bindtap="doCheckin">
+      <block wx:if="{{checkedInToday}}">
+        <t-icon name="check-circle-filled" size="40rpx" color="#07C160" />
+        <text class="action-label action-checked">已踩点 ✓</text>
+      </block>
+      <block wx:elif="{{checkinStatus === 'loading'}}">
+        <t-loading theme="circular" size="40rpx" />
+        <text class="action-label">踩点中...</text>
+      </block>
+      <block wx:else>
         <t-icon name="location" size="40rpx" color="#FF8C00" />
-        <text>打卡</text>
+        <text class="action-label">我来踩点</text>
+      </block>
+    </view>
+  </view>
+
+  <!-- P1: 标签投票半屏 -->
+  <view wx:if="{{showTagVote}}" class="tag-vote-overlay" bindtap="closeTagVote"></view>
+  <view wx:if="{{showTagVote}}" class="tag-vote-panel safe-bottom">
+    <view class="tv-header">
+      <text class="tv-title">帮其他铲屎官确认一下？</text>
+      <text class="tv-close" bindtap="closeTagVote">✕</text>
+    </view>
+    <view class="tv-tags">
+      <view wx:for="{{voteTags}}" wx:key="id" class="tv-tag-row">
+        <text class="tv-tag-name">{{item.name}}</text>
+        <block wx:if="{{tagCache[item.id] !== undefined}}">
+          <text class="tv-voted">已投 {{tagCache[item.id] === 1 ? '👍' : '👎'}}</text>
+        </block>
+        <block wx:else>
+          <view class="tv-btns">
+            <view class="tv-btn tv-btn-yes" bindtap="voteTag" data-tag-id="{{item.id}}" data-vote="1">👍 确认</view>
+            <view class="tv-btn tv-btn-no"  bindtap="voteTag" data-tag-id="{{item.id}}" data-vote="-1">👎 否认</view>
+          </view>
+        </block>
       </view>
     </view>
   </view>
-  <skeleton wx:else row="{{4}}" />
 </view>

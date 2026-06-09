@@ -5,9 +5,9 @@ const PRODUCTS = [
     "name": "Pet Deadly Doll 万圣节趣味服装 - 小号",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_01.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_01.jpg",
     "images": [
-      "/images/products/衣服/clothes_01.jpg"
+      "/gb/images/products/衣服/clothes_01.jpg"
     ],
     "priceOriginal": 88.22,
     "priceGroup": 52.93,
@@ -23,9 +23,9 @@ const PRODUCTS = [
     "name": "NACOCO 牛仔骑士风格宠物服装 - M码",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_02.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_02.jpg",
     "images": [
-      "/images/products/衣服/clothes_02.jpg"
+      "/gb/images/products/衣服/clothes_02.jpg"
     ],
     "priceOriginal": 115.39,
     "priceGroup": 69.23,
@@ -41,9 +41,9 @@ const PRODUCTS = [
     "name": "牛仔背带裤宠物连体衣 - 蓝色中号",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_03.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_03.jpg",
     "images": [
-      "/images/products/衣服/clothes_03.jpg"
+      "/gb/images/products/衣服/clothes_03.jpg"
     ],
     "priceOriginal": 128.97,
     "priceGroup": 77.38,
@@ -59,9 +59,9 @@ const PRODUCTS = [
     "name": "iSmarten 牛仔骑手风格宠物套装 - S码",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_04.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_04.jpg",
     "images": [
-      "/images/products/衣服/clothes_04.jpg"
+      "/gb/images/products/衣服/clothes_04.jpg"
     ],
     "priceOriginal": 101.8,
     "priceGroup": 61.08,
@@ -77,9 +77,9 @@ const PRODUCTS = [
     "name": "NACOCO 绿色恐龙造型宠物服装 - XL码",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_05.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_05.jpg",
     "images": [
-      "/images/products/衣服/clothes_05.jpg"
+      "/gb/images/products/衣服/clothes_05.jpg"
     ],
     "priceOriginal": 108.6,
     "priceGroup": 65.16,
@@ -95,9 +95,9 @@ const PRODUCTS = [
     "name": "Gimilife 卡通连帽衫宠物睡衣套装 - S码",
     "category": "clothing",
     "categoryLabel": "衣服",
-    "thumbnail": "/images/products/衣服/clothes_06.jpg",
+    "thumbnail": "/gb/images/products/衣服/clothes_06.jpg",
     "images": [
-      "/images/products/衣服/clothes_06.jpg"
+      "/gb/images/products/衣服/clothes_06.jpg"
     ],
     "priceOriginal": 135.76,
     "priceGroup": 81.46,
@@ -113,9 +113,9 @@ const PRODUCTS = [
     "name": "QUMY 狗狗鞋 - 大型犬户外防护靴",
     "category": "clothing",
     "categoryLabel": "鞋子",
-    "thumbnail": "/images/products/鞋子/shoes_01.jpg",
+    "thumbnail": "/gb/images/products/鞋子/shoes_01.jpg",
     "images": [
-      "/images/products/鞋子/shoes_01.jpg"
+      "/gb/images/products/鞋子/shoes_01.jpg"
     ],
     "priceOriginal": 196.89,
     "priceGroup": 118.13,
@@ -131,9 +131,9 @@ const PRODUCTS = [
     "name": "XSY&G 防水反光狗靴4件套 - 尺码6",
     "category": "clothing",
     "categoryLabel": "鞋子",
-    "thumbnail": "/images/products/鞋子/shoes_02.jpg",
+    "thumbnail": "/gb/images/products/鞋子/shoes_02.jpg",
     "images": [
-      "/images/products/鞋子/shoes_02.jpg"
+      "/gb/images/products/鞋子/shoes_02.jpg"
     ],
     "priceOriginal": 162.93,
     "priceGroup": 97.76,
@@ -149,9 +149,9 @@ const PRODUCTS = [
     "name": "防水狗靴 - 小型/中型犬防滑背带靴（黑色）",
     "category": "clothing",
     "categoryLabel": "鞋子",
-    "thumbnail": "/images/products/鞋子/shoes_03.jpg",
+    "thumbnail": "/gb/images/products/鞋子/shoes_03.jpg",
     "images": [
-      "/images/products/鞋子/shoes_03.jpg"
+      "/gb/images/products/鞋子/shoes_03.jpg"
     ],
     "priceOriginal": 95.01,
     "priceGroup": 57.01,
@@ -167,9 +167,9 @@ const PRODUCTS = [
     "name": "SCENEREAL 透气打孔狗鞋 - EVA防滑底",
     "category": "clothing",
     "categoryLabel": "鞋子",
-    "thumbnail": "/images/products/鞋子/shoes_04.jpg",
+    "thumbnail": "/gb/images/products/鞋子/shoes_04.jpg",
     "images": [
-      "/images/products/鞋子/shoes_04.jpg"
+      "/gb/images/products/鞋子/shoes_04.jpg"
     ],
     "priceOriginal": 251.22,
     "priceGroup": 150.73,
@@ -185,9 +185,9 @@ const PRODUCTS = [
     "name": "Dimicoo 透气狗靴 - 夏季炎热路面防滑鞋",
     "category": "clothing",
     "categoryLabel": "鞋子",
-    "thumbnail": "/images/products/鞋子/shoes_05.jpg",
+    "thumbnail": "/gb/images/products/鞋子/shoes_05.jpg",
     "images": [
-      "/images/products/鞋子/shoes_05.jpg"
+      "/gb/images/products/鞋子/shoes_05.jpg"
     ],
     "priceOriginal": 122.11,
     "priceGroup": 73.27,
@@ -203,9 +203,9 @@ const PRODUCTS = [
     "name": "狗狗棒球帽 - 粉色夏季沙滩遮阳帽（小号）",
     "category": "clothing",
     "categoryLabel": "帽子",
-    "thumbnail": "/images/products/帽子/hat_01.jpg",
+    "thumbnail": "/gb/images/products/帽子/hat_01.jpg",
     "images": [
-      "/images/products/帽子/hat_01.jpg"
+      "/gb/images/products/帽子/hat_01.jpg"
     ],
     "priceOriginal": 81.43,
     "priceGroup": 48.86,
@@ -221,9 +221,9 @@ const PRODUCTS = [
     "name": "宠物夏季遮阳帽 - 蓝色狗猫通用（小号）",
     "category": "clothing",
     "categoryLabel": "帽子",
-    "thumbnail": "/images/products/帽子/hat_02.jpg",
+    "thumbnail": "/gb/images/products/帽子/hat_02.jpg",
     "images": [
-      "/images/products/帽子/hat_02.jpg"
+      "/gb/images/products/帽子/hat_02.jpg"
     ],
     "priceOriginal": 88.22,
     "priceGroup": 52.93,
@@ -239,9 +239,9 @@ const PRODUCTS = [
     "name": "宠物狗棒球帽 - 绿色户外太阳帽（大号）",
     "category": "clothing",
     "categoryLabel": "帽子",
-    "thumbnail": "/images/products/帽子/hat_03.jpg",
+    "thumbnail": "/gb/images/products/帽子/hat_03.jpg",
     "images": [
-      "/images/products/帽子/hat_03.jpg"
+      "/gb/images/products/帽子/hat_03.jpg"
     ],
     "priceOriginal": 81.43,
     "priceGroup": 48.86,
@@ -257,9 +257,9 @@ const PRODUCTS = [
     "name": "迷你毕业帽2件套 - 黄色流苏宠物拍照道具",
     "category": "clothing",
     "categoryLabel": "帽子",
-    "thumbnail": "/images/products/帽子/hat_04.jpg",
+    "thumbnail": "/gb/images/products/帽子/hat_04.jpg",
     "images": [
-      "/images/products/帽子/hat_04.jpg"
+      "/gb/images/products/帽子/hat_04.jpg"
     ],
     "priceOriginal": 61.06,
     "priceGroup": 36.64,
@@ -275,9 +275,9 @@ const PRODUCTS = [
     "name": "带耳孔防晒棒球帽 - 粉色宠物户外登山帽（中号）",
     "category": "clothing",
     "categoryLabel": "帽子",
-    "thumbnail": "/images/products/帽子/hat_05.jpg",
+    "thumbnail": "/gb/images/products/帽子/hat_05.jpg",
     "images": [
-      "/images/products/帽子/hat_05.jpg"
+      "/gb/images/products/帽子/hat_05.jpg"
     ],
     "priceOriginal": 67.85,
     "priceGroup": 40.71,
@@ -293,9 +293,9 @@ const PRODUCTS = [
     "name": "PU皮革猫狗项圈带铃铛 - 桃红色",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_01.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_01.jpg",
     "images": [
-      "/images/products/项圈/collar_01.jpg"
+      "/gb/images/products/项圈/collar_01.jpg"
     ],
     "priceOriginal": 40.61,
     "priceGroup": 24.37,
@@ -311,9 +311,9 @@ const PRODUCTS = [
     "name": "Weewooday 6件装皮革猫项圈带铃铛 - 经典色套装",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_02.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_02.jpg",
     "images": [
-      "/images/products/项圈/collar_02.jpg"
+      "/gb/images/products/项圈/collar_02.jpg"
     ],
     "priceOriginal": 54.26,
     "priceGroup": 32.56,
@@ -329,9 +329,9 @@ const PRODUCTS = [
     "name": "Guiding Star 红色皮革项圈带铃铛",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_03.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_03.jpg",
     "images": [
-      "/images/products/项圈/collar_03.jpg"
+      "/gb/images/products/项圈/collar_03.jpg"
     ],
     "priceOriginal": 47.47,
     "priceGroup": 28.48,
@@ -347,9 +347,9 @@ const PRODUCTS = [
     "name": "高级PU皮革珍珠蕾丝贝壳吊坠项圈 - 粉色",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_04.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_04.jpg",
     "images": [
-      "/images/products/项圈/collar_04.jpg"
+      "/gb/images/products/项圈/collar_04.jpg"
     ],
     "priceOriginal": 88.22,
     "priceGroup": 52.93,
@@ -365,9 +365,9 @@ const PRODUCTS = [
     "name": "OOPSDOGGY 皮革AirTag猫项圈 - 深棕色",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_05.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_05.jpg",
     "images": [
-      "/images/products/项圈/collar_05.jpg"
+      "/gb/images/products/项圈/collar_05.jpg"
     ],
     "priceOriginal": 88.09,
     "priceGroup": 52.85,
@@ -383,9 +383,9 @@ const PRODUCTS = [
     "name": "真牛皮柔软衬垫厚金扣宠物项圈 - 红色",
     "category": "accessory",
     "categoryLabel": "项圈",
-    "thumbnail": "/images/products/项圈/collar_06.jpg",
+    "thumbnail": "/gb/images/products/项圈/collar_06.jpg",
     "images": [
-      "/images/products/项圈/collar_06.jpg"
+      "/gb/images/products/项圈/collar_06.jpg"
     ],
     "priceOriginal": 47.4,
     "priceGroup": 28.44,
@@ -401,9 +401,9 @@ const PRODUCTS = [
     "name": "SLSON 可折叠宠物喂食碗2只装 - 粉绿配色",
     "category": "accessory",
     "categoryLabel": "用品",
-    "thumbnail": "/images/products/用品/supply_01.jpg",
+    "thumbnail": "/gb/images/products/用品/supply_01.jpg",
     "images": [
-      "/images/products/用品/supply_01.jpg"
+      "/gb/images/products/用品/supply_01.jpg"
     ],
     "priceOriginal": 54.26,
     "priceGroup": 32.56,
@@ -419,9 +419,9 @@ const PRODUCTS = [
     "name": "骨干宠物收纳盒 - 爪骨印花薄荷绿",
     "category": "accessory",
     "categoryLabel": "用品",
-    "thumbnail": "/images/products/用品/supply_02.jpg",
+    "thumbnail": "/gb/images/products/用品/supply_02.jpg",
     "images": [
-      "/images/products/用品/supply_02.jpg"
+      "/gb/images/products/用品/supply_02.jpg"
     ],
     "priceOriginal": 68.32,
     "priceGroup": 40.99,
@@ -437,9 +437,9 @@ const PRODUCTS = [
     "name": "Neater Feeder Express 防脏乱高架猫碗 - 灰色",
     "category": "accessory",
     "categoryLabel": "用品",
-    "thumbnail": "/images/products/用品/supply_03.jpg",
+    "thumbnail": "/gb/images/products/用品/supply_03.jpg",
     "images": [
-      "/images/products/用品/supply_03.jpg"
+      "/gb/images/products/用品/supply_03.jpg"
     ],
     "priceOriginal": 203.68,
     "priceGroup": 122.21,
@@ -455,9 +455,9 @@ const PRODUCTS = [
     "name": "陶瓷猫碗套装带木架 - 现代简约灰色双碟",
     "category": "accessory",
     "categoryLabel": "用品",
-    "thumbnail": "/images/products/用品/supply_04.jpg",
+    "thumbnail": "/gb/images/products/用品/supply_04.jpg",
     "images": [
-      "/images/products/用品/supply_04.jpg"
+      "/gb/images/products/用品/supply_04.jpg"
     ],
     "priceOriginal": 122.18,
     "priceGroup": 73.31,
@@ -473,9 +473,9 @@ const PRODUCTS = [
     "name": "Morpilot 柔软猫笼宠物背包 - 棕色",
     "category": "accessory",
     "categoryLabel": "用品",
-    "thumbnail": "/images/products/用品/supply_05.jpg",
+    "thumbnail": "/gb/images/products/用品/supply_05.jpg",
     "images": [
-      "/images/products/用品/supply_05.jpg"
+      "/gb/images/products/用品/supply_05.jpg"
     ],
     "priceOriginal": 203.68,
     "priceGroup": 122.21,
@@ -491,9 +491,9 @@ const PRODUCTS = [
     "name": "互动狗狗食物拼图慢速喂食器 - 鸭形零食分配器",
     "category": "food",
     "categoryLabel": "食物",
-    "thumbnail": "/images/products/食物/food_01.jpg",
+    "thumbnail": "/gb/images/products/食物/food_01.jpg",
     "images": [
-      "/images/products/食物/food_01.jpg"
+      "/gb/images/products/食物/food_01.jpg"
     ],
     "priceOriginal": 95.01,
     "priceGroup": 57.01,
@@ -509,9 +509,9 @@ const PRODUCTS = [
     "name": "Yummy Sam 2件套猫条喂食器挤压勺",
     "category": "food",
     "categoryLabel": "食物",
-    "thumbnail": "/images/products/食物/food_02.jpg",
+    "thumbnail": "/gb/images/products/食物/food_02.jpg",
     "images": [
-      "/images/products/食物/food_02.jpg"
+      "/gb/images/products/食物/food_02.jpg"
     ],
     "priceOriginal": 33.89,
     "priceGroup": 20.33,
@@ -527,9 +527,9 @@ const PRODUCTS = [
     "name": "狗狗零食密封玻璃容器罐 - 2.2夸脱一键式盖子",
     "category": "food",
     "categoryLabel": "食物",
-    "thumbnail": "/images/products/食物/food_03.jpg",
+    "thumbnail": "/gb/images/products/食物/food_03.jpg",
     "images": [
-      "/images/products/食物/food_03.jpg"
+      "/gb/images/products/食物/food_03.jpg"
     ],
     "priceOriginal": 149.35,
     "priceGroup": 89.61,
@@ -545,9 +545,9 @@ const PRODUCTS = [
     "name": "互动鸭形食物拼图慢速喂食器 - 小型宠物版",
     "category": "food",
     "categoryLabel": "食物",
-    "thumbnail": "/images/products/食物/food_04.jpg",
+    "thumbnail": "/gb/images/products/食物/food_04.jpg",
     "images": [
-      "/images/products/食物/food_04.jpg"
+      "/gb/images/products/食物/food_04.jpg"
     ],
     "priceOriginal": 40.68,
     "priceGroup": 24.41,
@@ -563,9 +563,9 @@ const PRODUCTS = [
     "name": "猫咪治疗勺+3个硅胶罐盖套装 - 多色",
     "category": "food",
     "categoryLabel": "食物",
-    "thumbnail": "/images/products/食物/food_05.jpg",
+    "thumbnail": "/gb/images/products/食物/food_05.jpg",
     "images": [
-      "/images/products/食物/food_05.jpg"
+      "/gb/images/products/食物/food_05.jpg"
     ],
     "priceOriginal": 54.26,
     "priceGroup": 32.56,
@@ -581,9 +581,9 @@ const PRODUCTS = [
     "name": "SZKOKUHO 9件装小狗吱吱叫玩具 - 多色可爱设计",
     "category": "toy",
     "categoryLabel": "玩具",
-    "thumbnail": "/images/products/玩具/toy_01.jpg",
+    "thumbnail": "/gb/images/products/玩具/toy_01.jpg",
     "images": [
-      "/images/products/玩具/toy_01.jpg"
+      "/gb/images/products/玩具/toy_01.jpg"
     ],
     "priceOriginal": 59.77,
     "priceGroup": 35.86,
@@ -599,9 +599,9 @@ const PRODUCTS = [
     "name": "Aipper 25件装狗狗玩具套装 - 清洁牙齿+拔河+球",
     "category": "toy",
     "categoryLabel": "玩具",
-    "thumbnail": "/images/products/玩具/toy_02.jpg",
+    "thumbnail": "/gb/images/products/玩具/toy_02.jpg",
     "images": [
-      "/images/products/玩具/toy_02.jpg"
+      "/gb/images/products/玩具/toy_02.jpg"
     ],
     "priceOriginal": 109.95,
     "priceGroup": 65.97,
@@ -617,9 +617,9 @@ const PRODUCTS = [
     "name": "Outward Hound 松鼠吱吱叫毛绒玩具 - 3件装",
     "category": "toy",
     "categoryLabel": "玩具",
-    "thumbnail": "/images/products/玩具/toy_03.jpg",
+    "thumbnail": "/gb/images/products/玩具/toy_03.jpg",
     "images": [
-      "/images/products/玩具/toy_03.jpg"
+      "/gb/images/products/玩具/toy_03.jpg"
     ],
     "priceOriginal": 85.1,
     "priceGroup": 51.06,
@@ -635,9 +635,9 @@ const PRODUCTS = [
     "name": "3件套彩色甜甜圈吱吱叫宠物玩具",
     "category": "toy",
     "categoryLabel": "玩具",
-    "thumbnail": "/images/products/玩具/toy_04.jpg",
+    "thumbnail": "/gb/images/products/玩具/toy_04.jpg",
     "images": [
-      "/images/products/玩具/toy_04.jpg"
+      "/gb/images/products/玩具/toy_04.jpg"
     ],
     "priceOriginal": 47.47,
     "priceGroup": 28.48,
@@ -653,9 +653,9 @@ const PRODUCTS = [
     "name": "Multipet Lamb Chop 羊羔毛绒玩具 - 10英寸5个发声器",
     "category": "toy",
     "categoryLabel": "玩具",
-    "thumbnail": "/images/products/玩具/toy_05.jpg",
+    "thumbnail": "/gb/images/products/玩具/toy_05.jpg",
     "images": [
-      "/images/products/玩具/toy_05.jpg"
+      "/gb/images/products/玩具/toy_05.jpg"
     ],
     "priceOriginal": 60.99,
     "priceGroup": 36.59,
@@ -671,9 +671,9 @@ const PRODUCTS = [
     "name": "3合1宠物蒸汽美容刷 - 自清洁喷雾梳（蓝色）",
     "category": "grooming",
     "categoryLabel": "洗护",
-    "thumbnail": "/images/products/洗护/grooming_01.jpg",
+    "thumbnail": "/gb/images/products/洗护/grooming_01.jpg",
     "images": [
-      "/images/products/洗护/grooming_01.jpg"
+      "/gb/images/products/洗护/grooming_01.jpg"
     ],
     "priceOriginal": 135.76,
     "priceGroup": 81.46,
@@ -689,9 +689,9 @@ const PRODUCTS = [
     "name": "Augwind 6件套宠物美容沐浴套装 - 海军蓝",
     "category": "grooming",
     "categoryLabel": "洗护",
-    "thumbnail": "/images/products/洗护/grooming_02.jpg",
+    "thumbnail": "/gb/images/products/洗护/grooming_02.jpg",
     "images": [
-      "/images/products/洗护/grooming_02.jpg"
+      "/gb/images/products/洗护/grooming_02.jpg"
     ],
     "priceOriginal": 67.71,
     "priceGroup": 40.63,
@@ -707,9 +707,9 @@ const PRODUCTS = [
     "name": "Bodhi 狗狗洗发沐浴刷 - 蓝色",
     "category": "grooming",
     "categoryLabel": "洗护",
-    "thumbnail": "/images/products/洗护/grooming_03.jpg",
+    "thumbnail": "/gb/images/products/洗护/grooming_03.jpg",
     "images": [
-      "/images/products/洗护/grooming_03.jpg"
+      "/gb/images/products/洗护/grooming_03.jpg"
     ],
     "priceOriginal": 67.85,
     "priceGroup": 40.71,
@@ -725,9 +725,9 @@ const PRODUCTS = [
     "name": "宠物沐浴按摩清洁刷 - 蓝色软胶",
     "category": "grooming",
     "categoryLabel": "洗护",
-    "thumbnail": "/images/products/洗护/grooming_04.jpg",
+    "thumbnail": "/gb/images/products/洗护/grooming_04.jpg",
     "images": [
-      "/images/products/洗护/grooming_04.jpg"
+      "/gb/images/products/洗护/grooming_04.jpg"
     ],
     "priceOriginal": 26.15,
     "priceGroup": 15.69,
@@ -743,9 +743,9 @@ const PRODUCTS = [
     "name": "2026新款宠物蒸汽美容梳 - 冷雾去浮毛",
     "category": "grooming",
     "categoryLabel": "洗护",
-    "thumbnail": "/images/products/洗护/grooming_05.jpg",
+    "thumbnail": "/gb/images/products/洗护/grooming_05.jpg",
     "images": [
-      "/images/products/洗护/grooming_05.jpg"
+      "/gb/images/products/洗护/grooming_05.jpg"
     ],
     "priceOriginal": 135.76,
     "priceGroup": 81.46,

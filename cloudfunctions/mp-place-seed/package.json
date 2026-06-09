@@ -1,0 +1,9 @@
+{
+  "name": "cf-mp-place-seed",
+  "version": "1.0.0",
+  "description": "从高德地图批量拉取宠物友好POI数据",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

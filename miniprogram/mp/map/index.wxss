@@ -1,43 +1,217 @@
-/* mp/map/index.wxss — Notion 温润极简改造 */
+/* mp/map/index.wxss — 地图首页 · Airbnb Design System */
 
-.page-container {
-  min-height: 100vh;
-  background: var(--color-bg-page);
+/* ===== 页面容器 ===== */
+.page-map {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - env(safe-area-inset-top) - 80rpx);
+  position: relative;
 }
 
-/* 搜索栏 — 悬浮卡片：无阴影 + 细边框 */
-.search-bar {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-md);
-  border: 1rpx solid var(--color-border);
-  padding: var(--spacing-sm) var(--spacing-md);
-  margin: var(--spacing-md);
+/* ===== 搜索栏 ===== */
+.map-search-bar {
+  padding: 0 var(--spacing-sm);
+  background: var(--bg);
 }
 
-/* 地点卡片 — 底部抽屉列表 */
-.place-card {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  border: 1rpx solid var(--color-border);
-  padding: var(--spacing-md);
+/* ===== 分类筛选 ===== */
+.map-cats {
+  white-space: nowrap;
+  padding: var(--spacing-sm);
+  background: var(--bg);
 }
 
-.place-card + .place-card {
-  border-top: 1rpx solid var(--td-gray-color-3);
+.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 10rpx 24rpx;
+  margin-right: var(--spacing-xs);
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.cat-chip.active {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-weight: 600;
+}
+
+/* "全部"按钮取消态 */
+.cat-chip.inactive {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+/* ===== 地图 ===== */
+.map-view {
+  flex: 1;
+  width: 100%;
+}
+
+/* ===== 定位按钮 ===== */
+.map-locate-btn {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: 540rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.map-locate-btn:active {
+  background: var(--bg-secondary);
+}
+
+/* ===== 投稿按钮（圆形纯图标） ===== */
+.map-submit-btn {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: 460rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.map-submit-btn:active {
+  background: var(--primary-dark, #E04E50);
+}
+
+/* ===== 附近地点列表（三段式拖动） ===== */
+.map-place-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0vh;   /* 默认完全收起 */
+  background: var(--bg);
+  border-top: 1rpx solid var(--bg-tertiary);
+  display: flex;
+  flex-direction: column;
+  transition: height 250ms ease;
+  z-index: 5;
+  border-radius: 24rpx 24rpx 0 0;
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.list-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx var(--spacing-sm);  /* 高度降低 */
+  background: var(--bg);
+  border-bottom: 1rpx solid var(--bg-tertiary);
+  flex-shrink: 0;
+  min-height: 56rpx;  /* 标题行降低 80→56 */
+}
+
+.list-title {
+  display: block;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.list-tip {
+  font-size: var(--font-xs);
+  color: var(--warning, #ff976a);
+  margin-left: auto;
+  margin-right: 12rpx;
+}
+
+.list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== 列表完全收起时的"把手"小条 ===== */
+.list-handle {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.list-handle.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.list-handle-bar {
+  width: 120rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: #d0d0d0;
+}
+
+/* 地点迷你卡片 */
+.place-mini-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-xs);
+  background: var(--bg-secondary);
+}
+
+.place-mini-card:active {
+  background: var(--bg-tertiary);
+}
+
+.place-thumb {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+}
+
+.place-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .place-name {
+  display: block;
   font-size: var(--font-md);
-  font-weight: 500;
-  color: var(--color-text-main);
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.place-addr {
+.place-meta {
+  display: block;
   font-size: var(--font-xs);
-  color: var(--color-text-hint);
-}
-
-.place-dist {
-  font-size: var(--font-sm);
-  color: var(--color-primary);
+  color: var(--text-secondary);
+  margin-top: 4rpx;
 }

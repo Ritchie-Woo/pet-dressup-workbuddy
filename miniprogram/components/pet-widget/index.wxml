@@ -1,0 +1,79 @@
+<!-- pet-widget: CSS 桌面宠物组件 -->
+<view 
+  class="pet-wrap pet-{{currentAction}}"
+  style="width: {{size}}px; height: {{size}}px;"
+  catchtouchstart="onTouchStart"
+  catchtouchmove="onTouchMove"
+  catchtouchend="onTouchEnd"
+  bindtap="onPetTap">
+
+  <!-- 耳朵 -->
+  <view class="ear ear-l"></view>
+  <view class="ear ear-r"></view>
+  <view class="ear-inner ear-inner-l"></view>
+  <view class="ear-inner ear-inner-r"></view>
+
+  <!-- 头部 -->
+  <view class="head">
+    <!-- 左眼 -->
+    <view class="eye eye-l">
+      <view class="eyelid eyelid-l-{{currentAction}}"></view>
+      <view class="pupil" style="transform: translate({{eyeLX}}px, {{eyeLY}}px);"></view>
+      <view class="pupil-shine"></view>
+    </view>
+
+    <!-- 右眼 -->
+    <view class="eye eye-r">
+      <view class="eyelid eyelid-r-{{currentAction}}"></view>
+      <view class="pupil" style="transform: translate({{eyeRX}}px, {{eyeRY}}px);"></view>
+      <view class="pupil-shine"></view>
+    </view>
+
+    <!-- 鼻子 -->
+    <view class="nose"></view>
+
+    <!-- 嘴巴 -->
+    <view class="mouth mouth-{{currentAction}}">
+      <block wx:if="{{currentAction === 'idle' || currentAction === 'surprised'}}">
+        <view class="mouth-arc"></view>
+      </block>
+      <block wx:elif="{{currentAction === 'happy'}}">
+        <view class="mouth-smile"></view>
+      </block>
+      <block wx:elif="{{currentAction === 'sleeping'}}">
+        <view class="mouth-dot"></view>
+      </block>
+      <block wx:elif="{{currentAction === 'angry'}}">
+        <view class="mouth-wave"></view>
+      </block>
+    </view>
+
+    <!-- 腮红 -->
+    <view class="blush blush-l {{currentAction === 'happy' ? 'show' : ''}}"></view>
+    <view class="blush blush-r {{currentAction === 'happy' ? 'show' : ''}}"></view>
+  </view>
+
+  <!-- 特效层 -->
+  <view class="fx-layer">
+    <!-- 睡觉 ZZZ -->
+    <view wx:if="{{currentAction === 'sleeping'}}" class="zzz">
+      <text class="zz1">Z</text>
+      <text class="zz2">Z</text>
+      <text class="zz3">z</text>
+    </view>
+    <!-- 开心 ❤️ -->
+    <view wx:if="{{currentAction === 'happy'}}" class="hearts">
+      <text class="ht1">♥</text>
+      <text class="ht2">♥</text>
+    </view>
+    <!-- 惊讶 !! -->
+    <view wx:if="{{currentAction === 'surprised'}}" class="exclaims">
+      <text class="ex1">!</text>
+      <text class="ex2">!</text>
+    </view>
+    <!-- 生气 💢 -->
+    <view wx:if="{{currentAction === 'angry'}}" class="veins">
+      <text class="vn1">💢</text>
+    </view>
+  </view>
+</view>

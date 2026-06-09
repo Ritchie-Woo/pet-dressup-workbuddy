@@ -1,0 +1,30 @@
+<!-- wp/deskpet/index.wxml — 桌面宠物演示页 -->
+<view class="page">
+  <!-- 顶部信息 -->
+  <view class="top-bar">
+    <text class="brand">PetMini</text>
+  </view>
+
+  <!-- 宠物展示区 -->
+  <view class="pet-zone">
+    <pet-widget
+      size="{{220}}"
+      autoResetDelay="{{3000}}"
+      bind:actionchange="onActionChange"
+    />
+  </view>
+
+  <!-- 状态 + 提示 -->
+  <view class="info-bar">
+    <text class="action-tag">{{actionLabel}}</text>
+  </view>
+
+  <view class="hint-bar">
+    <text class="hint-icon">👆</text>
+    <text class="hint-text">点击宠物切换动作</text>
+    <text class="hint-icon">👆</text>
+  </view>
+  <view class="hint-bar hint-sub">
+    <text class="hint-text">在宠物周围滑动手指，眼睛会跟随你</text>
+  </view>
+</view>

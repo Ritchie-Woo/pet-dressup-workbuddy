@@ -1,6 +1,7 @@
 {
   "navigationStyle": "custom",
+  "navigationBarTitleText": "宠物详情",
   "usingComponents": {
-    "navbar": "../../../components/navbar/index"
+    "t-input": "tdesign-miniprogram/input/input"
   }
 }

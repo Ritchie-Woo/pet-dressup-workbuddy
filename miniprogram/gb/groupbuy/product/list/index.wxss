@@ -1,0 +1,73 @@
+/* 品牌栏 — 含返回键 */
+.brandbar-has-back { display: flex; align-items: center; justify-content: center; position: relative; }
+.brandbar-back { position: absolute; left: 24rpx; display: flex; align-items: center; justify-content: center; width: 60rpx; height: 60rpx; }
+.brandbar-back:active { opacity: 0.5; }
+.brandbar-spacer { width: 60rpx; }
+
+.product-list-page {
+  min-height: 100vh;
+  background: var(--body-bg);
+  padding: 0 24rpx 32rpx;
+}
+
+.add-bar { margin-bottom: 24rpx; }
+
+.product-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.product-main {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+}
+
+.product-thumb {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.product-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-price {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.product-meta { display: flex; gap: 24rpx; }
+.meta-item { font-size: 22rpx; color: var(--text-secondary); }
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 24rpx;
+  border-top: 1rpx solid var(--bg-secondary);
+}
+
+.toggle-label { font-size: 24rpx; color: var(--text-secondary); }
+
+.loading-wrap { display: flex; justify-content: center; padding: 60rpx 0; }

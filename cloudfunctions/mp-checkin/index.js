@@ -17,37 +17,49 @@ exports.main = async (event, context) => {
     switch (action) {
       case 'checkin': {
         const { placeId, petId } = event;
-        if (!placeId || !petId) return { code: -1, msg: '缺少 placeId 或 petId' };
+        if (!placeId) return { code: -1, msg: '缺少 placeId' };
 
-        // 同日去重
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const exist = await db.collection('mp_checkin')
-          .where({
-            user_id: userId, pet_id: petId, place_id: placeId,
-            created_at: db.command.gte(today)
-          }).get();
-        if (exist.data.length > 0) return { code: -1, msg: '今日已打卡' };
+        const now = new Date();
+        const checkinDate = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, '0'),
+          String(now.getDate()).padStart(2, '0')
+        ].join('-');
 
-        // 尝试获取2D形象快照
         let avatarSnapshot = '';
-        try {
-          const avatarRes = await cloud.callFunction({
-            name: 'wp-avatar',
-            data: { action: 'getByPet', petId }
-          });
-          if (avatarRes.result && avatarRes.result.code === 1) {
-            avatarSnapshot = avatarRes.result.data.baseAppearance?.resource || '';
-          }
-        } catch (e) { /* 穿搭不可用，使用默认头像 */ }
+        if (petId) {
+          try {
+            const avatarRes = await cloud.callFunction({
+              name: 'wp-avatar',
+              data: { action: 'getByPet', petId }
+            });
+            if (avatarRes.result && avatarRes.result.code === 1) {
+              avatarSnapshot = avatarRes.result.data.baseAppearance?.resource || '';
+            }
+          } catch (e) { /* 穿搭不可用 */ }
+        }
 
-        await db.collection('mp_checkin').add({
-          data: {
-            user_id: userId, pet_id: petId, place_id: placeId,
-            avatar_snapshot: avatarSnapshot,
-            created_at: new Date()
-          }
-        });
+        // 直接写入，唯一索引做去重保障
+        try {
+          await db.collection('mp_checkin').add({
+            data: {
+              user_id: userId,
+              pet_id: petId || '',
+              place_id: placeId,
+              avatar_snapshot: avatarSnapshot,
+              checkin_date: checkinDate,
+              created_at: now
+            }
+          });
+          return { code: 1, data: { success: true } };
+        } catch (e) {
+          return { code: -1, msg: '已踩点，今天来过啦～' };
+        }
+        // 异步刷新统计缓存（不阻塞踩点响应）
+        cloud.callFunction({
+          name: 'mp-place-stats',
+          data: { action: 'refresh', placeId }
+        }).catch(e => console.error('[mp-checkin] stats refresh failed:', e.message));
         return { code: 1, data: { success: true } };
       }
 
@@ -82,6 +94,72 @@ exports.main = async (event, context) => {
           petId: c.pet_id, avatarSnapshot: c.avatar_snapshot, createdAt: c.created_at
         }));
         return { code: 1, data: { checkins: list } };
+      }
+
+      // 查询当前用户今日是否已在指定地点踩点（用于前端渲染按钮状态）
+      case 'todayStatus': {
+        const { placeId } = event;
+        if (!placeId) return { code: -1, msg: '缺少 placeId' };
+
+        const now = new Date();
+        const checkinDate = [
+          now.getFullYear(),
+          String(now.getMonth() + 1).padStart(2, '0'),
+          String(now.getDate()).padStart(2, '0')
+        ].join('-');
+
+        try {
+          const exist = await db.collection('mp_checkin')
+            .where({ user_id: userId, place_id: placeId, checkin_date: checkinDate })
+            .get();
+          return { code: 1, data: { checkedInToday: exist.data.length > 0 } };
+        } catch (e) {
+          // 集合不存在时视为未踩点（首次踩点会自动创建集合）
+          return { code: 1, data: { checkedInToday: false } };
+        }
+      }
+
+      // P1: 标签投票（§5.6）
+      case 'tagVote': {
+        const { placeId, tagId, vote } = event;
+        if (!placeId || !tagId) return { code: -1, msg: '缺少参数' };
+        if (vote !== 1 && vote !== -1) return { code: -1, msg: 'vote 必须为 1 或 -1' };
+
+        // 唯一索引 (user_id, place_id, tag_id) 保证一人一地点一标签仅一票
+        try {
+          await db.collection('mp_place_tag_vote').add({
+            data: {
+              user_id: userId,
+              place_id: placeId,
+              tag_id: tagId,
+              vote,
+              checkin_id: '', // 本期不关联具体打卡记录
+              timestamp: Date.now()
+            }
+          });
+        } catch (e) {
+          return { code: -1, msg: '已投票，不可修改' };
+        }
+
+        // 异步刷新统计
+        cloud.callFunction({
+          name: 'mp-place-stats',
+          data: { action: 'refresh', placeId }
+        }).catch(e => console.error('[mp-checkin] stats refresh failed:', e.message));
+
+        return { code: 1, data: { success: true } };
+      }
+
+      // 查询当前用户对该地点的所有历史投票
+      case 'myTagVotes': {
+        const { placeId } = event;
+        if (!placeId) return { code: -1, msg: '缺少 placeId' };
+        const result = await db.collection('mp_place_tag_vote')
+          .where({ user_id: userId, place_id: placeId })
+          .get();
+        const cache = {};
+        result.data.forEach(v => { cache[v.tag_id] = v.vote; });
+        return { code: 1, data: { cache } };
       }
 
       default:

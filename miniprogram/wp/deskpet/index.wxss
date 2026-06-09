@@ -1,0 +1,66 @@
+/* wp/deskpet/index.wxss — 演示页样式 */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF8F0 0%, #FFE8D6 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Top bar */
+.top-bar {
+  width: 100%;
+  padding: 16px 20px 8px;
+}
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #D49530;
+  letter-spacing: 2px;
+}
+
+/* Pet zone — 垂直居中 */
+.pet-zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+
+/* Info bar */
+.info-bar {
+  margin-bottom: 12px;
+}
+.action-tag {
+  display: inline-block;
+  padding: 6px 18px;
+  background: rgba(212, 149, 48, 0.12);
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8B6914;
+}
+
+/* Hint bars */
+.hint-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.hint-sub {
+  margin-top: 2px;
+  margin-bottom: 40px;
+}
+.hint-icon {
+  font-size: 16px;
+  opacity: 0.6;
+}
+.hint-text {
+  font-size: 13px;
+  color: #B0A090;
+  letter-spacing: 0.5px;
+}

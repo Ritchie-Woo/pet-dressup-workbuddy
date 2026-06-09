@@ -10,7 +10,10 @@ Page({
     editMode: false,
     allSelected: false,
     selectedCount: 0,
-    totalPrice: '0.00'
+    totalPrice: '0.00',
+    payVisible: false,
+    payAmount: '0',
+    payTitle: ''
   },
 
   onShow() {
@@ -280,8 +283,23 @@ Page({
     }
 
     const selectedItems = this.data.cartItems.filter(item => item.selected);
-    wx.showLoading({ title: '创建订单…' });
-    this.createOrder(selectedItems, addresses[0]);
+    this._checkoutData = { items: selectedItems, address: addresses[0] };
+
+    this.setData({
+      payVisible: true,
+      payAmount: String(this.data.totalPrice),
+      payTitle: selectedItems.length + ' 件商品'
+    });
+  },
+
+  onPayClose() {
+    this.setData({ payVisible: false });
+  },
+
+  onPayConfirm() {
+    this.setData({ payVisible: false });
+    const { items, address } = this._checkoutData;
+    this.createOrder(items, address);
   },
 
   async createOrder(items, address) {

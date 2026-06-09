@@ -1,0 +1,9 @@
+{
+  "name": "cf-wp-recommend",
+  "version": "1.0.0",
+  "description": "推荐宠物",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

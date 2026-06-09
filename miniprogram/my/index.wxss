@@ -1,55 +1,111 @@
 /* my/index.wxss — Airbnb */
 
-.pg-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24rpx;
-  padding-top: calc(env(safe-area-inset-top) + 20rpx);
-  background: var(--bg);
-  border-bottom: 1rpx solid var(--bg-tertiary);
-}
-
-.toolbar-title {
-  font-size: var(--font-lg);
-  font-weight: 700;
-  color: var(--text);
-}
-
 .pg-my {
-  min-height: calc(100vh - 130rpx);
+  min-height: 100vh;
   background: var(--body-bg);
 }
 
-.my-user-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16rpx;
-  padding: 48rpx 32rpx;
-  background: var(--bg);
+/* ===== VIP 会员卡片 ===== */
+.my-vip-card {
   margin: 24rpx;
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow);
-  border: 1rpx solid var(--bg-tertiary);
+  overflow: hidden;
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,.1);
+  background: linear-gradient(135deg, #FFF8E1, #FFE0B2, #FFCC80);
 }
 
-.my-avatar-empty {
-  width: 96rpx;
-  height: 96rpx;
+.vip-card-top {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 36rpx 32rpx 24rpx;
+}
+
+.vip-avatar {
+  width: 104rpx;
+  height: 104rpx;
   border-radius: 50%;
-  background: var(--primary-lighter);
+  border: 4rpx solid rgba(255,255,255,.8);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #FFD54F;
+}
+
+.vip-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.vip-avatar-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48rpx;
+  font-size: 52rpx;
+  background: rgba(255,255,255,.4);
 }
 
-.my-name {
-  font-size: var(--font-xl);
+.vip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  min-width: 0;
+}
+
+.vip-name {
+  font-size: 36rpx;
   font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.5rpx;
+  color: #4E342E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vip-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6rpx;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(10px);
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+}
+
+.vip-crown {
+  font-size: 26rpx;
+}
+
+.vip-label {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #E65100;
+}
+
+/* 会员权益 */
+.vip-benefits {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255,255,255,.5);
+  padding: 20rpx 16rpx;
+}
+
+.benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.benefit-icon {
+  font-size: 36rpx;
+}
+
+.benefit-text {
+  font-size: 22rpx;
+  color: #6D4C41;
+  font-weight: 500;
 }
 
 .my-menu {
@@ -98,5 +154,23 @@
 
 .footer-text {
   font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+/* 团长入口 */
+.leader-entry {
+  background: linear-gradient(135deg, #FFF8E1, #FFE0B2);
+  border-radius: var(--radius);
+}
+
+.menu-label-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.menu-sub {
+  font-size: 22rpx;
   color: var(--text-secondary);
 }

@@ -1,19 +1,39 @@
 <!-- my/index.wxml — Airbnb Design System -->
-<view class="pg-toolbar">
-  <text class="toolbar-title">我的</text>
+<view class="page-brandbar">
+  <text class="brand-text">PetMini</text>
 </view>
 
 <view class="pg-my">
-  <!-- User Card -->
-  <view class="my-user-card">
-    <view wx:if="{{userInfo.avatarUrl}}" class="my-avatar-img">
-      <image src="{{userInfo.avatarUrl}}" mode="aspectFill" style="width:96rpx;height:96rpx;border-radius:50%;" />
+  <!-- VIP 会员卡片 -->
+  <view class="my-vip-card">
+    <view class="vip-card-top">
+      <view class="vip-avatar">
+        <image wx:if="{{userInfo.avatarUrl}}" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+        <text wx:else class="vip-avatar-placeholder">🐾</text>
+      </view>
+      <view class="vip-info">
+        <text class="vip-name" wx:if="{{userInfo.nickname}}">{{userInfo.nickname}}</text>
+        <text class="vip-name" wx:else>未登录</text>
+        <view class="vip-badge">
+          <text class="vip-crown">👑</text>
+          <text class="vip-label">PetMini 会员</text>
+        </view>
+      </view>
     </view>
-    <view wx:else class="my-avatar-empty">
-      <text>🐾</text>
+    <view class="vip-benefits">
+      <view class="benefit-item">
+        <text class="benefit-icon">🎁</text>
+        <text class="benefit-text">专属优惠</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">⚡</text>
+        <text class="benefit-text">优先发货</text>
+      </view>
+      <view class="benefit-item">
+        <text class="benefit-icon">💎</text>
+        <text class="benefit-text">积分翻倍</text>
+      </view>
     </view>
-    <text wx:if="{{userInfo.nickname}}" class="my-name">{{userInfo.nickname}}</text>
-    <text wx:else class="my-name">未登录</text>
   </view>
 
   <!-- Menu -->
@@ -23,16 +43,18 @@
       <text class="menu-label">我的宠物</text>
       <text class="menu-arrow">›</text>
     </view>
-    <view class="menu-item" catchtap="goAddress">
+    <!-- 支付功能隐藏：收货地址 -->
+    <!-- <view class="menu-item" catchtap="goAddress">
       <text class="menu-icon">📍</text>
       <text class="menu-label">收货地址</text>
       <text class="menu-arrow">›</text>
-    </view>
-    <view class="menu-item" catchtap="goOrders">
+    </view> -->
+    <!-- 支付功能隐藏：我的订单 -->
+    <!-- <view class="menu-item" catchtap="goOrders">
       <text class="menu-icon">📦</text>
       <text class="menu-label">我的订单</text>
       <text class="menu-arrow">›</text>
-    </view>
+    </view> -->
   </view>
 
   <view class="my-menu" style="margin-top:16rpx;">

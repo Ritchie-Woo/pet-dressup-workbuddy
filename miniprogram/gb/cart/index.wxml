@@ -78,4 +78,7 @@
       </view>
     </view>
   </block>
+
+  <!-- 支付半屏弹窗 -->
+  <pay-sheet visible="{{payVisible}}" amount="{{payAmount}}" title="{{payTitle}}" bind:close="onPayClose" bind:confirm="onPayConfirm" />
 </view>

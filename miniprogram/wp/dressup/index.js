@@ -1,6 +1,7 @@
-// wp/dressup/index.js — Airbnb 4:6 布局
+// wp/dressup/index.js — Airbnb 4:6 布局（带图片缓存）
 const storage = require('../../utils/storage');
 const { request } = require('../../utils/request');
+const imageCache = require('../../utils/imageCache');
 
 Page({
   data: {
@@ -10,10 +11,16 @@ Page({
     avatarCreated: false,
     canvasSize: 350,
     loading: true,
-    generating: false
+    generating: false,
+    recommendLoading: false,
+    recommendPets: [],
+    expandedCard: null,
+    expandPhase: ''
   },
 
   _loading: false,
+  _lastRenderedAvatarId: '',   // 避免重复渲染
+  _cachedAvatarUrl: '',        // 缓存的云端形象 URL
 
   onLoad() {
     const app = getApp();
@@ -25,6 +32,7 @@ Page({
   onShow() {
     if (this._loading) return;
     this.loadPets();
+    this.loadRecommendPets();
   },
 
   async loadPets() {
@@ -36,7 +44,6 @@ Page({
       this.setData({ pets, loading: false });
       this._loading = false;
 
-      // Restore last selected
       const lastId = storage.getSync('selectedPetId');
       if (lastId && pets.some(p => p.petId === lastId)) {
         this.selectPetChip({ currentTarget: { dataset: { id: lastId } } });
@@ -58,23 +65,39 @@ Page({
     storage.setSync('selectedPetId', petId);
     this.setData({ selectedPetId: petId, selectedPetName: pet.name });
 
-    // Check if avatar exists
     try {
       const avatarRes = await request('wp-avatar', { action: 'getByPet', petId }, { silent: true });
       if (avatarRes && avatarRes.code === 1) {
+        const avatarId = avatarRes.data.avatarId;
+        const base = avatarRes.data.baseAppearance;
+        const outfit = avatarRes.data.currentOutfit;
+
+        // 检查是否需要重新渲染
+        const needRerender = this._lastRenderedAvatarId !== avatarId;
+
         this.setData({ avatarCreated: true });
-        // Cache and render
         storage.setSync('currentDressPet', {
           petId, petName: pet.name,
-          avatarId: avatarRes.data.avatarId,
-          baseAppearance: avatarRes.data.baseAppearance,
-          currentOutfit: avatarRes.data.currentOutfit
+          avatarId, baseAppearance: base, currentOutfit: outfit
         });
-        setTimeout(() => this.renderCanvas(), 300);
+
+        if (needRerender) {
+          // 预取形象 URL 并缓存
+          if (base.generated && base.resource) {
+            const urls = await imageCache.getTempUrls([base.resource]);
+            this._cachedAvatarUrl = urls[0] || '';
+          }
+          this._lastRenderedAvatarId = avatarId;
+          setTimeout(() => this.renderCanvas(), 300);
+        }
       } else {
+        this._lastRenderedAvatarId = '';
+        this._cachedAvatarUrl = '';
         this.setData({ avatarCreated: false });
       }
     } catch (err) {
+      this._lastRenderedAvatarId = '';
+      this._cachedAvatarUrl = '';
       this.setData({ avatarCreated: false });
     }
   },
@@ -97,6 +120,9 @@ Page({
       const result = await request('wp-avatar', { action: 'deleteByPet', petId: pet.petId }, { silent: true });
       if (result.code === 1) {
         storage.remove('currentDressPet');
+        this._lastRenderedAvatarId = '';
+        this._cachedAvatarUrl = '';
+        imageCache.clearCache();
         this.setData({ avatarCreated: false });
         wx.showToast({ title: '已删除', icon: 'success' });
       } else {
@@ -118,15 +144,21 @@ Page({
       const res = await request('wp-avatar', {
         action: 'createOrGet',
         petId: pet.petId, species: pet.species, breed: pet.breed,
-        force: true  // 重新生成时强制覆盖
+        force: true
       });
       if (res.code === 1) {
+        const base = res.data.baseAppearance;
         storage.setSync('currentDressPet', {
           petId: pet.petId, petName: pet.name,
           avatarId: res.data.avatarId,
-          baseAppearance: res.data.baseAppearance,
-          currentOutfit: res.data.currentOutfit
+          baseAppearance: base, currentOutfit: res.data.currentOutfit
         });
+        // 预取 URL
+        if (base.generated && base.resource) {
+          const urls = await imageCache.getTempUrls([base.resource]);
+          this._cachedAvatarUrl = urls[0] || '';
+        }
+        this._lastRenderedAvatarId = res.data.avatarId;
         this.setData({ avatarCreated: true });
         setTimeout(() => this.renderCanvas(), 300);
       }
@@ -141,7 +173,6 @@ Page({
     const pet = this.data.pets.find(p => p.petId === this.data.selectedPetId);
     if (!pet) return;
 
-    // 1. 选照片
     const chooseRes = await new Promise((resolve, reject) => {
       wx.chooseImage({
         count: 1, sizeType: ['compressed'],
@@ -155,40 +186,40 @@ Page({
     wx.showLoading({ title: '上传并生成中…' });
 
     try {
-      // 2. 上传到云存储
       const cloudPath = 'photos/pet_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
       const uploadRes = await wx.cloud.uploadFile({
         cloudPath,
         filePath: chooseRes.tempFilePaths[0]
       });
 
-      // 3. 调云函数 AI 生成
       const res = await request('wp-avatar', {
         action: 'photo2avatar',
-        petId: pet.petId,
-        photoFileID: uploadRes.fileID,
-        species: pet.species,
-        breed: pet.breed
-      }, { timeout: 120000, silent: true }); // AI 生成需要更长时间，静默模式，自己处理提示
+        petId: pet.petId, photoFileID: uploadRes.fileID,
+        species: pet.species, breed: pet.breed
+      }, { timeout: 120000, silent: true });
 
       if (res.code === 1) {
+        const base = res.data.baseAppearance;
         storage.setSync('currentDressPet', {
           petId: pet.petId, petName: pet.name,
           avatarId: res.data.avatarId,
-          baseAppearance: res.data.baseAppearance,
-          currentOutfit: res.data.currentOutfit
+          baseAppearance: base, currentOutfit: res.data.currentOutfit
         });
+        if (base.generated && base.resource) {
+          const urls = await imageCache.getTempUrls([base.resource]);
+          this._cachedAvatarUrl = urls[0] || '';
+        }
+        this._lastRenderedAvatarId = res.data.avatarId;
         this.setData({ avatarCreated: true });
         setTimeout(() => this.renderCanvas(), 500);
       } else {
         wx.showToast({ title: res.msg || '生成失败', icon: 'none' });
       }
     } catch (err) {
-      const msg = err.message || '请求失败';
       console.error('[photo2avatar] err:', err);
       wx.showModal({
         title: '生成失败',
-        content: msg,
+        content: err.message || '请求失败',
         showCancel: false
       });
     } finally {
@@ -210,7 +241,6 @@ Page({
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, w);
 
-      /* background */
       ctx.fillStyle = '#FFF5F5';
       ctx.fillRect(0, 0, w, w);
 
@@ -219,36 +249,30 @@ Page({
 
       const base = petInfo.baseAppearance;
 
-      // AI-generated image takes priority
+      // AI 生成形象优先 — 使用缓存的 URL
       if (base.generated && base.resource) {
-        wx.cloud.getTempFileURL({
-          fileList: [base.resource],
-          success: urlRes => {
-            const imgUrl = urlRes.fileList[0].tempFileURL;
-            const img = canvas.createImage();
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0, w, w);
-              this._drawCanvasButtons(ctx, w);
-            };
-            img.onerror = () => {
-              this._drawFallback(ctx, w, base);
-              this._drawCanvasButtons(ctx, w);
-            };
-            img.src = imgUrl;
-          },
-          fail: () => {
-            this._drawFallback(ctx, w, base);
+        const imgUrl = this._cachedAvatarUrl;
+        if (imgUrl) {
+          const img = canvas.createImage();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, w, w);
             this._drawCanvasButtons(ctx, w);
-          }
-        });
+          };
+          img.onerror = () => {
+            // 缓存失效，重新获取
+            this._refreshAndDraw(ctx, w, base);
+          };
+          img.src = imgUrl;
+        } else {
+          this._refreshAndDraw(ctx, w, base);
+        }
         return;
       }
 
-      // Draw programmatic avatar
       this._drawFallback(ctx, w, base);
       this._drawCanvasButtons(ctx, w);
 
-      // Render outfit layers
+      // 穿搭层
       if (petInfo.currentOutfit) {
         const layers = ['bottom', 'top', 'collar', 'hat', 'accessory'];
         for (const layer of layers) {
@@ -266,26 +290,34 @@ Page({
     });
   },
 
-  // 在 canvas 上绘制图标（纯图标，无圆圈背景）
+  _refreshAndDraw(ctx, w, base) {
+    // 缓存失效时重新获取并缓存
+    imageCache.getTempUrls([base.resource]).then(urls => {
+      this._cachedAvatarUrl = urls[0] || '';
+      const img = ctx.canvas.createImage();
+      img.onload = () => { ctx.drawImage(img, 0, 0, w, w); this._drawCanvasButtons(ctx, w); };
+      img.onerror = () => { this._drawFallback(ctx, w, base); this._drawCanvasButtons(ctx, w); };
+      img.src = this._cachedAvatarUrl;
+    }).catch(() => {
+      this._drawFallback(ctx, w, base);
+      this._drawCanvasButtons(ctx, w);
+    });
+  },
+
   _drawCanvasButtons(ctx, w) {
-    const iconSize = 16; // 缩小一倍
+    const iconSize = 16;
     const gap = 12;
     const iconY = w - gap - iconSize;
-
-    // 删除图标（左下）🗑️
     ctx.fillStyle = 'rgba(100,100,100,0.7)';
     ctx.font = iconSize + 'px sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
     ctx.fillText('🗑️', gap, iconY);
-
-    // 重新生成图标（右下）🔄
     ctx.fillStyle = '#FF5A5F';
     ctx.textAlign = 'right';
     ctx.fillText('🔄', w - gap, iconY);
   },
 
-  // Canvas 点击事件 — 判断是否点击了图标
   onCanvasTap(e) {
     if (!this.data.avatarCreated) return;
     const touch = e.touches[0];
@@ -294,19 +326,13 @@ Page({
     const iconSize = 16;
     const gap = 12;
     const iconY = w - gap - iconSize;
-
     const dx = touch.x;
     const dy = touch.y;
-
-    // 删除图标点击区（左下）
     if (dx >= gap && dx <= gap + iconSize * 1.5 && dy >= iconY - iconSize && dy <= iconY + iconSize) {
-      this.deleteAvatar();
-      return;
+      this.deleteAvatar(); return;
     }
-    // 重新生成图标点击区（右下）
     if (dx >= w - gap - iconSize * 1.5 && dx <= w - gap && dy >= iconY - iconSize && dy <= iconY + iconSize) {
-      this.photo2Avatar();
-      return;
+      this.photo2Avatar(); return;
     }
   },
 
@@ -328,66 +354,25 @@ Page({
     };
     const c = colors[color] || '#C0C0C0';
     const cx = w / 2, cy = w / 2, r = w * 0.32;
-
-    // Body
     ctx.fillStyle = c;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy + r * 0.2, r, r * 0.8, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Head
-    ctx.beginPath();
-    ctx.arc(cx, cy - r * 0.45, r * 0.65, 0, Math.PI * 2);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.2, r, r * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy - r * 0.45, r * 0.65, 0, Math.PI * 2); ctx.fill();
     // Ears
-    ctx.beginPath();
-    ctx.moveTo(cx - r * 0.3, cy - r * 0.85);
-    ctx.lineTo(cx - r * 0.55, cy - r * 1.15);
-    ctx.lineTo(cx - r * 0.1, cy - r * 0.7);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx + r * 0.3, cy - r * 0.85);
-    ctx.lineTo(cx + r * 0.55, cy - r * 1.15);
-    ctx.lineTo(cx + r * 0.1, cy - r * 0.7);
-    ctx.fill();
-
-    // Inner ears
+    ctx.beginPath(); ctx.moveTo(cx - r * 0.3, cy - r * 0.85); ctx.lineTo(cx - r * 0.55, cy - r * 1.15); ctx.lineTo(cx - r * 0.1, cy - r * 0.7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + r * 0.3, cy - r * 0.85); ctx.lineTo(cx + r * 0.55, cy - r * 1.15); ctx.lineTo(cx + r * 0.1, cy - r * 0.7); ctx.fill();
     ctx.fillStyle = '#F8C8C8';
-    ctx.beginPath();
-    ctx.moveTo(cx - r * 0.35, cy - r * 0.88);
-    ctx.lineTo(cx - r * 0.45, cy - r * 1.05);
-    ctx.lineTo(cx - r * 0.18, cy - r * 0.75);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx + r * 0.35, cy - r * 0.88);
-    ctx.lineTo(cx + r * 0.45, cy - r * 1.05);
-    ctx.lineTo(cx + r * 0.18, cy - r * 0.75);
-    ctx.fill();
-
+    ctx.beginPath(); ctx.moveTo(cx - r * 0.35, cy - r * 0.88); ctx.lineTo(cx - r * 0.45, cy - r * 1.05); ctx.lineTo(cx - r * 0.18, cy - r * 0.75); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx + r * 0.35, cy - r * 0.88); ctx.lineTo(cx + r * 0.45, cy - r * 1.05); ctx.lineTo(cx + r * 0.18, cy - r * 0.75); ctx.fill();
     // Eyes
     ctx.fillStyle = '#333';
     ctx.beginPath(); ctx.arc(cx - r * 0.22, cy - r * 0.55, r * 0.08, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(cx + r * 0.22, cy - r * 0.55, r * 0.08, 0, Math.PI * 2); ctx.fill();
-
-    // Nose
     ctx.fillStyle = '#F8A0A0';
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - r * 0.35);
-    ctx.lineTo(cx - r * 0.06, cy - r * 0.28);
-    ctx.lineTo(cx + r * 0.06, cy - r * 0.28);
-    ctx.fill();
-
-    // Whiskers
-    ctx.strokeStyle = '#999';
-    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx, cy - r * 0.35); ctx.lineTo(cx - r * 0.06, cy - r * 0.28); ctx.lineTo(cx + r * 0.06, cy - r * 0.28); ctx.fill();
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1;
     for (let side of [-1, 1]) {
-      ctx.beginPath();
-      ctx.moveTo(cx + side * r * 0.1, cy - r * 0.38);
-      ctx.lineTo(cx + side * r * 0.45, cy - r * 0.48); ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(cx + side * r * 0.1, cy - r * 0.35);
-      ctx.lineTo(cx + side * r * 0.48, cy - r * 0.33); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + side * r * 0.1, cy - r * 0.38); ctx.lineTo(cx + side * r * 0.45, cy - r * 0.48); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + side * r * 0.1, cy - r * 0.35); ctx.lineTo(cx + side * r * 0.48, cy - r * 0.33); ctx.stroke();
     }
   },
 
@@ -398,59 +383,92 @@ Page({
     };
     const c = colors[color] || '#D4A76A';
     const cx = w / 2, cy = w / 2, r = w * 0.32;
-
-    // Body
     ctx.fillStyle = c;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy + r * 0.2, r * 0.85, r * 0.7, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Head
-    ctx.beginPath();
-    ctx.ellipse(cx, cy - r * 0.5, r * 0.6, r * 0.55, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Floppy ears
-    ctx.beginPath();
-    ctx.ellipse(cx - r * 0.45, cy - r * 0.45, r * 0.2, r * 0.35, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx + r * 0.45, cy - r * 0.45, r * 0.2, r * 0.35, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes
+    ctx.beginPath(); ctx.ellipse(cx, cy + r * 0.2, r * 0.85, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, cy - r * 0.5, r * 0.6, r * 0.55, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx - r * 0.45, cy - r * 0.45, r * 0.2, r * 0.35, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx + r * 0.45, cy - r * 0.45, r * 0.2, r * 0.35, 0.3, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#333';
     ctx.beginPath(); ctx.arc(cx - r * 0.2, cy - r * 0.6, r * 0.08, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(cx + r * 0.2, cy - r * 0.6, r * 0.08, 0, Math.PI * 2); ctx.fill();
-
-    // Nose
     ctx.fillStyle = '#333';
-    ctx.beginPath();
-    ctx.ellipse(cx + r * 0.02, cy - r * 0.4, r * 0.1, r * 0.07, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Tongue
+    ctx.beginPath(); ctx.ellipse(cx + r * 0.02, cy - r * 0.4, r * 0.1, r * 0.07, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#F88';
-    ctx.beginPath();
-    ctx.ellipse(cx, cy - r * 0.28, r * 0.06, r * 0.08, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, cy - r * 0.28, r * 0.06, r * 0.08, 0, 0, Math.PI * 2); ctx.fill();
   },
 
   _drawGeneric(ctx, w, color) {
     const cx = w / 2, cy = w / 2, r = w * 0.32;
     ctx.fillStyle = '#E8E8E8';
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#333';
     ctx.beginPath(); ctx.arc(cx - r * 0.3, cy - r * 0.2, r * 0.08, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(cx + r * 0.3, cy - r * 0.2, r * 0.08, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, cy + r * 0.1, r * 0.12, Math.PI, 0);
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy + r * 0.1, r * 0.12, Math.PI, 0); ctx.stroke();
   },
 
   goCreatePet() {
     wx.navigateTo({ url: '/common/pet/create/index' });
-  }
+  },
+
+  async loadRecommendPets() {
+    try {
+      const res = await request('wp-recommend', { action: 'list' }, { silent: true });
+      const pets = (res.data.pets || []).map(p => ({
+        ...p,
+        gender: this._normalizeGender(p.gender),
+        bg: this._getCardBg(this._normalizeGender(p.gender))
+      }));
+      this.setData({ recommendPets: pets });
+    } catch (err) {
+      console.error('[loadRecommendPets]', err);
+    }
+  },
+
+  _normalizeGender(g) {
+    if (!g) return '女生';
+    if (/^(male|男|公|男生)$/i.test(g)) return '男生';
+    return '女生';
+  },
+
+  _getCardBg(gender) {
+    return gender === '男生'
+      ? 'linear-gradient(135deg,#E3F0FF,#D0E4FF)'
+      : 'linear-gradient(135deg,#FFE8E7,#FFD5D3)';
+  },
+
+  refreshRecommend() {
+    if (this.data.recommendLoading) return;
+    this.setData({ recommendLoading: true });
+    this.loadRecommendPets().finally(() => {
+      setTimeout(() => { this.setData({ recommendLoading: false }); }, 1200);
+    });
+  },
+
+  onRecCardTap(e) {
+    if (this.data.recommendLoading || this.data.expandedCard) return;
+    const idx = parseInt(e.currentTarget.dataset.index);
+    const pet = this.data.recommendPets[idx];
+    if (!pet) return;
+    this.setData({ expandedCard: { ...pet, index: idx }, expandPhase: 'start' });
+    wx.nextTick(() => {
+      this.setData({ expandPhase: 'expand' });
+      this._expTimer = setTimeout(() => {
+        if (this.data.expandPhase === 'expand') this.setData({ expandPhase: 'show' });
+      }, 450);
+    });
+  },
+
+  onExpCardTransitionEnd() {
+    if (this._expTimer) { clearTimeout(this._expTimer); this._expTimer = null; }
+    if (this.data.expandPhase === 'expand') this.setData({ expandPhase: 'show' });
+  },
+
+  closeExpand() {
+    if (this._expTimer) { clearTimeout(this._expTimer); this._expTimer = null; }
+    this.setData({ expandPhase: 'start' });
+    setTimeout(() => { this.setData({ expandedCard: null, expandPhase: '' }); }, 300);
+  },
+
+  noop() {}
 });

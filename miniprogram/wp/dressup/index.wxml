@@ -12,7 +12,7 @@
         class="pet-chip {{selectedPetId === item.petId ? 'active' : ''}}"
         catchtap="selectPetChip" data-id="{{item.petId}}">
         <view class="chip-avatar">
-          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" mode="aspectFill" class="chip-img" />
+          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" mode="aspectFill" class="chip-img" lazy-load />
           <text wx:else class="chip-emoji">{{item.species === 'dog' ? '🐶' : item.species === 'cat' ? '🐱' : '🐰'}}</text>
         </view>
         <text class="chip-name">{{item.name}}</text>
@@ -24,46 +24,90 @@
     </view>
   </view>
 
-  <!-- Section 2: Avatar Display (main) -->
+  <!-- Section 2: Avatar Display with Picture Frame -->
   <view class="section-avatar">
-    <view wx:if="{{selectedPetId && avatarCreated}}" class="avatar-wrap">
-      <canvas type="2d" id="petCanvas" class="pg-canvas" style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
-        bindtouchstart="onCanvasTap" />
-    </view>
-    <view wx:elif="{{selectedPetId}}" class="avatar-empty">
-      <text class="ae-icon">✨</text>
-      <text class="ae-title">为 {{selectedPetName}} 生成 2D 形象</text>
-      <button class="btn-gen" catchtap="createAvatar">🎨 预设形象</button>
-      <button class="btn-gen btn-photo" catchtap="photo2Avatar" loading="{{generating}}">📷 从照片生成</button>
-    </view>
-    <view wx:else class="avatar-empty">
-      <text class="ae-icon">🐾</text>
-      <text class="ae-title">选择一只宠物开始</text>
+    <view class="avatar-frame">
+      <view wx:if="{{selectedPetId && avatarCreated}}" class="avatar-wrap">
+        <canvas type="2d" id="petCanvas" class="pg-canvas" style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
+          bindtouchstart="onCanvasTap" />
+      </view>
+      <view wx:elif="{{selectedPetId}}" class="avatar-empty">
+        <text class="ae-icon">✨</text>
+        <text class="ae-title">为 {{selectedPetName}} 生成 2D 形象</text>
+        <button class="btn-gen" catchtap="createAvatar">🎨 预设形象</button>
+        <button class="btn-gen btn-photo" catchtap="photo2Avatar" loading="{{generating}}">📷 从照片生成</button>
+      </view>
+      <view wx:else class="avatar-empty">
+        <text class="ae-icon">🐾</text>
+        <text class="ae-title">选择一只宠物开始</text>
+      </view>
     </view>
   </view>
 
-  <!-- Section 3: Recommended Pets (restore) -->
+  <!-- Section 3: Recommended Pets -->
   <view class="section-recommend">
-    <text class="rec-title">推荐宠物</text>
-    <scroll-view class="rec-scroll" scroll-x>
-      <view class="rec-card" style="background:linear-gradient(135deg,#FFE8E7,#FFD5D3)">
-        <view class="rec-avatar"></view>
-        <text class="rec-name">球球</text>
-        <text class="rec-info">金毛 · 2岁</text>
-        <text class="rec-like">♥ 326</text>
+    <view class="rec-header">
+      <text class="rec-title">别人家的</text>
+      <view class="rec-refresh" catchtap="refreshRecommend">
+        <text class="rec-refresh-icon">⟳</text>
+        <text class="rec-refresh-text" wx:if="{{!recommendLoading}}">换一换</text>
+        <text class="rec-refresh-dots" wx:else>···</text>
       </view>
-      <view class="rec-card" style="background:linear-gradient(135deg,#E8F8F6,#D0F0EB)">
+    </view>
+    <view class="rec-list {{recommendLoading ? 'shuffling' : ''}}">
+      <view wx:for="{{recommendPets}}" wx:key="index"
+        class="rec-card rec-card-{{index}}"
+        id="rec-card-{{index}}"
+        style="background:{{item.bg}}"
+        catchtap="onRecCardTap"
+        data-index="{{index}}"
+        hover-class="rec-card-hover">
         <view class="rec-avatar"></view>
-        <text class="rec-name">豆豆</text>
-        <text class="rec-info">柯基 · 1岁</text>
-        <text class="rec-like">♥ 189</text>
+        <text class="rec-name">{{item.name}}</text>
+        <text class="rec-info">{{item.breed}}</text>
+        <text class="rec-like">♥ {{item.likes}}</text>
       </view>
-      <view class="rec-card" style="background:linear-gradient(135deg,#FFF0EE,#FFE0DD)">
+    </view>
+  </view>
+
+  <!-- Expand Overlay -->
+  <view class="exp-overlay {{expandedCard ? 'exp-overlay-show' : ''}}" catchtap="closeExpand">
+    <view class="exp-card {{expandPhase}}"
+          style="background:{{expandPhase==='show' ? '#FDF5F0' : expandedCard.bg}};"
+          bindtransitionend="onExpCardTransitionEnd"
+          catchtap="noop">
+      <view class="exp-compact">
         <view class="rec-avatar"></view>
-        <text class="rec-name">棉花</text>
-        <text class="rec-info">萨摩耶 · 3岁</text>
-        <text class="rec-like">♥ 512</text>
+        <text class="rec-name">{{expandedCard.name}}</text>
+        <text class="rec-info">{{expandedCard.breed}}</text>
+        <text class="rec-like">♥ {{expandedCard.likes}}</text>
       </view>
-    </scroll-view>
+      <view class="exp-detail">
+        <view class="exp-close" catchtap="closeExpand">✕</view>
+        <view class="exp-info-bar">
+          <view class="exp-info-avatar">
+            <text class="exp-info-icon">{{expandedCard.species === 'dog' ? '🐶' : expandedCard.species === 'cat' ? '🐱' : '🐰'}}</text>
+          </view>
+          <view class="exp-info-main">
+            <text class="exp-info-name">{{expandedCard.name}}</text>
+            <text class="exp-info-meta">{{expandedCard.species === 'dog' ? '狗狗' : expandedCard.species === 'cat' ? '猫咪' : '其他'}} · {{expandedCard.breed}}</text>
+            <view class="exp-info-tags">
+              <text class="exp-tag">{{expandedCard.gender}}</text>
+              <text class="exp-tag">{{expandedCard.birthday}}</text>
+            </view>
+          </view>
+          <text class="exp-info-likes">♥ {{expandedCard.likes}}</text>
+        </view>
+        <view class="exp-3d-area">
+          <view class="exp-3d-placeholder" wx:if="{{!expandedCard.has3d}}">
+            <text class="exp-3d-empty-icon">🧊</text>
+            <text class="exp-3d-empty-text">暂无3D形象</text>
+          </view>
+          <view class="exp-3d-viewer" wx:else>
+            <text class="exp-3d-pet">🐶</text>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </view>

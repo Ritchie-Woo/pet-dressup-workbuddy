@@ -1,0 +1,9 @@
+{
+  "name": "cf-mp-place-stats",
+  "version": "1.0.0",
+  "description": "POI 聚合统计缓存刷新",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

@@ -1,0 +1,151 @@
+/* 半屏遮罩 */
+.pay-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 支付面板 */
+.pay-sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 40rpx;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32rpx);
+  animation: slideUp .3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* 顶部 */
+.pay-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.pay-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+}
+
+.pay-close {
+  padding: 8rpx;
+}
+
+/* 金额 */
+.pay-amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 24rpx 0;
+}
+
+.pay-symbol {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.pay-amount {
+  font-size: 72rpx;
+  font-weight: 700;
+  color: #333;
+  line-height: 1;
+}
+
+/* 商品摘要 */
+.pay-summary {
+  text-align: center;
+  padding-bottom: 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.pay-summary-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 支付方式 */
+.pay-method {
+  padding: 32rpx 0;
+}
+
+.pay-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.pay-method-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 16rpx;
+}
+
+.pay-method-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.pay-method-icon.wxpay {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: #07C160;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pay-method-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.pay-method-check.checked {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #07C160;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 确认按钮 */
+.pay-btn {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  background: linear-gradient(135deg, #FF5A5F, #FF3B40);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pay-btn:active {
+  opacity: .85;
+}
+
+.pay-btn-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+}

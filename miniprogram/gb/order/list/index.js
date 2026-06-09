@@ -35,6 +35,10 @@ Page({
     this.loadOrders();
   },
 
+  goBack() {
+    wx.navigateBack({ delta: 1 });
+  },
+
   async loadOrders() {
     this.setData({ loading: true });
     try {

@@ -22,7 +22,7 @@
     <!-- Name -->
     <view class="form-row">
       <text class="form-label">名字 <text class="required">*</text></text>
-      <t-input value="{{name}}" placeholder="给 TA 起个名字" bind:change="onNameChange" maxlength="{{8}}" />
+      <t-input value="{{name}}" placeholder="给 TA 起个名字" bind:change="onNameChange" />
     </view>
 
     <!-- Species -->
@@ -40,7 +40,7 @@
     <view class="form-row breed-row">
       <text class="form-label">品种</text>
       <view class="breed-wrap">
-        <input class="breed-input" value="{{breedInput}}" placeholder="{{species ? '输入品种名搜索' : '先选择物种'}}" bindinput="onBreedInput" bindfocus="onBreedFocus" bindblur="hideBreedDrop" maxlength="16" disabled="{{!species}}" />
+        <input class="breed-input" value="{{breedInput}}" placeholder="{{species ? '输入品种名搜索' : '先选择物种'}}" bindinput="onBreedInput" bindfocus="onBreedFocus" bindblur="hideBreedDrop" disabled="{{!species}}" />
         <view class="breed-drop" wx:if="{{showBreedDrop && breedSuggestions.length}}">
           <view wx:for="{{breedSuggestions}}" wx:key="*this" class="breed-opt" catchtap="selectBreed" data-val="{{item}}">{{item}}</view>
         </view>

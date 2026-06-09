@@ -1,0 +1,387 @@
+/**
+ * pet-widget — 纯 CSS 猫咪形象 + 5 种动作动画
+ *
+ * 坐标系: 以 .pet-wrap 中心为原点 (0,0)
+ *   耳朵在 y < 0, 头部在中心, 眼睛在 y ≈ -5% 处
+ */
+
+/* ============================================
+   Container
+   ============================================ */
+.pet-wrap {
+  position: relative;
+  overflow: visible;
+}
+
+/* ============================================
+   Head — 圆角方形头部
+   ============================================ */
+.head {
+  position: absolute;
+  left: 12%;
+  top: 18%;
+  width: 76%;
+  height: 68%;
+  background: linear-gradient(170deg, #F5C06E 0%, #E8A840 85%);
+  border-radius: 38%;
+  box-shadow: inset 0 -6px 12px rgba(0, 0, 0, 0.06),
+              0 4px 14px rgba(0, 0, 0, 0.10);
+  z-index: 2;
+}
+
+/* ============================================
+   Ears — 三角形耳朵
+   ============================================ */
+.ear {
+  position: absolute;
+  width: 26%;
+  height: 36%;
+  background: linear-gradient(170deg, #F5C06E, #D49530);
+  border-radius: 10% 70% 30% 10%;
+  z-index: 1;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.05);
+}
+.ear-l {
+  left: 14%;
+  top: 2%;
+  transform: rotate(-12deg);
+}
+.ear-r {
+  right: 14%;
+  top: 2%;
+  transform: rotate(12deg) scaleX(-1);
+}
+
+/* 耳朵内粉 */
+.ear-inner {
+  position: absolute;
+  width: 16%;
+  height: 22%;
+  background: #F2A0A8;
+  border-radius: 8% 60% 24% 8%;
+  z-index: 1;
+}
+.ear-inner-l {
+  left: 18%;
+  top: 8%;
+  transform: rotate(-10deg);
+}
+.ear-inner-r {
+  right: 18%;
+  top: 8%;
+  transform: rotate(10deg) scaleX(-1);
+}
+
+/* ============================================
+   Eyes — 眼白 + 瞳孔
+   ============================================ */
+.eye {
+  position: absolute;
+  top: 32%;
+  width: 22%;
+  height: 22%;
+  background: #fff;
+  border-radius: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.eye-l { left: 18%; }
+.eye-r { right: 18%; }
+
+/* 瞳孔 — 通过 JS 设置 transform: translate */
+.pupil {
+  width: 44%;
+  height: 44%;
+  background: radial-gradient(circle at 35% 35%, #333, #111);
+  border-radius: 50%;
+  transition: transform 0.08s ease-out;
+  z-index: 4;
+}
+
+/* 瞳孔高光 */
+.pupil-shine {
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  top: 16%;
+  left: 38%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 眼皮 — 根据动作显示 */
+.eyelid {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 6;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+/* idle/happy/surprised/angry: 无眼皮遮罩 */
+.eyelid-l-idle, .eyelid-r-idle,
+.eyelid-l-happy, .eyelid-r-happy,
+.eyelid-l-surprised, .eyelid-r-surprised,
+.eyelid-l-angry, .eyelid-r-angry {
+  background: transparent;
+}
+
+/* sleeping: 闭眼 — 顶端拉下 */
+.eyelid-l-sleeping,
+.eyelid-r-sleeping {
+  background: #E8A840;
+  transform: scaleY(0.5);
+  border-radius: 0 0 50% 50%;
+}
+
+/* happy: 眼变 ^ ^ — 通过缩小瞳孔区域 */
+.pet-happy .eye-l { transform: scaleY(0.70); }
+.pet-happy .eye-r { transform: scaleY(0.70); }
+
+/* surprised: 眼睛放大 */
+.pet-surprised .eye { transform: scale(1.25); }
+.pet-surprised .pupil { width: 36%; height: 36%; }
+
+/* angry: 眼睛压扁 */
+.pet-angry .eye { transform: scaleX(1.1) scaleY(0.65); }
+
+/* ============================================
+   Nose — 倒三角小鼻子
+   ============================================ */
+.nose {
+  position: absolute;
+  top: 51%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8%;
+  height: 7%;
+  background: #E88B8B;
+  border-radius: 40% 40% 50% 50%;
+  z-index: 3;
+}
+
+/* ============================================
+   Mouth — 不同动作不同嘴型
+   ============================================ */
+.mouth {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+/* idle / surprised: 小弧形 */
+.mouth-arc {
+  width: 16px;
+  height: 8px;
+  border: 2px solid #8B6914;
+  border-top: none;
+  border-radius: 0 0 50% 50%;
+  margin: 0 auto;
+}
+
+/* happy: 大笑弧 */
+.mouth-smile {
+  width: 24px;
+  height: 12px;
+  border: 2px solid #8B6914;
+  border-top: none;
+  border-radius: 0 0 50% 50%;
+  margin: 0 auto;
+}
+
+/* sleeping: 小圆嘴 */
+.mouth-dot {
+  width: 10px;
+  height: 8px;
+  background: #8B6914;
+  border-radius: 50%;
+  margin: 0 auto;
+  opacity: 0.7;
+}
+
+/* angry: 波浪嘴 */
+.mouth-wave {
+  width: 20px;
+  height: 8px;
+  border: 2px solid #8B6914;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0;
+  margin: 0 auto;
+}
+
+/* ============================================
+   Blush — 腮红 (happy 时显示)
+   ============================================ */
+.blush {
+  position: absolute;
+  top: 56%;
+  width: 14%;
+  height: 9%;
+  background: rgba(255, 150, 150, 0.45);
+  border-radius: 50%;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.blush-l { left: 8%; }
+.blush-r { right: 8%; }
+.blush.show { opacity: 1; }
+
+/* ============================================
+   动作动画 — 宠物整体
+   ============================================ */
+
+/* idle: 呼吸微动 */
+.pet-idle {
+  animation: breathe 3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+/* happy: 弹跳 */
+.pet-happy {
+  animation: bounce 0.45s ease-in-out 3;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  30%      { transform: translateY(-16px); }
+  50%      { transform: translateY(0); }
+  70%      { transform: translateY(-8px); }
+  85%      { transform: translateY(0); }
+}
+
+/* surprised: 僵住 + 微抖 */
+.pet-surprised {
+  animation: startle 0.6s ease-out;
+}
+@keyframes startle {
+  0%   { transform: scale(1); }
+  20%  { transform: scale(1.08); }
+  30%  { transform: scale(0.96); }
+  45%  { transform: scale(1.04); }
+  60%  { transform: scale(0.98); }
+  80%  { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+/* sleeping: 缓慢起伏 */
+.pet-sleeping {
+  animation: snooze 2.5s ease-in-out infinite;
+}
+@keyframes snooze {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25%      { transform: scale(1.02) rotate(1deg); }
+  75%      { transform: scale(0.98) rotate(-1deg); }
+}
+
+/* angry: 左右抖 */
+.pet-angry {
+  animation: tremor 0.15s ease-in-out 6;
+}
+@keyframes tremor {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  75%      { transform: translateX(3px); }
+}
+
+/* ============================================
+   特效层
+   ============================================ */
+.fx-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* ZZZ */
+.zzz {
+  position: absolute;
+  right: -10%;
+  top: -10%;
+}
+.zz1, .zz2, .zz3 {
+  position: absolute;
+  font-size: 20px;
+  font-weight: bold;
+  color: #6B9BD2;
+  opacity: 0;
+  right: 0;
+}
+.zz1 { top: 0;   animation: floatZ 1.8s ease-out infinite; }
+.zz2 { top: 18px; animation: floatZ 1.8s ease-out 0.4s infinite; }
+.zz3 { top: 34px; animation: floatZ 1.8s ease-out 0.8s infinite; }
+@keyframes floatZ {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  30%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(-8px, -28px) scale(1.4); }
+}
+
+/* 爱心 */
+.hearts {
+  position: absolute;
+  left: 50%;
+  top: -8%;
+}
+.ht1, .ht2 {
+  position: absolute;
+  font-size: 18px;
+  color: #FF6B8A;
+  opacity: 0;
+}
+.ht1 { left: -24px; animation: floatHeart 1.4s ease-out infinite; }
+.ht2 { left: 8px;   animation: floatHeart 1.4s ease-out 0.5s infinite; }
+@keyframes floatHeart {
+  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+  40%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-36px) scale(1.3); }
+}
+
+/* 感叹号 */
+.exclaims {
+  position: absolute;
+  left: 50%;
+  top: -10%;
+}
+.ex1, .ex2 {
+  position: absolute;
+  font-size: 22px;
+  font-weight: bold;
+  color: #FFB020;
+  opacity: 0;
+}
+.ex1 { left: -18px; animation: popEx 1s ease-out infinite; }
+.ex2 { left: 4px;   animation: popEx 1s ease-out 0.3s infinite; }
+@keyframes popEx {
+  0%   { opacity: 0; transform: translateY(0) scale(0.3); }
+  30%  { opacity: 1; transform: translateY(-8px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-24px) scale(0.9); }
+}
+
+/* 生气青筋 */
+.veins {
+  position: absolute;
+  right: -4%;
+  top: 0;
+}
+.vn1 {
+  position: absolute;
+  font-size: 16px;
+  opacity: 0;
+  animation: veinPop 0.8s ease-out infinite;
+}
+@keyframes veinPop {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%      { opacity: 1; transform: scale(1.1); }
+}

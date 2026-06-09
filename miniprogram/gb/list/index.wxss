@@ -2,45 +2,80 @@
 .gb-list-container {
   position: relative;
   height: 100vh;
-}
-
-.gb-list-page {
-  height: 100%;
-  padding-top: calc(env(safe-area-inset-top) + 20rpx);
   background: var(--bg);
 }
 
-/* 搜索 */
-.search-bar { padding: 0 24rpx 16rpx; }
+/* ===== 固定头部 ===== */
+.gb-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding-top: env(safe-area-inset-top);
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,.06);
+}
 
-/* 分类 */
-.cate-row {
-  white-space: nowrap;
-  padding: 16rpx 24rpx;
+/* 品牌标识 */
+.gb-brandbar {
+  padding: 20rpx 24rpx;
   background: #fff;
 }
+
+/* 搜索栏 */
+.gb-search-wrap {
+  padding: 12rpx 24rpx 12rpx;
+}
+
+/* 分类标签 */
+.gb-cate-row {
+  white-space: nowrap;
+  padding: 8rpx 24rpx 16rpx;
+  background: #fff;
+}
+
 .cate-pill {
   display: inline-flex;
-  padding: 12rpx 28rpx;
+  align-items: center;
+  padding: 14rpx 32rpx;
   border-radius: var(--radius-pill);
   font-size: 26rpx;
   color: var(--td-text-color-secondary);
   background: var(--td-bg-color-page);
   margin-right: 16rpx;
   font-weight: 500;
+  transition: all 0.2s ease;
 }
-.cate-pill.active { background: var(--primary); color: #fff; font-weight: 700; }
+
+.cate-pill.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ===== 商品列表 ===== */
+.gb-list-page {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.gb-list-spacer {
+  height: calc(env(safe-area-inset-top) + 244rpx);
+  flex-shrink: 0;
+}
 
 /* 商品网格 */
 .product-grid {
   display: flex;
   flex-wrap: wrap;
-  padding: 20rpx 20rpx;
-  gap: 20rpx;
+  padding: 10rpx;
 }
 
 .prod-card {
-  width: calc(50% - 10rpx);
+  width: calc(50% - 20rpx);
+  margin: 10rpx;
   background: #fff;
   border-radius: var(--radius);
   overflow: hidden;

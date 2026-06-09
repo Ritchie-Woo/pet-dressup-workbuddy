@@ -7,12 +7,25 @@
   flex-direction: column;
 }
 
+/* 品牌顶栏 */
+.order-brandbar {
+  padding: 20rpx 24rpx;
+  padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+.brandbar-has-back { display: flex; align-items: center; justify-content: center; position: relative; }
+.brandbar-back { position: absolute; left: 24rpx; display: flex; align-items: center; justify-content: center; width: 60rpx; height: 60rpx; }
+.brandbar-back:active { opacity: 0.5; }
+.brandbar-spacer { width: 60rpx; }
+
 /* Tab 容器 */
 .tabs-wrapper {
   background: #FFFFFF;
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 /* 订单滚动区 */

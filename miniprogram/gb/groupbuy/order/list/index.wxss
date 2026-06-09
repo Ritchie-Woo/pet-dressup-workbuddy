@@ -1,0 +1,39 @@
+/* 品牌栏 — 含返回键 */
+.brandbar-has-back { display: flex; align-items: center; justify-content: center; position: relative; }
+.brandbar-back { position: absolute; left: 24rpx; display: flex; align-items: center; justify-content: center; width: 60rpx; height: 60rpx; }
+.brandbar-back:active { opacity: 0.5; }
+.brandbar-spacer { width: 60rpx; }
+
+.order-list-page { min-height: 100vh; background: var(--body-bg); }
+.tabs-wrapper { background: var(--bg); position: sticky; top: 0; z-index: 10; }
+
+.order-card {
+  background: var(--bg);
+  margin: 0 24rpx 20rpx;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.order-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20rpx 24rpx; border-bottom: 1rpx solid var(--bg-secondary);
+}
+
+.order-no { font-size: 22rpx; color: var(--text-secondary); }
+
+.order-body {
+  display: flex; justify-content: space-between; padding: 24rpx;
+}
+
+.order-info { flex: 1; display: flex; flex-direction: column; gap: 6rpx; min-width: 0; }
+.order-product { font-size: 28rpx; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.order-spec { font-size: 22rpx; color: var(--text-secondary); }
+.order-buyer { font-size: 22rpx; color: var(--text-secondary); }
+
+.order-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4rpx; flex-shrink: 0; }
+.order-amount { font-size: 30rpx; font-weight: 800; color: var(--primary); }
+.order-qty { font-size: 22rpx; color: var(--text-secondary); }
+
+.order-footer { padding: 0 24rpx 20rpx; }
+.loading-wrap { display: flex; justify-content: center; padding: 60rpx 0; }
