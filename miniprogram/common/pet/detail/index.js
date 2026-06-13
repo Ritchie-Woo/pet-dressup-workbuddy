@@ -24,6 +24,7 @@ Page({
   data: {
     petId: '',
     avatarUrl: '',
+    avatarUploading: false,
     name: '',
     species: '',
     breedInput: '',
@@ -73,12 +74,40 @@ Page({
   },
 
   onAvatarTap() {
-    wx.chooseMedia({
+    wx.chooseImage({
       count: 1,
-      mediaType: ['image'],
+      sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: (res) => {
-        this.setData({ avatarUrl: res.tempFiles[0].tempFilePath });
+      success: res => {
+        const filePath = res.tempFilePaths[0];
+        wx.cropImage({
+          src: filePath,
+          cropScale: '1:1',
+          success: cropRes => this._uploadAvatar(cropRes.tempFilePath),
+          fail: () => this._uploadAvatar(filePath)
+        });
+      }
+    });
+  },
+
+  _uploadAvatar(filePath) {
+    this.setData({ avatarUploading: true });
+    wx.showLoading({ title: '上传中' });
+    const cloudPath = 'avatars/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.png';
+    wx.cloud.uploadFile({
+      cloudPath,
+      filePath,
+      success: res => {
+        this.setData({ avatarUrl: res.fileID });
+        wx.showToast({ title: '头像已设置', icon: 'success' });
+      },
+      fail: err => {
+        console.error('头像上传失败', err);
+        wx.showToast({ title: '头像上传失败', icon: 'none' });
+      },
+      complete: () => {
+        wx.hideLoading();
+        this.setData({ avatarUploading: false });
       }
     });
   },
@@ -135,6 +164,10 @@ Page({
       wx.showToast({ title: '宠物名不能超过8个字', icon: 'none' });
       return;
     }
+    if (this.data.avatarUploading) {
+      wx.showToast({ title: '头像上传中', icon: 'none' });
+      return;
+    }
 
     this.setData({ saving: true });
     try {
@@ -145,7 +178,8 @@ Page({
         species: this.data.species,
         breed: this.data.breedInput,
         gender: this.data.gender,
-        birthday: this.data.birthday
+        birthday: this.data.birthday,
+        avatarUrl: this.data.avatarUrl
       });
       wx.showToast({ title: '保存成功', icon: 'success' });
       setTimeout(() => wx.navigateBack(), 800);

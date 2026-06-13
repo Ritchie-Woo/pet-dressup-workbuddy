@@ -1,0 +1,9 @@
+{
+  "name": "mp-place-import",
+  "version": "1.0.0",
+  "description": "批量导入宠物友好场所到 mp_place 集合",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

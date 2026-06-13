@@ -40,12 +40,6 @@
       ]
     }
   ],
-  "preloadRule": {
-    "my/index": {
-      "network": "all",
-      "packages": ["subpackage-gb", "subpackage-mbti"]
-    }
-  },
   "window": {
     "navigationStyle": "custom",
     "backgroundTextStyle": "dark",
@@ -69,12 +63,6 @@
         "text": "地图",
         "iconPath": "images/tab/mp.png",
         "selectedIconPath": "images/tab/mp-active.png"
-      },
-      {
-        "pagePath": "my/index",
-        "text": "我的",
-        "iconPath": "images/tab/my.png",
-        "selectedIconPath": "images/tab/my-active.png"
       }
     ]
   },

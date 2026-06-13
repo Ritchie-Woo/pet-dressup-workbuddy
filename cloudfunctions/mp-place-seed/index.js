@@ -27,12 +27,11 @@ const BATCHES = [
 ];
 
 // 搜索配置：关键词 → 分类映射（区级搜索 5 页够了）
+// 分类对齐 5 类核心：mall / restaurant / park / hotel / adoption
 const SEARCH_TASKS = [
-  { keywords: '宠物医院', category: 'hospital', maxPages: 5 },
-  { keywords: '宠物店', category: 'pet_store', maxPages: 5 },
-  { keywords: '宠物美容', category: 'pet_store', maxPages: 5 },
-  { keywords: '宠物公园', category: 'park', maxPages: 3 },
-  { keywords: '宠物友好|宠物咖啡|猫咖|狗咖', category: 'cafe', maxPages: 5 },
+  { keywords: '宠物友好商场|宠物商场|可带宠物商场', category: 'mall', maxPages: 5 },
+  { keywords: '宠物公园|宠物友好公园|遛狗公园', category: 'park', maxPages: 3 },
+  { keywords: '宠物领养|流浪动物救助|动物收容', category: 'adoption', maxPages: 5 },
 ];
 
 // 餐厅 & 酒店搜索（batch 5，单独跑一次）
@@ -77,10 +76,9 @@ function transformPoi(poi, category, city) {
   const [lng, lat] = (poi.location || '0,0').split(',').map(Number);
 
   const policyMap = {
-    hospital: '宠物医院，建议提前电话预约',
-    pet_store: '欢迎带宠物进店',
+    mall: '宠物友好商场，部分商户可携宠进入，建议提前确认',
     park: '可遛宠，请牵绳并清理便便',
-    cafe: '宠物友好，具体政策请咨询店家',
+    adoption: '领养代替购买，请提前联系确认开放时间',
   };
 
   const images = (poi.photos || []).map(p => (p && p.url) || '').filter(Boolean).slice(0, 5);

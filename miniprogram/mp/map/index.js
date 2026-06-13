@@ -1,7 +1,7 @@
 // mp/map/index.js — 宠物友好地图
-const { request } = require('../../utils/request');
+const { request, startWalk, stopWalk, heartbeatWalk, queryWalkers, getPetList } = require('../../utils/request');
 
-const CAT_LABELS = { restaurant: '餐厅', cafe: '咖啡馆', park: '公园', pet_store: '宠物店', hospital: '医院', hotel: '宠物酒店', other: '其他' };
+const CAT_LABELS = { mall: '商场', restaurant: '餐厅', park: '公园', hotel: '酒店', adoption: '领养', other: '其他' };
 
 // 服务区域：南京 + 上海（矩形范围，用于快速判断）
 const SERVICE_AREAS = [
@@ -9,6 +9,7 @@ const SERVICE_AREAS = [
   { name: '上海', latMin: 30.66, latMax: 31.83, lngMin: 120.84, lngMax: 122.12 },
 ];
 const DEFAULT_CENTER = { lat: 32.06, lng: 118.79 }; // 南京市中心
+const WALK_STALE_THRESHOLD = 15 * 60 * 1000;
 
 function isInServiceArea(lat, lng) {
   return SERVICE_AREAS.some(a =>
@@ -36,14 +37,23 @@ Page({
     _dragging: false,   // 是否正在拖动（控制过渡）
     categories: [
       { value: 'all', icon: '📍', label: '全部' },
-      { value: 'restaurant', icon: '🍽️', label: '餐厅' },
-      { value: 'cafe', icon: '☕', label: '咖啡馆' },
-      { value: 'park', icon: '🌳', label: '公园' },
-      { value: 'pet_store', icon: '🐾', label: '宠物店' },
-      { value: 'hospital', icon: '🏥', label: '医院' },
-      { value: 'hotel', icon: '🏨', label: '酒店' }
+      { value: 'mall', icon: '/assets/icons/mall.png', isImage: true, label: '商场' },
+      { value: 'restaurant', icon: '/assets/icons/restaurant.png', isImage: true, label: '餐厅' },
+      { value: 'park', icon: '/assets/icons/park.png', isImage: true, label: '公园' },
+      { value: 'hotel', icon: '/assets/icons/hotel.png', isImage: true, label: '酒店' },
+      { value: 'adoption', icon: '/assets/icons/adoption.png', isImage: true, label: '领养' },
+      { value: 'other', icon: '/images/markers/other.png', isImage: true, label: '其他' }
     ],
-    keyword: ''
+    keyword: '',
+    showWalkBar: false,
+    walkingActive: false,
+    walkSessionId: null,
+    walkDuration: '0分钟',
+    walkPetList: [],
+    selectedWalkPets: [],
+    walkGroups: [],
+    selectedWalkGroup: null,
+    showWalkGroupPanel: false
   },
 
   // 防抖：避免 onRegionChange 频繁触发云函数请求
@@ -52,6 +62,14 @@ Page({
   _lastCenter: null,   // 上次加载的中心点
   _placeMap: {},       // marker 索引 → placeId 映射
   _viewport: null,     // 上次查询的可视范围 {latMin,latMax,lngMin,lngMax}
+  _walkTimer: null,
+  _walkDurationTimer: null,
+  _walkStartTime: null,
+  _walkersPollTimer: null,    // 30s 拉一次附近狗友
+  _sessionCheckTimer: null,   // 5 分钟一次 session 健康检测
+  _placeMarkersCache: [],     // POI markers 缓存（用于隐藏/恢复）
+  _walkGroupMap: {},
+  _lastHeartbeatAt: null,
 
   onLoad() {
     const app = getApp();
@@ -65,6 +83,44 @@ Page({
     //   return;
     // }
     this.getLocation();
+    this._loadWalkPetList();
+  },
+
+  onHide() {
+    // 切 tab 时暂停心跳 + 暂停狗友轮询
+    if (this._walkTimer) { clearInterval(this._walkTimer); this._walkTimer = null; }
+    if (this._walkDurationTimer) { clearInterval(this._walkDurationTimer); this._walkDurationTimer = null; }
+    if (this._walkersPollTimer) { clearInterval(this._walkersPollTimer); this._walkersPollTimer = null; }
+    if (this._sessionCheckTimer) { clearInterval(this._sessionCheckTimer); this._sessionCheckTimer = null; }
+  },
+
+  onShow() {
+    if (this.data.walkingActive && this._lastHeartbeatAt && Date.now() - this._lastHeartbeatAt > WALK_STALE_THRESHOLD) {
+      wx.showToast({ title: '遛狗会话已过期', icon: 'none' });
+      this._stopWalking();
+      return;
+    }
+    // 恢复心跳
+    if (this.data.walkingActive && !this._walkTimer) {
+      this._walkTimer = setInterval(() => this._heartbeat(), 30000);
+      this._walkDurationTimer = setInterval(() => this._updateWalkDuration(), 60000);
+      this._heartbeat().catch(() => {});
+    }
+    // 恢复狗友轮询
+    if (this.data.walkingActive && !this._walkersPollTimer) {
+      this._startWalkersPolling();
+    }
+    if (this.data.walkingActive && !this._sessionCheckTimer) {
+      this._sessionCheckTimer = setInterval(() => this._checkSession(), 15 * 60 * 1000);
+    }
+  },
+
+  onUnload() {
+    if (this.data.walkingActive && this.data.walkSessionId) {
+      stopWalk(this.data.walkSessionId).catch(() => {});
+    }
+    this._clearWalkTimers();
+    this._stopWalkersPolling();
   },
 
   // 直接获取位置，失败再判断授权状态
@@ -416,7 +472,16 @@ Page({
   onSearchClear() { this.setData({ keyword: '' }, () => this.loadPlaces(this.data.latitude, this.data.longitude)); },
 
   onMarkerTap(e) {
-    const id = this._placeMap[e.detail.markerId];
+    const markerId = e.detail.markerId;
+    const group = this._walkGroupMap[markerId];
+    if (group) {
+      this.setData({
+        selectedWalkGroup: group,
+        showWalkGroupPanel: true
+      });
+      return;
+    }
+    const id = this._placeMap[markerId];
     if (!id) return;
     const place = this.data.places.find(p => p.placeId === id);
     if (place) {
@@ -496,6 +561,232 @@ Page({
     wx.navigateTo({
       url: `/mp/place/index?mode=submit&lat=${latitude}&lng=${longitude}`
     });
+  },
+
+  // ===== 遛狗 =====
+
+  toggleWalkBar() {
+    if (this.data.showWalkBar) {
+      this.setData({ showWalkBar: false, selectedWalkPets: [] });
+    } else {
+      this.setData({ showWalkBar: true, showWalkGroupPanel: false, selectedWalkGroup: null });
+      this._loadWalkPetList();
+    }
+  },
+
+  // 点击遮罩区域关闭遛狗面板
+  onWalkMaskTap() {
+    if (this.data.showWalkBar && !this.data.walkingActive) {
+      this.setData({ showWalkBar: false, selectedWalkPets: [] });
+    }
+  },
+
+  async _loadWalkPetList() {
+    try {
+      const res = await getPetList();
+      if (res.code === 1 && res.data && res.data.pets) {
+        const dogs = res.data.pets.filter(p => p.species === 'dog');
+        const dogIds = dogs.map(p => p.petId);
+        this.setData({
+          walkPetList: dogs,
+          selectedWalkPets: this.data.selectedWalkPets.filter(id => dogIds.indexOf(id) > -1)
+        });
+      }
+    } catch (e) { /* 宠物列表加载失败静默 */ }
+  },
+
+  selectWalkPet(e) {
+    const pet = e.currentTarget.dataset.pet;
+    const selected = this.data.selectedWalkPets[0] === pet.petId ? [] : [pet.petId];
+    this.setData({ selectedWalkPets: selected });
+  },
+
+  async startWalkingWithPet() {
+    const petIds = this.data.selectedWalkPets;
+    if (this.data.walkPetList.length === 0) {
+      wx.showToast({ title: '请先创建狗狗档案', icon: 'none' });
+      return;
+    }
+    if (petIds.length === 0) {
+      wx.showToast({ title: '请选择一只狗狗', icon: 'none' });
+      return;
+    }
+    // 取第一只作为主遛狗宠物
+    const petId = petIds[0];
+    try {
+      const res = await startWalk(petId);
+      if (res.code === 1 && res.data.session) {
+        const session = res.data.session;
+        this._walkStartTime = new Date(session.started_at || Date.now());
+        this._lastHeartbeatAt = Date.now();
+        // 缓存当前 POI markers，停止时恢复
+        this._placeMarkersCache = this.data.markers.filter(m => m.id < 10000);
+        this.setData({
+          walkingActive: true,
+          walkSessionId: session._id,
+          showWalkBar: false,
+          showWalkGroupPanel: false,
+          selectedWalkGroup: null,
+          walkGroups: [],
+          // 进入遛狗模式：隐藏 POI + 清空 places
+          categoryActive: false,
+          activeCategory: 'all',
+          markers: [],
+          places: [],
+          truncated: false
+        });
+        this._walkTimer = setInterval(() => this._heartbeat(), 30000);
+        this._walkDurationTimer = setInterval(() => this._updateWalkDuration(), 60000);
+        this._updateWalkDuration();
+        this._heartbeat().catch(() => {});
+        // 立即拉一次附近狗友 + 启动 30s 轮询
+        this._fetchNearbyWalkers();
+        this._startWalkersPolling();
+        // 5 分钟一次 session 健康检测
+        this._sessionCheckTimer = setInterval(() => this._checkSession(), 15 * 60 * 1000);
+      }
+    } catch (err) {
+      wx.showToast({ title: '开启失败，请重试', icon: 'none' });
+    }
+  },
+
+  stopWalking() {
+    this._stopWalking();
+  },
+
+  closeWalkGroupPanel() {
+    this.setData({ showWalkGroupPanel: false, selectedWalkGroup: null });
+  },
+
+  async _stopWalking() {
+    if (this.data.walkSessionId) {
+      try { await stopWalk(this.data.walkSessionId); } catch (e) {}
+    }
+    this._clearWalkTimers();
+    this._stopWalkersPolling();
+    if (this._sessionCheckTimer) { clearInterval(this._sessionCheckTimer); this._sessionCheckTimer = null; }
+    // 恢复 POI
+    const restored = this._placeMarkersCache || [];
+    this._placeMarkersCache = [];
+    this.setData({
+      walkingActive: false,
+      walkSessionId: null,
+      walkDuration: '0分钟',
+      walkGroups: [],
+      selectedWalkGroup: null,
+      showWalkGroupPanel: false,
+      markers: restored,
+      categoryActive: true
+    });
+    this._walkStartTime = null;
+    this._lastHeartbeatAt = null;
+    this._walkGroupMap = {};
+    // 重新拉一次 POI
+    if (this._viewport) this.loadPlaces(this.data.latitude, this.data.longitude, this._viewport);
+  },
+
+  _clearWalkTimers() {
+    if (this._walkTimer) { clearInterval(this._walkTimer); this._walkTimer = null; }
+    if (this._walkDurationTimer) { clearInterval(this._walkDurationTimer); this._walkDurationTimer = null; }
+  },
+
+  // ===== 附近狗友轮询 =====
+  _startWalkersPolling() {
+    if (this._walkersPollTimer) return;
+    this._walkersPollTimer = setInterval(() => this._fetchNearbyWalkers(), 30000);
+  },
+
+  _stopWalkersPolling() {
+    if (this._walkersPollTimer) { clearInterval(this._walkersPollTimer); this._walkersPollTimer = null; }
+  },
+
+  async _fetchNearbyWalkers() {
+    try {
+      const res = await queryWalkers({
+        latitude: this.data.latitude,
+        longitude: this.data.longitude,
+        radius: 1000
+      });
+      if (res.code === 1 && res.data) {
+        this._buildWalkerMarkers(res.data.groups || [], res.data.hotspots || []);
+      }
+    } catch (err) {
+      console.warn('[walkers] 拉取失败:', err.message || err);
+    }
+  },
+
+  _buildWalkerMarkers(groups, hotspots = []) {
+    // group id 用 10000+ 区间，跟 POI 不冲突
+    this._walkGroupMap = {};
+    const markerGroups = groups.length > 0
+      ? groups
+      : hotspots.slice(0, 5).map(h => ({
+          groupId: `hotspot_${h._id}`,
+          count: h.total_sessions || 1,
+          latitude: h.latitude,
+          longitude: h.longitude,
+          pets: [{ avatarUrl: '/assets/icons/walk.png' }],
+          isHotspot: true
+        }));
+    const groupMarkers = markerGroups.slice(0, 20).map((group, i) => {
+      const id = 10000 + i;
+      this._walkGroupMap[id] = group;
+      const m = {
+        id,
+        latitude: group.latitude,
+        longitude: group.longitude,
+        width: 48, height: 48,
+        iconPath: '/assets/icons/walk.png',
+        callout: {
+          content: group.isHotspot ? '附近遛狗热区' : `附近 ${group.count || 1} 只狗狗`,
+          display: 'ALWAYS',
+          padding: 8, borderRadius: 8,
+          fontSize: 14, color: '#fff', bgColor: '#FF6B35',
+          borderWidth: 0, borderColor: 'transparent'
+        }
+      };
+      return m;
+    });
+    // 只显示 group markers，POI 已被 startWalking 时清空
+    this.setData({ markers: groupMarkers, walkGroups: markerGroups });
+  },
+
+  // 5 分钟一次的 session 健康检测
+  async _checkSession() {
+    if (!this.data.walkSessionId) return;
+    try {
+      await this._heartbeat();
+      await this._fetchNearbyWalkers();
+    } catch (err) {
+      console.warn('[session] 异常，自动停止遛狗:', err.message);
+      wx.showToast({ title: '遛狗会话已断开', icon: 'none' });
+      this._stopWalking();
+    }
+  },
+
+  _heartbeat() {
+    if (!this.data.walkSessionId) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      wx.getLocation({
+        type: 'gcj02',
+        success: (res) => {
+          heartbeatWalk(this.data.walkSessionId, res.latitude, res.longitude)
+            .then(() => {
+              this._lastHeartbeatAt = Date.now();
+              this.setData({ latitude: res.latitude, longitude: res.longitude });
+              resolve();
+            })
+            .catch(reject);
+        },
+        fail: reject
+      });
+    });
+  },
+
+  _updateWalkDuration() {
+    if (!this._walkStartTime) return;
+    const mins = Math.max(0, Math.round((Date.now() - this._walkStartTime.getTime()) / 60000));
+    this.setData({ walkDuration: mins < 60 ? mins + '分钟' : Math.floor(mins / 60) + '小时' + (mins % 60) + '分钟' });
   },
 
   categoryLabel(cat) { return CAT_LABELS[cat] || cat; }

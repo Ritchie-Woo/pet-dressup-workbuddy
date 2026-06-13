@@ -15,7 +15,12 @@ Page({
     recommendLoading: false,
     recommendPets: [],
     expandedCard: null,
-    expandPhase: ''
+    expandPhase: '',
+    selectedPet: null,
+    selectedPetPhotos: [],
+    selectedPetIsPublic: true,
+    photoUploading: false,
+    likingPetIds: {}
   },
 
   _loading: false,
@@ -49,6 +54,20 @@ Page({
         this.selectPetChip({ currentTarget: { dataset: { id: lastId } } });
       } else if (pets.length > 0) {
         this.selectPetChip({ currentTarget: { dataset: { id: pets[0].petId } } });
+      } else {
+        storage.remove('selectedPetId');
+        storage.remove('currentDressPet');
+        this._lastRenderedAvatarId = '';
+        this._cachedAvatarUrl = '';
+        this.setData({
+          selectedPetId: '',
+          selectedPetName: '',
+          avatarCreated: false,
+          selectedPet: null,
+          selectedPetPhotos: [],
+          selectedPetIsPublic: true,
+          photoUploading: false
+        });
       }
     } catch (err) {
       console.error('加载宠物列表失败', err);
@@ -63,7 +82,14 @@ Page({
     if (!pet) return;
 
     storage.setSync('selectedPetId', petId);
-    this.setData({ selectedPetId: petId, selectedPetName: pet.name });
+    const photos = this._normalizePetPhotos(pet.photos);
+    this.setData({
+      selectedPetId: petId,
+      selectedPetName: pet.name,
+      selectedPet: pet,
+      selectedPetPhotos: photos,
+      selectedPetIsPublic: pet.isPublic !== false
+    });
 
     try {
       const avatarRes = await request('wp-avatar', { action: 'getByPet', petId }, { silent: true });
@@ -225,6 +251,133 @@ Page({
     } finally {
       wx.hideLoading();
       this.setData({ generating: false });
+    }
+  },
+
+  _normalizePetPhotos(photos) {
+    return Array.isArray(photos) ? photos.filter(Boolean).slice(0, 5) : [];
+  },
+
+  _updatePetInList(petId, updates) {
+    const pets = this.data.pets.map(item => {
+      if (item.petId !== petId) return item;
+      return { ...item, ...updates };
+    });
+    const selectedPet = pets.find(item => item.petId === petId) || null;
+    this.setData({
+      pets,
+      selectedPet,
+      selectedPetPhotos: selectedPet ? this._normalizePetPhotos(selectedPet.photos) : [],
+      selectedPetIsPublic: selectedPet ? selectedPet.isPublic !== false : true
+    });
+  },
+
+  async uploadPetPhoto() {
+    const pet = this.data.selectedPet;
+    if (!pet || this.data.photoUploading) return;
+    const currentPhotos = this._normalizePetPhotos(this.data.selectedPetPhotos);
+    if (currentPhotos.length >= 5) {
+      wx.showToast({ title: '最多 5 张照片', icon: 'none' });
+      return;
+    }
+
+    const chooseRes = await new Promise((resolve, reject) => {
+      wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: resolve,
+        fail: reject
+      });
+    }).catch(() => null);
+    if (!chooseRes || !chooseRes.tempFilePaths || !chooseRes.tempFilePaths[0]) return;
+
+    this.setData({ photoUploading: true });
+    wx.showLoading({ title: '上传中…' });
+    try {
+      const cloudPath = 'pet-photos/' + pet.petId + '_' + Date.now() + '_' + Math.random().toString(36).slice(2) + '.jpg';
+      const uploadRes = await wx.cloud.uploadFile({
+        cloudPath,
+        filePath: chooseRes.tempFilePaths[0]
+      });
+      const nextPhotos = currentPhotos.concat(uploadRes.fileID);
+      const res = await request('common-pet', {
+        action: 'update',
+        petId: pet.petId,
+        photos: nextPhotos
+      }, { silent: true });
+      if (res.code !== 1) {
+        wx.showToast({ title: res.msg || '保存失败', icon: 'none' });
+        return;
+      }
+      this._updatePetInList(pet.petId, { photos: nextPhotos });
+      wx.showToast({ title: '已上传', icon: 'success' });
+    } catch (err) {
+      wx.showToast({ title: err.message || '上传失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+      this.setData({ photoUploading: false });
+    }
+  },
+
+  async deletePetPhoto(e) {
+    const pet = this.data.selectedPet;
+    if (!pet) return;
+    const index = Number(e.currentTarget.dataset.index);
+    const currentPhotos = this._normalizePetPhotos(this.data.selectedPetPhotos);
+    if (index < 0 || index >= currentPhotos.length) return;
+
+    const confirmed = await new Promise(resolve => {
+      wx.showModal({
+        title: '删除照片',
+        content: '确定从这只宠物的照片列表移除这张照片吗？',
+        success: r => resolve(r.confirm)
+      });
+    });
+    if (!confirmed) return;
+
+    const nextPhotos = currentPhotos.filter((_, i) => i !== index);
+    wx.showLoading({ title: '删除中…' });
+    try {
+      const res = await request('common-pet', {
+        action: 'update',
+        petId: pet.petId,
+        photos: nextPhotos
+      }, { silent: true });
+      if (res.code !== 1) {
+        wx.showToast({ title: res.msg || '删除失败', icon: 'none' });
+        return;
+      }
+      this._updatePetInList(pet.petId, { photos: nextPhotos });
+      wx.showToast({ title: '已删除', icon: 'success' });
+    } catch (err) {
+      wx.showToast({ title: err.message || '删除失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  async togglePetPublic() {
+    const pet = this.data.selectedPet;
+    if (!pet) return;
+    const nextIsPublic = !this.data.selectedPetIsPublic;
+    this.setData({ selectedPetIsPublic: nextIsPublic });
+    try {
+      const res = await request('common-pet', {
+        action: 'update',
+        petId: pet.petId,
+        isPublic: nextIsPublic
+      }, { silent: true });
+      if (res.code !== 1) {
+        this.setData({ selectedPetIsPublic: !nextIsPublic });
+        wx.showToast({ title: res.msg || '保存失败', icon: 'none' });
+        return;
+      }
+      this._updatePetInList(pet.petId, { isPublic: nextIsPublic });
+      wx.showToast({ title: nextIsPublic ? '已公开' : '已设为不公开', icon: 'none' });
+    } catch (err) {
+      this.setData({ selectedPetIsPublic: !nextIsPublic });
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' });
     }
   },
 
@@ -411,14 +564,29 @@ Page({
     wx.navigateTo({ url: '/common/pet/create/index' });
   },
 
+  goEditPet(e) {
+    const petId = e.currentTarget.dataset.id || this.data.selectedPetId;
+    if (!petId) return;
+    wx.navigateTo({ url: `/common/pet/detail/index?petId=${petId}` });
+  },
+
   async loadRecommendPets() {
     try {
-      const res = await request('wp-recommend', { action: 'list' }, { silent: true });
-      const pets = (res.data.pets || []).map(p => ({
+      const res = await request('wp-recommend', { action: 'list', limit: 3 }, { silent: true });
+      const pets = (res.data.pets || []).map(p => {
+        const photos = this._normalizePetPhotos(p.photos);
+        const imageUrl = photos[0] || p.avatarUrl || '';
+        const gender = this._normalizeGender(p.gender);
+        return {
         ...p,
-        gender: this._normalizeGender(p.gender),
-        bg: this._getCardBg(this._normalizeGender(p.gender))
-      }));
+          photos,
+          imageUrl,
+          likes: Number(p.likes) || 0,
+          liked: !!p.liked,
+          gender,
+          bg: this._getCardBg(gender)
+        };
+      });
       this.setData({ recommendPets: pets });
     } catch (err) {
       console.error('[loadRecommendPets]', err);
@@ -468,6 +636,43 @@ Page({
     if (this._expTimer) { clearTimeout(this._expTimer); this._expTimer = null; }
     this.setData({ expandPhase: 'start' });
     setTimeout(() => { this.setData({ expandedCard: null, expandPhase: '' }); }, 300);
+  },
+
+  async likeRecommendPet(e) {
+    const petId = e.currentTarget.dataset.petId;
+    if (!petId || this.data.likingPetIds[petId]) return;
+    const idx = this.data.recommendPets.findIndex(item => item.petId === petId);
+    if (idx < 0) return;
+    const current = this.data.recommendPets[idx];
+    if (current.liked) {
+      wx.showToast({ title: '已点赞', icon: 'none' });
+      return;
+    }
+
+    this.setData({ [`likingPetIds.${petId}`]: true });
+    try {
+      const res = await request('wp-recommend', { action: 'like', petId }, { silent: true });
+      if (res.code !== 1) {
+        wx.showToast({ title: res.msg || '点赞失败', icon: 'none' });
+        return;
+      }
+      const likes = Number(res.data && res.data.likes) || current.likes;
+      this.setData({
+        [`recommendPets[${idx}].liked`]: true,
+        [`recommendPets[${idx}].likes`]: likes,
+        [`likingPetIds.${petId}`]: false
+      });
+      if (this.data.expandedCard && this.data.expandedCard.petId === petId) {
+        this.setData({
+          'expandedCard.liked': true,
+          'expandedCard.likes': likes
+        });
+      }
+    } catch (err) {
+      wx.showToast({ title: err.message || '点赞失败', icon: 'none' });
+    } finally {
+      this.setData({ [`likingPetIds.${petId}`]: false });
+    }
   },
 
   noop() {}

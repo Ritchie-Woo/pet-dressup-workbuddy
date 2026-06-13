@@ -56,6 +56,7 @@
   justify-content: center;
   border: 3rpx solid transparent;
   flex-shrink: 0;
+  position: relative;
 }
 
 .pet-chip.active .chip-avatar {
@@ -70,6 +71,21 @@
 }
 
 .chip-emoji { font-size: 64rpx; }
+
+.chip-edit {
+  position: absolute;
+  right: -2rpx;
+  bottom: -2rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx solid var(--bg);
+  box-shadow: var(--shadow);
+}
 
 .chip-name {
   font-size: 24rpx;
@@ -103,6 +119,13 @@
   box-sizing: border-box;
 }
 
+.avatar-panel {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Metal platinum-gold picture frame — 撑满整个 section */
 .avatar-frame {
   width: 100%;
@@ -133,6 +156,109 @@
     inset 0 0 32rpx rgba(130, 125, 120, 0.07);
   overflow: hidden;
   box-sizing: border-box;
+}
+
+.pet-photo-panel {
+  padding: 18rpx 24rpx 20rpx;
+  background: var(--bg);
+  border-top: 1rpx solid var(--bg-tertiary);
+  box-sizing: border-box;
+}
+
+.pet-photo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 48rpx;
+  padding: 0 18rpx;
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 700;
+}
+
+.visibility-toggle.public {
+  background: var(--secondary-light);
+  color: var(--secondary);
+}
+
+.visibility-toggle.private {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.photo-count {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.photo-strip {
+  display: flex;
+  flex-direction: row;
+  gap: 14rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.pet-photo-item,
+.pet-photo-add,
+.pet-photo-limit {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 18rpx;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.pet-photo-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--bg-secondary);
+}
+
+.pet-photo-delete {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-photo-add,
+.pet-photo-limit {
+  border: 2rpx dashed var(--primary-light);
+  background: var(--primary-lighter);
+  color: var(--primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+.pet-photo-limit {
+  border-color: var(--bg-tertiary);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
 }
 
 .avatar-wrap {
@@ -262,23 +388,73 @@
   border-radius: 50%;
   background: rgba(255,255,255,0.5);
   border: 2rpx solid rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.rec-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+}
+
+.rec-avatar-icon {
+  font-size: 38rpx;
+  line-height: 1;
 }
 
 .rec-name {
   font-size: var(--font-sm);
   font-weight: 700;
   color: var(--primary);
+  max-width: 180rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rec-info {
   font-size: var(--font-xs);
   color: var(--text-secondary);
+  max-width: 180rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rec-like {
   font-size: var(--font-xs);
   color: var(--primary);
   font-weight: 600;
+  min-width: 76rpx;
+  height: 40rpx;
+  padding: 0 12rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.55);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  box-sizing: border-box;
+}
+
+.rec-like.liked {
+  color: #FFFFFF;
+  background: var(--primary);
+}
+
+.rec-like:active {
+  transform: scale(0.94);
+}
+
+.rec-like-heart {
+  font-size: 24rpx;
+  line-height: 1;
 }
 
 /* ===== Shuffle Animation ===== */
@@ -416,9 +592,11 @@
   width: 80rpx; height: 80rpx; border-radius: 50%;
   background: rgba(160, 120, 100, 0.1);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  overflow: hidden;
 }
 
 .exp-info-icon { font-size: 48rpx; }
+.exp-info-img { width: 100%; height: 100%; border-radius: 50%; display: block; }
 
 .exp-info-main { display: flex; flex-direction: column; gap: 4rpx; flex: 1; min-width: 0; }
 .exp-info-name { font-size: var(--font-lg); font-weight: 700; color: #5D4037; }
@@ -430,4 +608,25 @@
   border-radius: var(--radius-pill); background: rgba(160, 120, 100, 0.08);
 }
 
-.exp-info-likes { font-size: var(--font-md); color: #FF5A5F; font-weight: 700; flex-shrink: 0; }
+.exp-info-likes {
+  font-size: var(--font-md);
+  color: #FF5A5F;
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 88rpx;
+  height: 52rpx;
+  padding: 0 16rpx;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 90, 95, 0.1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+}
+
+.exp-info-likes.liked {
+  color: #FFFFFF;
+  background: #FF5A5F;
+}

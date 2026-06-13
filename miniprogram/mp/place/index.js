@@ -2,7 +2,21 @@
 const { request } = require('../../utils/request');
 const storage = require('../../utils/storage');
 const TAGS = require('./tags');
-const CAT_LABELS = { restaurant: '餐厅', cafe: '咖啡馆', park: '公园', pet_store: '宠物店', hospital: '宠物医院', hotel: '宠物酒店', other: '其他' };
+const CAT_LABELS = { mall: '商场', restaurant: '餐厅', park: '公园', hotel: '酒店', adoption: '领养', other: '其他' };
+const SOURCE_LABELS = {
+  douyin: '抖音',
+  xiaohongshu: '小红书',
+  official_account: '公众号',
+  wechat_official: '公众号',
+  manual: '人工确认',
+  manual_confirmed: '人工确认',
+  user_submitted: '用户投稿',
+  user_collected: '用户采集',
+  dev_seed: '开发种子',
+  test_seed: '测试种子',
+  seed: '种子数据',
+  unknown: '未标注'
+};
 
 function relativeTime(dateStr) {
   if (!dateStr) return '';
@@ -15,6 +29,13 @@ function relativeTime(dateStr) {
   const days = Math.floor(hours / 24);
   if (days < 30) return `${days}天前`;
   return new Date(dateStr).toLocaleDateString('zh-CN');
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('zh-CN');
 }
 
 Page({
@@ -38,9 +59,9 @@ Page({
     submitting: false,
     initLat: null, initLng: null,   // 从外面地图透传过来的初始位置
     categories: [
-      { value: 'restaurant', label: '餐厅' }, { value: 'cafe', label: '咖啡馆' },
-      { value: 'park', label: '公园' }, { value: 'pet_store', label: '宠物店' },
-      { value: 'hospital', label: '宠物医院' }, { value: 'hotel', label: '宠物酒店' },
+      { value: 'mall', label: '商场' }, { value: 'restaurant', label: '餐厅' },
+      { value: 'park', label: '公园' }, { value: 'hotel', label: '酒店' },
+      { value: 'adoption', label: '领养' },
       { value: 'other', label: '其他' }
     ]
   },
@@ -76,6 +97,9 @@ Page({
         checkinCount: data.checkinCount || 0,
         recentCheckins,
         lastCheckinTime: recentCheckins.length > 0 ? relativeTime(recentCheckins[0].createdAt) : '',
+        placeSourceLabel: this.sourceLabel(data.source),
+        placeRecordedTime: this.formatPlaceTime(data.createdAt),
+        placeUpdatedTime: this.formatPlaceTime(data.updatedAt),
         tagStats: data.tagStats || {},
         tagListWithStats: this._buildTagListWithStats(data.tagList || []),
         breedDistribution: data.breedDistribution || {},
@@ -396,5 +420,7 @@ Page({
     finally { this.setData({ submitting: false }); }
   },
 
-  categoryLabel(cat) { return CAT_LABELS[cat] || cat; }
+  categoryLabel(cat) { return CAT_LABELS[cat] || cat; },
+  sourceLabel(source) { return SOURCE_LABELS[source || 'unknown'] || SOURCE_LABELS.unknown; },
+  formatPlaceTime(value) { return formatDate(value); }
 });

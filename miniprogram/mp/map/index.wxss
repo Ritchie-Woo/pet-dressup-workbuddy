@@ -47,6 +47,20 @@
   opacity: 0.5;
 }
 
+/* 分类图标 */
+.cat-chip-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.cat-chip-emoji {
+  font-size: var(--font-md);
+}
+
+.cat-chip-label {
+  font-size: var(--font-sm);
+}
+
 /* ===== 地图 ===== */
 .map-view {
   flex: 1;
@@ -91,6 +105,319 @@
 
 .map-submit-btn:active {
   background: var(--primary-dark, #E04E50);
+}
+
+/* ===== 遛狗开关按钮 ===== */
+.map-walk-btn {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: 620rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.walk-btn-emoji {
+  font-size: 36rpx;
+  line-height: 1;
+}
+
+.walk-btn-icon {
+  width: 56rpx;
+  height: 56rpx;
+}
+
+.map-walk-btn:active {
+  background: var(--bg-secondary);
+}
+
+.map-walk-btn.active {
+  background: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===== 遛狗遮罩（点击外部关闭面板） ===== */
+.walk-mask {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 9;
+}
+
+/* ===== 遛狗状态栏 ===== */
+.walk-toggle-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 360rpx;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 88vw;
+  padding: 16rpx 16rpx 16rpx 20rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  box-shadow: var(--shadow-lg);
+}
+
+.walk-privacy-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  width: 100%;
+  margin-bottom: 12rpx;
+  padding: 10rpx 12rpx;
+  border-radius: 12rpx;
+  background: #fff7e8;
+  color: #8c6f4a;
+  font-size: 22rpx;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.walk-privacy-tip text {
+  flex: 1;
+  min-width: 0;
+}
+
+.walk-bar-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text);
+  align-self: flex-start;
+}
+
+/* 宠物 + 按钮 横向行 */
+.walk-pet-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 12rpx;
+}
+
+.walk-empty-state {
+  flex: 1;
+  min-height: 150rpx;
+  padding: 24rpx 20rpx;
+  border-radius: 16rpx;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8rpx;
+  box-sizing: border-box;
+}
+
+.walk-empty-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.walk-empty-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 宠物横向滚动行 */
+.walk-pet-scroll {
+  white-space: nowrap;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.walk-pet-scroll > view {
+  display: inline-flex;
+}
+
+.walk-pet-chip {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  width: 130rpx;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  padding: 8rpx 4rpx;
+  border-radius: 16rpx;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.walk-pet-chip.active {
+  background: transparent;
+}
+
+.walk-pet-avatar,
+.walk-pet-emoji {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 50%;
+  border: 4rpx solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72rpx;
+  background: #fff;
+}
+
+.walk-pet-chip.active .walk-pet-avatar,
+.walk-pet-chip.active .walk-pet-emoji {
+  border-color: var(--primary);
+}
+
+.walk-pet-check {
+  position: absolute;
+  top: 12rpx;
+  right: 16rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.walk-pet-name {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  max-width: 140rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.walk-pet-chip.active .walk-pet-name {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* 竖向开始遛狗按钮 */
+.walk-start-btn-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 150rpx;
+  border-radius: 16rpx;
+  background: var(--primary);
+  box-shadow: var(--shadow);
+  gap: 2rpx;
+}
+
+.walk-start-btn-vertical.disabled {
+  background: var(--bg-tertiary);
+  box-shadow: none;
+}
+
+.walk-start-text {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.walk-start-btn-vertical.disabled .walk-start-text {
+  color: var(--text-tertiary);
+}
+
+/* 遛狗中状态条（可点击停止） */
+.walk-active-bar {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 14rpx 36rpx;
+  border-radius: 40rpx;
+  background: var(--primary);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.walk-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.walk-dot.pulsing {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.walk-group-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 220rpx;
+  transform: translateX(-50%);
+  z-index: 11;
+  width: 84vw;
+  padding: 20rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  box-sizing: border-box;
+}
+
+.walk-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.walk-group-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.walk-group-close {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 34rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.walk-group-avatars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.walk-group-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--bg-secondary);
 }
 
 /* ===== 附近地点列表（三段式拖动） ===== */

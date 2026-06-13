@@ -22,6 +22,7 @@ FUNCTIONS=(
   "mp-place"
   "mp-checkin"
   "mp-place-stats"
+  "mp-walk"
   "mbti-test"
 )
 

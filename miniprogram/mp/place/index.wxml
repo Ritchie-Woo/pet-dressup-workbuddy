@@ -72,6 +72,22 @@
       </view>
     </view>
 
+    <!-- 来源/时间 -->
+    <view class="detail-section card source-card" wx:if="{{place.source || placeRecordedTime || placeUpdatedTime}}">
+      <view class="source-row" wx:if="{{place.source}}">
+        <text class="source-label">来源</text>
+        <text class="source-value">{{placeSourceLabel}}</text>
+      </view>
+      <view class="source-row" wx:if="{{placeRecordedTime}}">
+        <text class="source-label">收录时间</text>
+        <text class="source-value">{{placeRecordedTime}}</text>
+      </view>
+      <view class="source-row" wx:if="{{placeUpdatedTime && placeUpdatedTime !== placeRecordedTime}}">
+        <text class="source-label">更新时间</text>
+        <text class="source-value">{{placeUpdatedTime}}</text>
+      </view>
+    </view>
+
     <!-- 地址/电话/时间 -->
     <view class="detail-section card">
       <view class="info-row" bindtap="openNavigation"><t-icon name="location" size="36rpx" color="#FF8C00" /><text class="info-text">{{place.address}}</text><t-icon name="chevron-right" size="28rpx" color="#ccc" /></view>
@@ -140,11 +156,7 @@
 
   <!-- 操作栏：position: fixed 浮在底部，给内部留 180rpx padding-bottom -->
   <view class="detail-actions safe-bottom">
-    <view class="action-half" bindtap="toggleFavorite">
-      <t-icon name="{{isFavorited ? 'heart-filled' : 'heart'}}" size="40rpx" color="{{isFavorited ? '#FF4D4F' : '#999'}}" />
-      <text class="action-label">{{isFavorited ? '已收藏' : '收藏'}}</text>
-    </view>
-    <view class="action-half {{checkedInToday ? 'action-disabled' : ''}}" bindtap="doCheckin">
+    <view class="action-full {{checkedInToday ? 'action-disabled' : ''}}" bindtap="doCheckin">
       <block wx:if="{{checkedInToday}}">
         <t-icon name="check-circle-filled" size="40rpx" color="#07C160" />
         <text class="action-label action-checked">已踩点 ✓</text>

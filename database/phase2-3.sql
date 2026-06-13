@@ -152,7 +152,8 @@ CREATE TABLE IF NOT EXISTS mp_place (
     INDEX idx_category (category)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='宠物友好地点表（#3 地图模块）';
 
--- 用户收藏地点表
+-- 用户收藏地点表 ⚠️ 2026-06-10 废弃：移除收藏功能
+-- 保留表结构以兼容历史数据，不再写入。前端 action 'favorite' / 'myFavorites' 已删除
 CREATE TABLE IF NOT EXISTS mp_favorite (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id         BIGINT NOT NULL COMMENT '关联 common_user.id',
@@ -160,7 +161,7 @@ CREATE TABLE IF NOT EXISTS mp_favorite (
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user (user_id),
     UNIQUE KEY uk_user_place (user_id, place_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户收藏地点表（#3 地图模块）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='[DEPRECATED] 用户收藏地点表 — 2026-06-10 移除收藏功能';
 
 -- 宠物打卡记录表
 CREATE TABLE IF NOT EXISTS mp_checkin (

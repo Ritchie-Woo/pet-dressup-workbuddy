@@ -106,22 +106,20 @@ const ORDER_STATUS_LABELS = {
 
 // 地图地点分类
 const PLACE_CATEGORY = {
+  MALL: 'mall',
   RESTAURANT: 'restaurant',
-  CAFE: 'cafe',
   PARK: 'park',
-  PET_STORE: 'pet_store',
-  HOSPITAL: 'hospital',
   HOTEL: 'hotel',
+  ADOPTION: 'adoption',
   OTHER: 'other'
 };
 
 const PLACE_CATEGORY_LABELS = {
+  mall: '商场',
   restaurant: '餐厅',
-  cafe: '咖啡馆',
   park: '公园',
-  pet_store: '宠物店',
-  hospital: '医院',
   hotel: '酒店',
+  adoption: '领养',
   other: '其他'
 };
 

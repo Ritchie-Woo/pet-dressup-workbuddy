@@ -3,6 +3,44 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
+const MAX_PET_PHOTOS = 5;
+
+function normalizePhotos(photos) {
+  if (!Array.isArray(photos)) return [];
+  return photos.filter(photo => typeof photo === 'string' && photo.trim()).slice(0, MAX_PET_PHOTOS);
+}
+
+function parsePhotosInput(photos) {
+  if (photos === undefined) return { provided: false, photos: [] };
+  if (!Array.isArray(photos)) return { error: '照片数据格式错误' };
+  const cleaned = photos.filter(photo => typeof photo === 'string' && photo.trim());
+  if (cleaned.length > MAX_PET_PHOTOS) return { error: '最多上传 5 张照片' };
+  return { provided: true, photos: cleaned };
+}
+
+function normalizeIsPublic(pet) {
+  return pet.is_public !== false;
+}
+
+function normalizeLikeCount(pet) {
+  return typeof pet.like_count === 'number' ? pet.like_count : 0;
+}
+
+function formatPet(p) {
+  return {
+    petId: p._id,
+    name: p.name,
+    species: p.species,
+    breed: p.breed,
+    gender: p.gender,
+    birthday: p.birthday,
+    avatarUrl: p.avatar_url,
+    photos: normalizePhotos(p.photos),
+    isPublic: normalizeIsPublic(p),
+    likeCount: normalizeLikeCount(p),
+    createdAt: p.created_at
+  };
+}
 
 exports.main = async (event, context) => {
   const { action } = event;
@@ -20,8 +58,10 @@ exports.main = async (event, context) => {
 
     switch (action) {
       case 'create': {
-        const { name, species, breed, gender, birthday, avatarUrl } = event;
+        const { name, species, breed, gender, birthday, avatarUrl, photos, isPublic } = event;
         if (!name || !species) return { code: -1, msg: '宠物名和物种为必填' };
+        const parsedPhotos = parsePhotosInput(photos);
+        if (parsedPhotos.error) return { code: -1, msg: parsedPhotos.error };
 
         // 限制每用户最多 5 只宠物
         const countResult = await db.collection('common_pet')
@@ -39,6 +79,9 @@ exports.main = async (event, context) => {
             gender: gender || 'unknown',
             birthday: birthday || null,
             avatar_url: avatarUrl || '',
+            photos: parsedPhotos.provided ? parsedPhotos.photos : [],
+            is_public: isPublic === false ? false : true,
+            like_count: 0,
             is_active: 1,
             created_at: new Date(),
             updated_at: new Date()
@@ -52,16 +95,7 @@ exports.main = async (event, context) => {
           .where({ user_id: userId, is_active: 1 })
           .orderBy('created_at', 'asc');
         const result = await pets.get();
-        const list = result.data.map(p => ({
-          petId: p._id,
-          name: p.name,
-          species: p.species,
-          breed: p.breed,
-          gender: p.gender,
-          birthday: p.birthday,
-          avatarUrl: p.avatar_url,
-          createdAt: p.created_at
-        }));
+        const list = result.data.map(formatPet);
         return { code: 1, data: { pets: list, total: list.length } };
       }
 
@@ -75,25 +109,18 @@ exports.main = async (event, context) => {
         const p = result.data;
         return {
           code: 1,
-          data: {
-            petId: p._id,
-            name: p.name,
-            species: p.species,
-            breed: p.breed,
-            gender: p.gender,
-            birthday: p.birthday,
-            avatarUrl: p.avatar_url,
-            createdAt: p.created_at
-          }
+          data: formatPet(p)
         };
       }
 
       case 'update': {
-        const { petId, name, species, breed, gender, birthday, avatarUrl } = event;
+        const { petId, name, species, breed, gender, birthday, avatarUrl, photos, isPublic } = event;
         if (!petId) return { code: -1, msg: '缺少 petId' };
         const result = await db.collection('common_pet').doc(petId).get();
         if (!result.data || !result.data._id) return { code: -1, msg: '宠物不存在' };
         if (result.data.user_id !== userId) return { code: -2, msg: '无权操作' };
+        const parsedPhotos = parsePhotosInput(photos);
+        if (parsedPhotos.error) return { code: -1, msg: parsedPhotos.error };
 
         const updateData = { updated_at: new Date() };
         if (name !== undefined) updateData.name = name;
@@ -102,6 +129,8 @@ exports.main = async (event, context) => {
         if (gender !== undefined) updateData.gender = gender;
         if (birthday !== undefined) updateData.birthday = birthday;
         if (avatarUrl !== undefined) updateData.avatar_url = avatarUrl;
+        if (parsedPhotos.provided) updateData.photos = parsedPhotos.photos;
+        if (isPublic !== undefined) updateData.is_public = !!isPublic;
 
         await db.collection('common_pet').doc(petId).update({ data: updateData });
         return { code: 1, data: { success: true } };

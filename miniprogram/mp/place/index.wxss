@@ -195,6 +195,33 @@ page {
   font-style: italic;
 }
 
+/* 来源/时间 */
+.source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.source-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.source-value {
+  flex: 1;
+  text-align: right;
+  font-size: var(--font-sm);
+  color: var(--text);
+  word-break: break-word;
+}
+
 /* 详情信息行 */
 .info-row {
   display: flex;
@@ -275,6 +302,29 @@ page {
   transition: all 0.2s ease;
 }
 
+/* 全宽操作按钮（去收藏后只剩"我来踩点"一个按钮） */
+.action-full {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 24rpx 0;
+  border-radius: var(--radius);
+  background: var(--primary);
+  transition: all 0.2s ease;
+}
+
+.action-full:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.action-full .action-label {
+  color: var(--text-on-primary);
+  font-weight: 600;
+}
+
 .action-half:active {
   transform: scale(0.97);
   background: var(--bg-tertiary);
@@ -288,6 +338,11 @@ page {
 .action-disabled:active {
   transform: none;
   background: var(--bg-secondary);
+}
+
+.action-full.action-disabled:active {
+  transform: none;
+  background: var(--primary);
 }
 
 .action-label {

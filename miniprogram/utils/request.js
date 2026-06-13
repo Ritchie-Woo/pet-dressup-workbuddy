@@ -186,11 +186,22 @@ function searchPlaces(keyword) {
 function getPlaceDetail(placeId) {
   return request('mp-place', { action: 'detail', placeId });
 }
-function toggleFavorite(placeId) {
-  return request('mp-place', { action: 'favorite', placeId, toggle: true });
-}
 function doCheckin(placeId, petId) {
   return request('mp-checkin', { action: 'checkin', placeId, petId });
+}
+
+// ===== 遛狗 API =====
+function startWalk(petId) {
+  return request('mp-walk', { action: 'start', petId });
+}
+function stopWalk(sessionId) {
+  return request('mp-walk', { action: 'stop', sessionId });
+}
+function heartbeatWalk(sessionId, latitude, longitude) {
+  return request('mp-walk', { action: 'heartbeat', sessionId, latitude, longitude }, { silent: true });
+}
+function queryWalkers(params = {}) {
+  return request('mp-walk', { action: 'query', ...params }, { silent: true });
 }
 
 module.exports = {
@@ -228,6 +239,9 @@ module.exports = {
   getNearbyPlaces,
   searchPlaces,
   getPlaceDetail,
-  toggleFavorite,
-  doCheckin
+  doCheckin,
+  startWalk,
+  stopWalk,
+  heartbeatWalk,
+  queryWalkers
 };

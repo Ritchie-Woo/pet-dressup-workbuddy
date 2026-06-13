@@ -14,6 +14,9 @@
         <view class="chip-avatar">
           <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" mode="aspectFill" class="chip-img" lazy-load />
           <text wx:else class="chip-emoji">{{item.species === 'dog' ? '🐶' : item.species === 'cat' ? '🐱' : '🐰'}}</text>
+          <view wx:if="{{selectedPetId === item.petId}}" class="chip-edit" catchtap="goEditPet" data-id="{{item.petId}}">
+            <t-icon name="edit-1" size="24rpx" color="#FFFFFF" />
+          </view>
         </view>
         <text class="chip-name">{{item.name}}</text>
       </view>
@@ -26,20 +29,47 @@
 
   <!-- Section 2: Avatar Display with Picture Frame -->
   <view class="section-avatar">
-    <view class="avatar-frame">
-      <view wx:if="{{selectedPetId && avatarCreated}}" class="avatar-wrap">
-        <canvas type="2d" id="petCanvas" class="pg-canvas" style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
-          bindtouchstart="onCanvasTap" />
+    <view class="avatar-panel">
+      <view class="avatar-frame">
+        <view wx:if="{{selectedPetId && avatarCreated}}" class="avatar-wrap">
+          <canvas type="2d" id="petCanvas" class="pg-canvas" style="width:{{canvasSize}}px;height:{{canvasSize}}px;"
+            bindtouchstart="onCanvasTap" />
+        </view>
+        <view wx:elif="{{selectedPetId}}" class="avatar-empty">
+          <text class="ae-icon">✨</text>
+          <text class="ae-title">为 {{selectedPetName}} 生成 2D 形象</text>
+          <button class="btn-gen" catchtap="createAvatar">🎨 预设形象</button>
+          <button class="btn-gen btn-photo" catchtap="photo2Avatar" loading="{{generating}}">📷 从照片生成</button>
+        </view>
+        <view wx:else class="avatar-empty">
+          <text class="ae-icon">🐾</text>
+          <text class="ae-title">选择一只宠物开始</text>
+          <button class="btn-gen" catchtap="goCreatePet">新增宠物</button>
+        </view>
       </view>
-      <view wx:elif="{{selectedPetId}}" class="avatar-empty">
-        <text class="ae-icon">✨</text>
-        <text class="ae-title">为 {{selectedPetName}} 生成 2D 形象</text>
-        <button class="btn-gen" catchtap="createAvatar">🎨 预设形象</button>
-        <button class="btn-gen btn-photo" catchtap="photo2Avatar" loading="{{generating}}">📷 从照片生成</button>
-      </view>
-      <view wx:else class="avatar-empty">
-        <text class="ae-icon">🐾</text>
-        <text class="ae-title">选择一只宠物开始</text>
+      <view wx:if="{{selectedPetId}}" class="pet-photo-panel">
+        <view class="pet-photo-head">
+          <view class="visibility-toggle {{selectedPetIsPublic ? 'public' : 'private'}}" catchtap="togglePetPublic">
+            <t-icon name="{{selectedPetIsPublic ? 'browse' : 'browse-off'}}" size="28rpx" color="{{selectedPetIsPublic ? '#00A699' : '#717171'}}" />
+            <text>{{selectedPetIsPublic ? '公开' : '不公开'}}</text>
+          </view>
+          <text class="photo-count">{{selectedPetPhotos.length}}/5</text>
+        </view>
+        <view class="photo-strip">
+          <view wx:for="{{selectedPetPhotos}}" wx:key="*this" class="pet-photo-item">
+            <image class="pet-photo-img" src="{{item}}" mode="aspectFill" lazy-load />
+            <view class="pet-photo-delete" catchtap="deletePetPhoto" data-index="{{index}}">
+              <t-icon name="close" size="22rpx" color="#FFFFFF" />
+            </view>
+          </view>
+          <view wx:if="{{selectedPetPhotos.length < 5}}" class="pet-photo-add" catchtap="uploadPetPhoto">
+            <t-icon name="add" size="36rpx" color="#FF5A5F" />
+            <text>{{photoUploading ? '上传中' : '上传照片'}}</text>
+          </view>
+          <view wx:else class="pet-photo-limit" catchtap="uploadPetPhoto">
+            <text>最多 5 张</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>
@@ -62,10 +92,16 @@
         catchtap="onRecCardTap"
         data-index="{{index}}"
         hover-class="rec-card-hover">
-        <view class="rec-avatar"></view>
+        <view class="rec-avatar">
+          <image wx:if="{{item.imageUrl}}" class="rec-avatar-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+          <text wx:else class="rec-avatar-icon">{{item.species === 'dog' ? '🐶' : item.species === 'cat' ? '🐱' : '🐰'}}</text>
+        </view>
         <text class="rec-name">{{item.name}}</text>
-        <text class="rec-info">{{item.breed}}</text>
-        <text class="rec-like">♥ {{item.likes}}</text>
+        <text class="rec-info">{{item.breed || (item.species === 'dog' ? '狗狗' : item.species === 'cat' ? '猫咪' : '其他')}}</text>
+        <view class="rec-like {{item.liked ? 'liked' : ''}}" catchtap="likeRecommendPet" data-pet-id="{{item.petId}}">
+          <text class="rec-like-heart">♥</text>
+          <text>{{item.likes}}</text>
+        </view>
       </view>
     </view>
   </view>
@@ -77,16 +113,23 @@
           bindtransitionend="onExpCardTransitionEnd"
           catchtap="noop">
       <view class="exp-compact">
-        <view class="rec-avatar"></view>
+        <view class="rec-avatar">
+          <image wx:if="{{expandedCard.imageUrl}}" class="rec-avatar-img" src="{{expandedCard.imageUrl}}" mode="aspectFill" lazy-load />
+          <text wx:else class="rec-avatar-icon">{{expandedCard.species === 'dog' ? '🐶' : expandedCard.species === 'cat' ? '🐱' : '🐰'}}</text>
+        </view>
         <text class="rec-name">{{expandedCard.name}}</text>
         <text class="rec-info">{{expandedCard.breed}}</text>
-        <text class="rec-like">♥ {{expandedCard.likes}}</text>
+        <view class="rec-like {{expandedCard.liked ? 'liked' : ''}}" catchtap="likeRecommendPet" data-pet-id="{{expandedCard.petId}}">
+          <text class="rec-like-heart">♥</text>
+          <text>{{expandedCard.likes}}</text>
+        </view>
       </view>
       <view class="exp-detail">
         <view class="exp-close" catchtap="closeExpand">✕</view>
         <view class="exp-info-bar">
           <view class="exp-info-avatar">
-            <text class="exp-info-icon">{{expandedCard.species === 'dog' ? '🐶' : expandedCard.species === 'cat' ? '🐱' : '🐰'}}</text>
+            <image wx:if="{{expandedCard.imageUrl}}" class="exp-info-img" src="{{expandedCard.imageUrl}}" mode="aspectFill" lazy-load />
+            <text wx:else class="exp-info-icon">{{expandedCard.species === 'dog' ? '🐶' : expandedCard.species === 'cat' ? '🐱' : '🐰'}}</text>
           </view>
           <view class="exp-info-main">
             <text class="exp-info-name">{{expandedCard.name}}</text>
@@ -96,7 +139,10 @@
               <text class="exp-tag">{{expandedCard.birthday}}</text>
             </view>
           </view>
-          <text class="exp-info-likes">♥ {{expandedCard.likes}}</text>
+          <view class="exp-info-likes {{expandedCard.liked ? 'liked' : ''}}" catchtap="likeRecommendPet" data-pet-id="{{expandedCard.petId}}">
+            <text>♥</text>
+            <text>{{expandedCard.likes}}</text>
+          </view>
         </view>
         <view class="exp-3d-area">
           <view class="exp-3d-placeholder" wx:if="{{!expandedCard.has3d}}">

@@ -42,6 +42,11 @@ exports.main = async (event, context) => {
         let query = db.collection('mp_place').where(where);
         if (category && category !== 'all') {
           query = query.where({ category });
+        } else {
+          // 「全部」模式：仅展示目标 6 类，旧分类不再映射
+          query = query.where({
+            category: _.in(['mall', 'restaurant', 'park', 'hotel', 'adoption', 'other'])
+          });
         }
 
         // D2：硬截断 limit 50（缩放到全国时也不爆）
@@ -73,7 +78,9 @@ exports.main = async (event, context) => {
           .where(_.or([
             { name: db.RegExp({ regexp: keyword, options: 'i' }) },
             { address: db.RegExp({ regexp: keyword, options: 'i' }) }
-          ]).and({ status: 'approved' }))
+          ]).and({ status: 'approved' }).and({
+            category: _.in(['mall', 'restaurant', 'park', 'hotel', 'adoption', 'other'])
+          }))
           .limit(20).get();
         const places = result.data.map(p => ({
           placeId: p._id, name: p.name, category: p.category, address: p.address,
@@ -140,7 +147,10 @@ exports.main = async (event, context) => {
             latitude: p.latitude, longitude: p.longitude, phone: p.phone,
             businessHours: p.business_hours, petPolicy: p.pet_policy,
             images: p.images || [], rating: p.rating, reviewCount: p.review_count,
-            source: p.source, checkinCount, recentCheckins,
+            source: p.source,
+            createdAt: p.created_at,
+            updatedAt: p.updated_at,
+            checkinCount, recentCheckins,
             tagStats, tagList, breedDistribution, hourlyHeatmap
           }
         };
@@ -235,14 +245,14 @@ exports.main = async (event, context) => {
         const now = new Date();
         const seeds = [
           {
-            name: '星巴克臻选（华侨城店）', category: 'cafe',
-            address: '深圳市南山区华侨城创意园北区A4栋',
-            latitude: 22.5362, longitude: 113.9792,
-            phone: '0755-26901234',
-            business_hours: '07:00-22:00',
-            pet_policy: '户外座位宠物友好，提供饮水碗，室内需装包',
-            images: ['https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=600'],
-            rating: 4.5, review_count: 28,
+            name: '万象天地', category: 'mall',
+            address: '深圳市南山区深南大道9668号',
+            latitude: 22.5362, longitude: 113.9540,
+            phone: '0755-86681234',
+            business_hours: '10:00-22:00',
+            pet_policy: '宠物友好商场，提供宠物推车租借，部分商户可携宠进入',
+            images: ['https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600'],
+            rating: 4.5, review_count: 36,
             status: 'approved', source: 'dev_seed'
           },
           {
@@ -257,36 +267,36 @@ exports.main = async (event, context) => {
             status: 'approved', source: 'dev_seed'
           },
           {
-            name: '宠物家（科技园店）', category: 'pet_store',
-            address: '深圳市南山区科技南路18号阳光粤海花园1楼',
-            latitude: 22.5431, longitude: 113.9520,
-            phone: '0755-86543210',
-            business_hours: '09:00-21:00',
-            pet_policy: '可带宠物进店，提供免费零食和试吃',
+            name: 'gaga鲜语（万象天地店）', category: 'restaurant',
+            address: '深圳市南山区深南大道9668号万象天地B1层',
+            latitude: 22.5365, longitude: 113.9545,
+            phone: '0755-26909876',
+            business_hours: '08:00-22:00',
+            pet_policy: '户外区域宠物友好，提供饮水碗，有宠物专属菜单',
+            images: ['https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600'],
+            rating: 4.3, review_count: 28,
+            status: 'approved', source: 'dev_seed'
+          },
+          {
+            name: '深圳湾安达仕酒店', category: 'hotel',
+            address: '深圳市南山区科苑南路2600号',
+            latitude: 22.5130, longitude: 113.9460,
+            phone: '0755-66888888',
+            business_hours: '全天营业',
+            pet_policy: '宠物友好客房，提供宠物床、食盆、零食礼包，需提前预约',
+            images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600'],
+            rating: 4.7, review_count: 42,
+            status: 'approved', source: 'dev_seed'
+          },
+          {
+            name: '深圳领养日公益中心', category: 'adoption',
+            address: '深圳市福田区莲花路1008号',
+            latitude: 22.5478, longitude: 114.0580,
+            phone: '0755-83211234',
+            business_hours: '10:00-18:00（周一闭馆）',
+            pet_policy: '定期举办领养活动，可预约上门看宠，提供领养后回访服务',
             images: ['https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600'],
-            rating: 4.6, review_count: 42,
-            status: 'approved', source: 'dev_seed'
-          },
-          {
-            name: '猫狗咖啡厅·Caturday', category: 'cafe',
-            address: '深圳市福田区华强北路1019号华强广场B1',
-            latitude: 22.5478, longitude: 114.0857,
-            phone: '0755-87654321',
-            business_hours: '10:00-20:00',
-            pet_policy: '猫狗友好主题咖啡厅，有宠物菜单，可进室内',
-            images: ['https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=600'],
-            rating: 4.7, review_count: 89,
-            status: 'approved', source: 'dev_seed'
-          },
-          {
-            name: '瑞鹏宠物医院（南山分院）', category: 'hospital',
-            address: '深圳市南山区桃园路222号',
-            latitude: 22.5280, longitude: 113.9245,
-            phone: '0755-26781234',
-            business_hours: '09:00-21:00（急诊24h）',
-            pet_policy: '全科宠物医院，有独立犬猫候诊区',
-            images: ['https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600'],
-            rating: 4.4, review_count: 103,
+            rating: 4.9, review_count: 67,
             status: 'approved', source: 'dev_seed'
           }
         ];

@@ -1,0 +1,9 @@
+{
+  "name": "mp-place-geocode",
+  "version": "1.0.0",
+  "description": "批量地址反查坐标（高德 Web API）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

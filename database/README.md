@@ -72,9 +72,9 @@ database/
 │  │ category          │                     │  │ avatar_snapshot  │
 │  │ rarity            │  gb_order           │  └──────────────────┘
 │  └────────┬──────────┘  │ product_id       │
-│           │              │ user_id          │  mp_favorite
-│  wp_user_item           │ address_id ─────→│ common_address    │  mp_review
-│  │ user_id + item_id    │ wp_item_added    │  │ rating/content   │
+│           │              │ user_id          │  mp_review
+│  wp_user_item           │ address_id ─────→│ common_address    │  │ rating/content
+│  │ user_id + item_id    │ wp_item_added    │  │ ...              │  └──────────────────┘
 │  └──────────────────────┘ status            │  └──────────────────┘
 │                          └────────┬─────────┘
 │  wp_outfit                       │
@@ -139,8 +139,8 @@ database/
 | `gb_order` | `product_id` | `gb_product.id` | 订单关联商品 |
 | `gb_order` | `address_id` | `common_address.id` | 收货地址 |
 | `gb_progress` | `product_id` | `gb_product.id` | 进度关联商品 |
-| `mp_favorite` | `user_id` | `common_user.id` | 收藏属于用户 |
-| `mp_favorite` | `place_id` | `mp_place.id` | 收藏关联地点 |
+| `mp_favorite` ⚠️ 废弃 | `user_id` | `common_user.id` | ~~收藏属于用户~~（2026-06-10 移除收藏功能） |
+| `mp_favorite` ⚠️ 废弃 | `place_id` | `mp_place.id` | ~~收藏关联地点~~（2026-06-10 移除收藏功能） |
 | `mp_checkin` | `user_id` | `common_user.id` | 打卡属于用户 |
 | `mp_checkin` | `pet_id` | `common_pet.id` | 打卡关联宠物 |
 | `mp_checkin` | `place_id` | `mp_place.id` | 打卡关联地点 |
@@ -307,7 +307,7 @@ DROP TABLE IF EXISTS mbti_match, mbti_label, mbti_test;
 | `gb_order` | `idx_user`, `idx_product`, `idx_status` | INDEX | 订单查询 |
 | `gb_progress` | `idx_product`, `idx_batch` | INDEX | 团购进度查询 |
 | `mp_place` | `idx_location`, `idx_category` | INDEX | 地理位置+分类搜索 |
-| `mp_favorite` | `uk_user_place` | UNIQUE | 防重复收藏 |
+| `mp_favorite` ⚠️ 废弃 | `uk_user_place` | UNIQUE | ~~防重复收藏~~（2026-06-10 移除） |
 | `mp_checkin` | `idx_place`, `idx_user`, `idx_pet` | INDEX | 打卡查询 |
 | `mp_review` | `idx_place`, `idx_user` | INDEX | 评价查询 |
 | `mbti_test` | `idx_pet`, `idx_user` | INDEX | 测试记录查询 |
